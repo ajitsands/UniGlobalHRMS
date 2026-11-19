@@ -1,7 +1,6 @@
 # Dependencies & Build Outputs
 node_modules/
 **/node_modules/
-HRMS/frontend/dist/
 .vite/
 *.local
 *.tsbuildinfo
