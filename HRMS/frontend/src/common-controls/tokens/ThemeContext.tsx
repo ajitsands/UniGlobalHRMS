@@ -1,0 +1,452 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+
+export type ThemeMode = 'uniglobal-light' | 'single' | 'gradient';
+export type HeaderFooterStyle = 'light' | 'single' | 'gradient';
+export type MenuLayout = 'vertical' | 'horizontal' | 'docking' | 'minimal';
+export type AppLanguage = 'en' | 'ar';
+export type FontSizeScale = 'sm' | 'md' | 'lg' | 'xl';
+
+export const FONT_SIZE_PRESETS: { id: FontSizeScale; label: string; px: number }[] = [
+  { id: 'sm', label: 'S', px: 11.5 },
+  { id: 'md', label: 'M', px: 13.5 },
+  { id: 'lg', label: 'L', px: 15.5 },
+  { id: 'xl', label: 'XL', px: 18 },
+];
+
+export const FONT_FAMILY_OPTIONS = [
+  { id: 'inter', label: 'Inter (Default)', css: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" },
+  { id: 'poppins', label: 'Poppins (Modern)', css: "'Poppins', 'Inter', sans-serif" },
+  { id: 'jakarta', label: 'Plus Jakarta Sans', css: "'Plus Jakarta Sans', 'Inter', sans-serif" },
+  { id: 'roboto', label: 'Roboto (Enterprise)', css: "'Roboto', 'Inter', sans-serif" },
+  { id: 'cairo', label: 'Cairo (EN + Arabic)', css: "'Cairo', 'Inter', sans-serif" },
+  { id: 'system', label: 'System UI (Native)', css: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" },
+];
+
+export const CARD_SHADOW_LEVELS = [
+  { level: 0, label: 'Flat', css: 'none' },
+  { level: 1, label: 'Subtle', css: '0 1px 3px rgba(15, 23, 42, 0.07), 0 1px 2px rgba(15, 23, 42, 0.04)' },
+  { level: 2, label: 'Medium', css: '0 4px 12px rgba(15, 23, 42, 0.09), 0 2px 4px rgba(15, 23, 42, 0.05)' },
+  { level: 3, label: 'Deep', css: '0 10px 26px rgba(15, 23, 42, 0.13), 0 4px 8px rgba(15, 23, 42, 0.06)' },
+  { level: 4, label: 'Elevated XL', css: '0 18px 42px rgba(15, 23, 42, 0.18), 0 8px 16px rgba(15, 23, 42, 0.08)' },
+];
+
+export const TEXT_COLOR_PRESETS = [
+  { name: 'White', hex: '#ffffff' },
+  { name: 'UniGlobal Navy', hex: '#1B365D' },
+  { name: 'Dark Slate', hex: '#0f172a' },
+  { name: 'Slate', hex: '#334155' },
+  { name: 'Gold', hex: '#fde68a' },
+  { name: 'UniGlobal Crimson', hex: '#B31B34' },
+];
+
+export interface GradientPreset {
+  id: string;
+  name: string;
+  css: string;
+  primary: string;
+}
+
+export const GRADIENT_PRESETS: GradientPreset[] = [
+  {
+    id: 'uniglobal-brand',
+    name: 'UniGlobal Brand (Navy + Crimson)',
+    css: 'linear-gradient(135deg, #1B365D 0%, #B31B34 100%)',
+    primary: '#1B365D',
+  },
+  {
+    id: 'uniglobal-navy',
+    name: 'UniGlobal Navy Ocean',
+    css: 'linear-gradient(135deg, #1B365D 0%, #1d4ed8 100%)',
+    primary: '#1B365D',
+  },
+  {
+    id: 'emerald-teal',
+    name: 'Emerald Teal',
+    css: 'linear-gradient(135deg, #065f46 0%, #0d9488 100%)',
+    primary: '#059669',
+  },
+  {
+    id: 'royal-indigo',
+    name: 'Royal Indigo',
+    css: 'linear-gradient(135deg, #312e81 0%, #6366f1 100%)',
+    primary: '#4f46e5',
+  },
+];
+
+export const SINGLE_COLOR_PRESETS = [
+  { name: 'UniGlobal Navy', hex: '#1B365D' },
+  { name: 'UniGlobal Crimson', hex: '#B31B34' },
+  { name: 'Royal Blue', hex: '#1d4ed8' },
+  { name: 'Emerald', hex: '#059669' },
+  { name: 'Slate Indigo', hex: '#334155' },
+];
+
+interface ThemeContextValue {
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
+  primaryColor: string;
+  setPrimaryColor: (hex: string) => void;
+  gradientId: string;
+  setGradientId: (id: string) => void;
+  menuLayout: MenuLayout;
+  setMenuLayout: (layout: MenuLayout) => void;
+  menuSticky: boolean;
+  setMenuSticky: (sticky: boolean) => void;
+  headerFooterStyle: HeaderFooterStyle;
+  setHeaderFooterStyle: (style: HeaderFooterStyle) => void;
+  headerFooterColor: string;
+  setHeaderFooterColor: (hex: string) => void;
+  hfTextColor: string;
+  setHfTextColor: (hex: string) => void;
+  hfGradStart: string;
+  setHfGradStart: (hex: string) => void;
+  hfGradEnd: string;
+  setHfGradEnd: (hex: string) => void;
+  hfGradAngle: number;
+  setHfGradAngle: (deg: number) => void;
+  menuBgStyle: HeaderFooterStyle;
+  setMenuBgStyle: (style: HeaderFooterStyle) => void;
+  menuBgColor: string;
+  setMenuBgColor: (hex: string) => void;
+  menuTextColor: string;
+  setMenuTextColor: (hex: string) => void;
+  menuGradStart: string;
+  setMenuGradStart: (hex: string) => void;
+  menuGradEnd: string;
+  setMenuGradEnd: (hex: string) => void;
+  menuGradAngle: number;
+  setMenuGradAngle: (deg: number) => void;
+  resetAppearance: () => void;
+  language: AppLanguage;
+  setLanguage: (lang: AppLanguage) => void;
+  fontSizePx: number;
+  setFontSizePx: (px: number) => void;
+  fontFamilyId: string;
+  setFontFamilyId: (id: string) => void;
+  cardShadowLevel: number;
+  setCardShadowLevel: (level: number) => void;
+  scrollbarColor: string;
+  setScrollbarColor: (hex: string) => void;
+  quickAccessIds: string[];
+  toggleQuickAccess: (menuId: string) => void;
+  isAdmin: boolean;
+  setIsAdmin: (v: boolean) => void;
+  isMenuLocked: boolean;
+  setIsMenuLocked: (v: boolean) => void;
+}
+
+const ThemeContext = createContext<ThemeContextValue | null>(null);
+const STORAGE_KEY = 'uniglobal_hrms_ui_settings_v1';
+
+interface PersistedSettings {
+  themeMode: ThemeMode;
+  primaryColor: string;
+  gradientId: string;
+  menuLayout: MenuLayout;
+  menuSticky: boolean;
+  headerFooterStyle: HeaderFooterStyle;
+  headerFooterColor: string;
+  hfTextColor: string;
+  hfGradStart: string;
+  hfGradEnd: string;
+  hfGradAngle: number;
+  menuBgStyle: HeaderFooterStyle;
+  menuBgColor: string;
+  menuTextColor: string;
+  menuGradStart: string;
+  menuGradEnd: string;
+  menuGradAngle: number;
+  language: AppLanguage;
+  fontSizePx: number;
+  fontFamilyId: string;
+  cardShadowLevel: number;
+  scrollbarColor: string;
+  quickAccessIds: string[];
+  isMenuLocked: boolean;
+}
+
+const DEFAULT_SETTINGS: PersistedSettings = {
+  themeMode: 'uniglobal-light',
+  primaryColor: '#1B365D',
+  gradientId: 'uniglobal-brand',
+  menuLayout: 'vertical',
+  menuSticky: true,
+  headerFooterStyle: 'light',
+  headerFooterColor: '#1B365D',
+  hfTextColor: '#1B365D',
+  hfGradStart: '#1B365D',
+  hfGradEnd: '#B31B34',
+  hfGradAngle: 135,
+  menuBgStyle: 'light',
+  menuBgColor: '#1B365D',
+  menuTextColor: '#334155',
+  menuGradStart: '#1B365D',
+  menuGradEnd: '#0f172a',
+  menuGradAngle: 180,
+  language: 'en',
+  fontSizePx: 13.5,
+  fontFamilyId: 'inter',
+  cardShadowLevel: 1,
+  scrollbarColor: '#1B365D',
+  quickAccessIds: ['dashboard', 'ui-kit', 'emp-directory', 'pay-run'],
+  isMenuLocked: false,
+};
+
+function loadInitialSettings(): PersistedSettings {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return DEFAULT_SETTINGS;
+    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_SETTINGS;
+  }
+}
+
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const initial = loadInitialSettings();
+  const [themeMode, setThemeMode] = useState<ThemeMode>(initial.themeMode);
+  const [primaryColor, setPrimaryColor] = useState<string>(initial.primaryColor);
+  const [gradientId, setGradientId] = useState<string>(initial.gradientId);
+  const [menuLayout, setMenuLayout] = useState<MenuLayout>(initial.menuLayout);
+  const [menuSticky, setMenuSticky] = useState<boolean>(initial.menuSticky);
+  const [headerFooterStyle, setHeaderFooterStyleState] = useState<HeaderFooterStyle>(initial.headerFooterStyle);
+  const [headerFooterColor, setHeaderFooterColor] = useState<string>(initial.headerFooterColor);
+  const [hfTextColor, setHfTextColor] = useState<string>(initial.hfTextColor);
+  const [hfGradStart, setHfGradStart] = useState<string>(initial.hfGradStart);
+  const [hfGradEnd, setHfGradEnd] = useState<string>(initial.hfGradEnd);
+  const [hfGradAngle, setHfGradAngle] = useState<number>(initial.hfGradAngle);
+  const [menuBgStyle, setMenuBgStyleState] = useState<HeaderFooterStyle>(initial.menuBgStyle);
+  const [menuBgColor, setMenuBgColor] = useState<string>(initial.menuBgColor);
+  const [menuTextColor, setMenuTextColor] = useState<string>(initial.menuTextColor);
+  const [menuGradStart, setMenuGradStart] = useState<string>(initial.menuGradStart);
+  const [menuGradEnd, setMenuGradEnd] = useState<string>(initial.menuGradEnd);
+  const [menuGradAngle, setMenuGradAngle] = useState<number>(initial.menuGradAngle);
+  const [language, setLanguage] = useState<AppLanguage>(initial.language);
+  const [fontSizePx, setFontSizePx] = useState<number>(initial.fontSizePx);
+  const [fontFamilyId, setFontFamilyId] = useState<string>(initial.fontFamilyId);
+  const [cardShadowLevel, setCardShadowLevel] = useState<number>(initial.cardShadowLevel);
+  const [scrollbarColor, setScrollbarColor] = useState<string>(initial.scrollbarColor);
+  const [quickAccessIds, setQuickAccessIds] = useState<string[]>(initial.quickAccessIds);
+  const [isAdmin, setIsAdmin] = useState<boolean>(true);
+  const [isMenuLocked, setIsMenuLocked] = useState<boolean>(initial.isMenuLocked);
+
+  const setHeaderFooterStyle = (style: HeaderFooterStyle) => {
+    setHeaderFooterStyleState(style);
+    setHfTextColor(style === 'light' ? '#1B365D' : '#ffffff');
+  };
+
+  const setMenuBgStyle = (style: HeaderFooterStyle) => {
+    setMenuBgStyleState(style);
+    setMenuTextColor(style === 'light' ? '#334155' : '#ffffff');
+  };
+
+  useEffect(() => {
+    try {
+      const payload: PersistedSettings = {
+        themeMode,
+        primaryColor,
+        gradientId,
+        menuLayout,
+        menuSticky,
+        headerFooterStyle,
+        headerFooterColor,
+        hfTextColor,
+        hfGradStart,
+        hfGradEnd,
+        hfGradAngle,
+        menuBgStyle,
+        menuBgColor,
+        menuTextColor,
+        menuGradStart,
+        menuGradEnd,
+        menuGradAngle,
+        language,
+        fontSizePx,
+        fontFamilyId,
+        cardShadowLevel,
+        scrollbarColor,
+        quickAccessIds,
+        isMenuLocked,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      // ignore storage quota errors
+    }
+  }, [
+    themeMode,
+    primaryColor,
+    gradientId,
+    menuLayout,
+    menuSticky,
+    headerFooterStyle,
+    headerFooterColor,
+    hfTextColor,
+    hfGradStart,
+    hfGradEnd,
+    hfGradAngle,
+    menuBgStyle,
+    menuBgColor,
+    menuTextColor,
+    menuGradStart,
+    menuGradEnd,
+    menuGradAngle,
+    language,
+    fontSizePx,
+    fontFamilyId,
+    cardShadowLevel,
+    scrollbarColor,
+    quickAccessIds,
+    isMenuLocked,
+  ]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dir = language === 'ar' ? 'rtl' : 'ltr';
+    root.lang = language;
+  }, [language]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--ug-font-size', `${fontSizePx}px`);
+    root.style.fontSize = `${fontSizePx}px`;
+  }, [fontSizePx]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--ug-hf-text', hfTextColor);
+    root.style.setProperty('--ug-menu-text', menuTextColor);
+  }, [hfTextColor, menuTextColor]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const fontOpt = FONT_FAMILY_OPTIONS.find((f) => f.id === fontFamilyId) ?? FONT_FAMILY_OPTIONS[0];
+    root.style.setProperty('--ug-font', fontOpt.css);
+    root.style.setProperty('--ug-font-display', fontOpt.css);
+  }, [fontFamilyId]);
+
+  useEffect(() => {
+    const shadowOpt = CARD_SHADOW_LEVELS.find((s) => s.level === cardShadowLevel) ?? CARD_SHADOW_LEVELS[1];
+    document.documentElement.style.setProperty('--ug-card-shadow', shadowOpt.css);
+  }, [cardShadowLevel]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--ug-scrollbar-thumb', scrollbarColor);
+  }, [scrollbarColor]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const preset = GRADIENT_PRESETS.find((g) => g.id === gradientId) ?? GRADIENT_PRESETS[0];
+
+    if (themeMode === 'uniglobal-light') {
+      root.style.setProperty('--ug-primary', '#1B365D');
+      root.style.setProperty('--ug-primary-soft', 'rgba(27, 54, 93, 0.08)');
+      root.style.setProperty('--ug-accent', '#B31B34');
+      root.style.setProperty('--ug-active-bg', '#1B365D');
+    } else if (themeMode === 'single') {
+      root.style.setProperty('--ug-primary', primaryColor);
+      root.style.setProperty('--ug-primary-soft', `${primaryColor}16`);
+      root.style.setProperty('--ug-active-bg', primaryColor);
+    } else {
+      root.style.setProperty('--ug-primary', preset.primary);
+      root.style.setProperty('--ug-primary-soft', `${preset.primary}16`);
+      root.style.setProperty('--ug-gradient', preset.css);
+      root.style.setProperty('--ug-active-bg', preset.css);
+    }
+  }, [themeMode, primaryColor, gradientId]);
+
+  const toggleQuickAccess = (menuId: string) => {
+    setQuickAccessIds((prev) =>
+      prev.includes(menuId) ? prev.filter((id) => id !== menuId) : [...prev, menuId]
+    );
+  };
+
+  const resetAppearance = () => {
+    setThemeMode('uniglobal-light');
+    setPrimaryColor('#1B365D');
+    setGradientId('uniglobal-brand');
+    setHeaderFooterStyleState('light');
+    setHeaderFooterColor('#1B365D');
+    setHfTextColor('#1B365D');
+    setHfGradStart('#1B365D');
+    setHfGradEnd('#B31B34');
+    setHfGradAngle(135);
+    setMenuBgStyleState('light');
+    setMenuBgColor('#1B365D');
+    setMenuTextColor('#334155');
+    setMenuGradStart('#1B365D');
+    setMenuGradEnd('#0f172a');
+    setMenuGradAngle(180);
+    setMenuLayout('vertical');
+    setMenuSticky(true);
+    setFontSizePx(13.5);
+    setFontFamilyId('inter');
+    setCardShadowLevel(1);
+    setScrollbarColor('#1B365D');
+  };
+
+  return (
+    <ThemeContext.Provider
+      value={{
+        themeMode,
+        setThemeMode,
+        primaryColor,
+        setPrimaryColor,
+        gradientId,
+        setGradientId,
+        menuLayout,
+        setMenuLayout,
+        menuSticky,
+        setMenuSticky,
+        headerFooterStyle,
+        setHeaderFooterStyle,
+        headerFooterColor,
+        setHeaderFooterColor,
+        hfTextColor,
+        setHfTextColor,
+        hfGradStart,
+        setHfGradStart,
+        hfGradEnd,
+        setHfGradEnd,
+        hfGradAngle,
+        setHfGradAngle,
+        menuBgStyle,
+        setMenuBgStyle,
+        menuBgColor,
+        setMenuBgColor,
+        menuTextColor,
+        setMenuTextColor,
+        menuGradStart,
+        setMenuGradStart,
+        menuGradEnd,
+        setMenuGradEnd,
+        menuGradAngle,
+        setMenuGradAngle,
+        resetAppearance,
+        language,
+        setLanguage,
+        fontSizePx,
+        setFontSizePx,
+        fontFamilyId,
+        setFontFamilyId,
+        cardShadowLevel,
+        setCardShadowLevel,
+        scrollbarColor,
+        setScrollbarColor,
+        quickAccessIds,
+        toggleQuickAccess,
+        isAdmin,
+        setIsAdmin,
+        isMenuLocked,
+        setIsMenuLocked,
+      }}
+    >
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export function useTheme(): ThemeContextValue {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error('useTheme must be used inside ThemeProvider');
+  return ctx;
+}

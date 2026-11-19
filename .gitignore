@@ -1,0 +1,25 @@
+# Dependencies & Build Outputs
+node_modules/
+**/node_modules/
+HRMS/frontend/dist/
+.vite/
+*.local
+*.tsbuildinfo
+
+# .NET Build Outputs
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+
+# Secrets & Environment Files
+.env
+.env.local
+.env.production.local
+appsettings.Production.json
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
+*.log
