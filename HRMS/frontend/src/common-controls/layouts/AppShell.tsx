@@ -457,7 +457,7 @@ export const AppShell: React.FC<AppShellProps> = ({
               padding: 3,
             }}
           >
-            <UniGlobalLogoIcon size={26} />
+            <UniGlobalLogoIcon size={36} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>

@@ -266,13 +266,23 @@ RequestHeader set X-Forwarded-Proto "https"</code></pre>
       <pre><code>/usr/local/cpanel/scripts/rebuildhttpdconf
 /usr/local/cpanel/scripts/restartsrv_httpd</code></pre>
 
-      <h2><span class="step">06</span> Quick Frontend Deployment via Git (<code>prompthrms</code> User)</h2>
-      <pre><code># First-time clone:
-git clone https://github.com/ajitsands/UniGlobalHRMS.git ~/repo
-cp -r ~/repo/HRMS/frontend/dist/. ~/public_html/
-
-# Subsequent updates:
-cd ~/repo &amp;&amp; git pull origin main &amp;&amp; cp -r ~/repo/HRMS/frontend/dist/. ~/public_html/</code></pre>
+      <h2><span class="step">06</span> Live Application URLs &amp; Full-Stack Update via Git</h2>
+      <table>
+        <thead>
+          <tr><th>URL</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong><code>https://prompthrms.sandslab.com/</code></strong></td><td>Live PROMPT HRMS Application (React UI served from <code>wwwroot/</code> + <code>/api/v1/*</code>)</td></tr>
+          <tr><td><strong><code>https://prompthrms.sandslab.com/swagger</code></strong></td><td>Interactive Swagger / OpenAPI Documentation (Developers &amp; PROMPT ERP / CRM integration)</td></tr>
+          <tr><td><strong><code>https://prompthrms.sandslab.com/api/v1/health</code></strong></td><td>API &amp; SQL Server 2022 Live Health Check</td></tr>
+        </tbody>
+      </table>
+      <p><strong>1-Command Full-Stack Update (run as <code>root@earth</code>):</strong> Preserves <code>appsettings.Production.json</code> untouched.</p>
+      <pre><code>su - prompthrms -c "cd ~/repo &amp;&amp; git pull origin main" &amp;&amp; \
+\cp -rf /home/prompthrms/repo/HRMS/backend/publish-linux/. /opt/prompt-hrms/ &amp;&amp; \
+chown -R prompthrms:prompthrms /opt/prompt-hrms &amp;&amp; \
+systemctl restart prompt-hrms &amp;&amp; \
+sleep 3 &amp;&amp; curl -s http://127.0.0.1:5050/api/v1/health &amp;&amp; echo ""</code></pre>
 
       <h2><span class="step">07</span> Automated Daily SQL Server Backup</h2>
       <pre><code>mkdir -p /var/opt/mssql/backups &amp;&amp; chown mssql:mssql /var/opt/mssql/backups

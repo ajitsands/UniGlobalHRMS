@@ -129,21 +129,23 @@ systemctl status prompt-hrms --no-pager
 *(Do NOT install Nginx — use cPanel's existing Apache so other domains remain untouched.)*
 
 1. In **cPanel → Domains**, create a dedicated subdomain (e.g. `hrms.yourdomain.com`) and enable **AutoSSL**.
-2. Create an Apache include **only** for that subdomain (replace `<cpanel_user>` and `hrms.yourdomain.com`):
+2. Create Apache includes for **both `ssl` (`:444`) and `std` (`:81`)** *(required when cPanel `ea-nginx` sits in front of Apache)*:
    ```bash
-   mkdir -p /etc/apache2/conf.d/userdata/ssl/2_4/<cpanel_user>/hrms.yourdomain.com
+   mkdir -p /etc/apache2/conf.d/userdata/ssl/2_4/prompthrms/prompthrms.sandslab.com \
+            /etc/apache2/conf.d/userdata/std/2_4/prompthrms/prompthrms.sandslab.com
    ```
-3. Create `/etc/apache2/conf.d/userdata/ssl/2_4/<cpanel_user>/hrms.yourdomain.com/hrms_proxy.conf`:
+3. Create `hrms_proxy.conf` in both `ssl` and `std` folders:
    ```apache
    ProxyPreserveHost On
    ProxyPass / http://127.0.0.1:5050/
    ProxyPassReverse / http://127.0.0.1:5050/
    RequestHeader set X-Forwarded-Proto "https"
    ```
-4. Rebuild & gracefully reload Apache:
+4. Rebuild Apache & reload Nginx:
    ```bash
    /usr/local/cpanel/scripts/rebuildhttpdconf
    /usr/local/cpanel/scripts/restartsrv_httpd
+   systemctl reload nginx
    ```
 
 ---
@@ -153,7 +155,7 @@ systemctl status prompt-hrms --no-pager
 ### Option A — SSMS via SSH Tunnel *(Verified & Recommended — Most Secure, Port 1433 Stays Closed)*
 1. On your Windows PC, open **PowerShell** and start an encrypted SSH tunnel (keep this window open while using SSMS):
    ```powershell
-   ssh -L 127.0.0.1:14330:127.0.0.1:1433 root@<server-ip>
+   ssh -L 127.0.0.1:14330:127.0.0.1:1433 root@185.252.176.129
    ```
    *(Using local port `14330` avoids conflicting with your local Windows SQL Server on `1433`.)*
 2. Open **SQL Server Management Studio (SSMS)**:
@@ -196,14 +198,25 @@ Manual / Cron backup command:
 
 ---
 
-## 9. Quick Frontend Deployment via Git (`prompthrms` cPanel User)
-Logged in as `prompthrms@earth`:
-```bash
-# First time clone:
-git clone https://github.com/ajitsands/UniGlobalHRMS.git ~/repo
-cp -r ~/repo/HRMS/frontend/dist/. ~/public_html/
+## 9. Live URLs & Full-Stack Deployment via Git (`prompthrms.sandslab.com`)
 
-# Subsequent updates:
-cd ~/repo && git pull origin main && cp -r ~/repo/HRMS/frontend/dist/. ~/public_html/
+### Live Application Endpoints
+| URL | Purpose |
+| :--- | :--- |
+| **`https://prompthrms.sandslab.com/`** | **Live PROMPT HRMS Application** (React SPA served from `/opt/prompt-hrms/wwwroot/` + talks to `/api/v1/*` on the same domain) |
+| **`https://prompthrms.sandslab.com/swagger`** | **Interactive Swagger / OpenAPI Docs** (for developers & PROMPT ERP / CRM integration) |
+| **`https://prompthrms.sandslab.com/api/v1/health`** | **System & SQL Server 2022 Health Check** |
+
+*(Security Note for Final Production Go-Live: Restrict `/swagger` to Admin/Dev IPs or disable Swagger UI in Production once external integrations are signed off.)*
+
+### 1-Command Full-Stack Update (`.NET 8` API + React UI) as `root@earth`
+*(Preserves `/opt/prompt-hrms/appsettings.Production.json` untouched because it is not in Git.)*
+```bash
+su - prompthrms -c "cd ~/repo && git pull origin main" && \
+\cp -rf /home/prompthrms/repo/HRMS/backend/publish-linux/. /opt/prompt-hrms/ && \
+chown -R prompthrms:prompthrms /opt/prompt-hrms && \
+systemctl restart prompt-hrms && \
+sleep 3 && curl -s http://127.0.0.1:5050/api/v1/health && echo ""
 ```
+
 

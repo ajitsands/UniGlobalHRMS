@@ -173,9 +173,9 @@ body {
 }
 
 .ug-brand-badge {
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   background: var(--ug-active-bg);
   color: #ffffff;
   display: grid;
@@ -183,6 +183,7 @@ body {
   font-weight: 800;
   font-size: 1.037rem;
   box-shadow: var(--ug-shadow-sm);
+  flex-shrink: 0;
 }
 
 .ug-header.is-gradient .ug-brand-badge {

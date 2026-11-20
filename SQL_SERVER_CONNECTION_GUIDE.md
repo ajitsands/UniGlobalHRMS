@@ -11,7 +11,7 @@
 Open **PowerShell** on your Windows PC and run (keep this window open while working in SSMS):
 
 ```powershell
-ssh -L 127.0.0.1:14330:127.0.0.1:1433 root@<server-ip>
+ssh -L 127.0.0.1:14330:127.0.0.1:1433 root@185.252.176.129
 ```
 
 - Enter the server `root` password when prompted.
