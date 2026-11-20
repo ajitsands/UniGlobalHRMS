@@ -48,9 +48,13 @@ HRMS/
 └── docs/                         # Phase-by-phase API Docs (OpenAPI/Markdown), DB Scripts, User Manual
 ```
 
-### Data Access Strategy
+### Data Access & Queuing Strategy
 - **EF Core (`AppDbContext`):** All CRUD operations, multi-table transactions, schema migrations, and automatic `ChangeTracker` **Data Audit Logs** (old/new values, user, timestamp).
 - **Dapper (`IDbConnection`):** High-performance **Reports**, **Dashboard aggregations**, **Payroll/GL reconciliation**, and complex SQL queries (meeting the 3–5s peak response SLA).
+- **Background Queuing & Scheduling (Hangfire + SQL Server Transactional Outbox — No RabbitMQ Required):**
+  - Uses **Hangfire (SQL Server 2022 storage)** + **`IntegrationOutboxMessages` table** directly inside `HRMS.API` + `UniGlobalHRMS` (zero extra broker/daemon to install on `earth`).
+  - Handles **PROMPT ERP GL & CRM Sync** (automatic exponential retry + Admin Error Queue with 1-click Re-Send per Req 3.7.12), **Password-Protected Payslip Email Batches**, **Biometric Attendance Sync**, **Daily CPR/Visa/Passport/Probation Expiry Alerts & Escalations**, and **Scheduled Report Delivery**.
+  - Abstracted behind `IJobQueueService` in `HRMS.Application` for clean future extensibility.
 
 ---
 

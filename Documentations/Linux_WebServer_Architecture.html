@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROMPT HRMS — Linux Web Server &amp; Hosting Architecture</title>
+  <style>
+    :root {
+      --navy: #1B365D;
+      --crimson: #B31B34;
+      --emerald: #059669;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Inter, -apple-system, sans-serif;
+      color: var(--text);
+      background: #f1f5f9;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .doc {
+      max-width: 960px;
+      margin: 24px auto;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+      border: 1px solid var(--border);
+    }
+    .header {
+      background: linear-gradient(135deg, #1B365D 0%, #142847 68%, #B31B34 100%);
+      color: #ffffff;
+      padding: 28px 36px;
+      border-bottom: 4px solid var(--crimson);
+    }
+    .header-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+    .badge {
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    h1 { margin: 0 0 6px; font-size: 24px; letter-spacing: -0.3px; }
+    .subtitle { margin: 0; font-size: 13px; color: #cbd5e1; }
+    .content { padding: 28px 36px; }
+    h2 {
+      font-size: 16px;
+      color: var(--navy);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 6px;
+      margin: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2 .tag {
+      background: var(--navy);
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .diagram {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 14px 0 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .layer-box {
+      width: 100%;
+      max-width: 680px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--navy);
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(15,23,42,0.04);
+    }
+    .layer-box.accent { border-left-color: var(--crimson); }
+    .layer-box.green { border-left-color: var(--emerald); }
+    .layer-title { font-weight: 700; color: var(--navy); font-size: 13.5px; }
+    .layer-desc { font-size: 12px; color: var(--muted); }
+    .layer-port {
+      font-family: Consolas, monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      background: #e2e8f0;
+      color: var(--navy);
+      padding: 3px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .arrow { font-size: 16px; font-weight: 800; color: var(--crimson); line-height: 1; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px;
+      font-size: 12px;
+    }
+    th {
+      background: var(--navy);
+      color: #fff;
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--crimson);
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: var(--bg); }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 12px 14px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 8px 0 14px;
+    }
+    code {
+      font-family: Consolas, monospace;
+      background: #e2e8f0;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+    .callout {
+      background: #f0f9ff;
+      border-left: 4px solid var(--navy);
+      padding: 12px 14px;
+      border-radius: 6px;
+      margin: 12px 0;
+      font-size: 12.5px;
+    }
+    .footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 14px 36px;
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    @media print {
+      body { background: #fff; }
+      .doc { margin: 0; box-shadow: none; border: none; max-width: 100%; }
+      h2, .diagram, table, pre { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <div class="header">
+      <div class="header-meta">
+        <span>PROMPT HRMS • UNIGLOBAL Suite | SaNDS Lab Middle East W.L.L.</span>
+        <span class="badge">DOC-ARCH-003 • v1.0 (Live Verified)</span>
+      </div>
+      <h1>Linux Web Server &amp; Hosting Architecture</h1>
+      <p class="subtitle">AlmaLinux v8.10 (cPanel/WHM) Reverse-Proxy &amp; ASP.NET Core 8 Kestrel Runtime Architecture for <strong>prompthrms.sandslab.com</strong></p>
+    </div>
+
+    <div class="content">
+      <h2><span class="tag">01</span> End-to-End Request Flow Architecture</h2>
+      <div class="diagram">
+        <div class="layer-box">
+          <div>
+            <div class="layer-title">1. Client Layer (Web Browser / Mobile / PROMPT ERP / CRM)</div>
+            <div class="layer-desc">Accesses <code>https://prompthrms.sandslab.com/</code>, <code>/api/v1/*</code>, and <code>/swagger</code></div>
+          </div>
+          <span class="layer-port">HTTPS :443</span>
+        </div>
+        <div class="arrow">&darr;</div>
+        <div class="layer-box accent">
+          <div>
+            <div class="layer-title">2. Nginx Reverse Proxy (cPanel <code>ea-nginx</code>)</div>
+            <div class="layer-desc">Public entry point, TLS/SSL termination (AutoSSL), HTTP/2, static compression</div>
+          </div>
+          <span class="layer-port">Public :80 / :443</span>
+        </div>
+        <div class="arrow">&darr;</div>
+        <div class="layer-box">
+          <div>
+            <div class="layer-title">3. Apache HTTP Server (<code>httpd</code>)</div>
+            <div class="layer-desc">Per-subdomain VirtualHost (<code>std</code> &amp; <code>ssl</code>) routes ONLY <code>prompthrms.sandslab.com</code> via <code>ProxyPass</code></div>
+          </div>
+          <span class="layer-port">Internal :81 / :444</span>
+        </div>
+        <div class="arrow">&darr;</div>
+        <div class="layer-box green">
+          <div>
+            <div class="layer-title">4. Kestrel Application Web Server (ASP.NET Core 8.0)</div>
+            <div class="layer-desc">Runs <code>HRMS.API.dll</code> under <code>systemd</code> (<code>prompt-hrms.service</code>); serves React SPA (<code>wwwroot/</code>) + REST API + Swagger</div>
+          </div>
+          <span class="layer-port">127.0.0.1:5050</span>
+        </div>
+        <div class="arrow">&darr;</div>
+        <div class="layer-box">
+          <div>
+            <div class="layer-title">5. Database Layer — Microsoft SQL Server 2022 (Linux)</div>
+            <div class="layer-desc">Hosts <code>UniGlobalHRMS</code> (EF Core CRUD/Audit + Dapper Reports); RAM capped at 4 GB; fully isolated from MySQL (<code>:3306</code>)</div>
+          </div>
+          <span class="layer-port">127.0.0.1:1433</span>
+        </div>
+      </div>
+
+      <h2><span class="tag">02</span> Web Server &amp; Component Responsibilities</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Software</th>
+            <th>Role in PROMPT HRMS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Application Web Server</strong></td>
+            <td><strong>Kestrel</strong> (.NET 8.0.34)</td>
+            <td>Microsoft's built-in, cross-platform, high-performance HTTP server. Executes all C# API controllers, EF Core transactions, Dapper SQL queries, Swagger, and serves the compiled React SPA from <code>/opt/prompt-hrms/wwwroot/</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Process Manager</strong></td>
+            <td><strong>systemd</strong> (<code>prompt-hrms.service</code>)</td>
+            <td>Runs Kestrel 24/7 as non-privileged user <code>prompthrms</code>, starts automatically on server reboot, and auto-restarts on failure within 10 seconds.</td>
+          </tr>
+          <tr>
+            <td><strong>Reverse Proxy (Edge)</strong></td>
+            <td><strong>Nginx (<code>ea-nginx</code>) + Apache (<code>httpd</code>)</strong></td>
+            <td>Terminates HTTPS/SSL via cPanel AutoSSL and proxies traffic for <code>prompthrms.sandslab.com</code> to <code>http://127.0.0.1:5050/</code> without affecting any other cPanel websites or PHP/MySQL apps.</td>
+          </tr>
+          <tr>
+            <td><strong>Database Engine</strong></td>
+            <td><strong>SQL Server 2022 CU28</strong></td>
+            <td>Stores all HRMS data, Global Corporate UI Settings (<code>AppUiSettings</code>), <code>DataAuditLogs</code>, <code>UserInteractionLogs</code>, and Hangfire / Integration Outbox queue tables.</td>
+          </tr>
+          <tr>
+            <td><strong>Background Queue &amp; Cron</strong></td>
+            <td><strong>Hangfire + SQL Server Outbox</strong></td>
+            <td>Runs inside <code>HRMS.API</code> backed by SQL Server 2022 (no RabbitMQ/Erlang required). Powers PROMPT ERP GL &amp; CRM sync with automatic retries &amp; Admin Error Queue (Req 3.7.12), protected payslip email batches, biometric sync, daily document/probation expiry alerts, and scheduled reports.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2><span class="tag">03</span> Port Isolation &amp; Security Matrix</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Bind Address &amp; Port</th>
+            <th>Public Access</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Nginx (<code>ea-nginx</code>)</td><td><code>0.0.0.0:80, 443</code></td><td>Yes (HTTPS)</td><td>SSL certificate managed by cPanel AutoSSL</td></tr>
+          <tr><td>Apache (<code>httpd</code>)</td><td><code>185.252.176.129:81, 444</code></td><td>Internal Proxy</td><td>Per-domain include in <code>userdata/std</code> &amp; <code>userdata/ssl</code></td></tr>
+          <tr><td>Kestrel (<code>HRMS.API</code>)</td><td><code>127.0.0.1:5050</code></td><td><strong>No (Loopback Only)</strong></td><td>Only reachable via local Apache/Nginx proxy</td></tr>
+          <tr><td>SQL Server 2022</td><td><code>127.0.0.1:1433</code></td><td><strong>No (Closed Publicly)</strong></td><td>Remote SSMS uses encrypted SSH tunnel (<code>127.0.0.1,14330</code>)</td></tr>
+          <tr><td>Existing MySQL / MariaDB</td><td><code>127.0.0.1:3306</code></td><td>Unchanged</td><td>100% separate port, service, and data directory</td></tr>
+        </tbody>
+      </table>
+
+      <h2><span class="tag">04</span> Why This Architecture Works for Enterprise HRMS</h2>
+      <div class="callout">
+        <strong>Key Benefits:</strong>
+        <ul style="margin:6px 0 0; padding-left:18px;">
+          <li><strong>Zero CORS Complexity:</strong> React UI and <code>/api/v1/*</code> share the exact same origin (<code>https://prompthrms.sandslab.com</code>).</li>
+          <li><strong>Zero Conflict with Existing Server Apps:</strong> Other cPanel domains, PHP apps, and MySQL remain untouched.</li>
+          <li><strong>100% Cross-Platform Portability:</strong> The same <code>HRMS.API</code> build deploys seamlessly on AlmaLinux (Kestrel + Nginx/Apache), Windows IIS (ASP.NET Core Hosting Bundle), or Docker.</li>
+          <li><strong>Fast Updates:</strong> Frontend-only UI changes copy straight into <code>/opt/prompt-hrms/wwwroot/</code> with zero downtime; backend updates restart Kestrel in ~2 seconds.</li>
+        </ul>
+      </div>
+
+      <h2><span class="tag">05</span> Quick Operations Reference</h2>
+      <pre><code># Frontend-only update (as prompthrms@earth, zero restart needed):
+cd ~/repo &amp;&amp; git pull origin main &amp;&amp; \cp -rf HRMS/backend/publish-linux/wwwroot/. /opt/prompt-hrms/wwwroot/
+
+# Full-stack update (backend + frontend, as root@earth):
+su - prompthrms -c "cd ~/repo &amp;&amp; git pull origin main" &amp;&amp; \
+\cp -rf /home/prompthrms/repo/HRMS/backend/publish-linux/. /opt/prompt-hrms/ &amp;&amp; \
+chown -R prompthrms:prompthrms /opt/prompt-hrms &amp;&amp; systemctl restart prompt-hrms
+
+# Live service &amp; log checks (as root@earth):
+systemctl status prompt-hrms --no-pager
+journalctl -u prompt-hrms -n 30 --no-pager
+curl -s https://prompthrms.sandslab.com/api/v1/health</code></pre>
+    </div>
+
+    <div class="footer">
+      <span>UniGlobal Consultancy Services W.L.L. • PROMPT HRMS</span>
+      <span>Prepared by SaNDS Lab Middle East W.L.L. • November 2026</span>
+    </div>
+  </div>
+</body>
+</html>
