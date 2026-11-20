@@ -27,7 +27,9 @@ import {
 } from '../tokens/ThemeContext';
 import { Accordion, Drawer } from '../controls/ContainersAndPopups';
 import { Button, HelpPopup, Tooltip } from '../controls/HelpAndFeedback';
+import { SwitchToggle } from '../controls/FormControls';
 import { UniGlobalLogoIcon } from '../controls/BrandAndLoader';
+import { useToast } from '../controls/ToastSystem';
 
 export interface NavMenuItem {
   id: string;
@@ -100,10 +102,21 @@ export const AppShell: React.FC<AppShellProps> = ({
     setScrollbarColor,
     quickAccessIds,
     toggleQuickAccess,
+    userRole,
+    setUserRole,
     isAdmin,
     isMenuLocked,
     setIsMenuLocked,
+    lockCorporateTheme,
+    setLockCorporateTheme,
+    isSavingToDb,
+    dbConnected,
+    lastSavedBy,
+    lastSavedAtUtc,
+    saveGlobalSettingsToDb,
   } = useTheme();
+  const toast = useToast();
+  const isLockedForCurrentUser = userRole !== 'SuperAdmin' && lockCorporateTheme;
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -745,6 +758,61 @@ export const AppShell: React.FC<AppShellProps> = ({
       {/* Appearance & Layout Studio Drawer */}
       <Drawer open={settingsOpen} onClose={() => setSettingsOpen(false)} title="Workspace & Theme Customizer">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Role Switcher (Preview SuperAdmin vs Standard User) */}
+          <div
+            style={{
+              padding: '8px 12px',
+              borderRadius: 8,
+              background: 'var(--ug-surface-alt)',
+              border: '1px solid var(--ug-border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ fontSize: '0.82rem', fontWeight: 600 }}>
+              Active Role:{' '}
+              <span style={{ color: userRole === 'SuperAdmin' ? 'var(--ug-accent)' : 'var(--ug-primary)' }}>
+                {userRole}
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <Button
+                variant={userRole === 'SuperAdmin' ? 'primary' : 'secondary'}
+                size="sm"
+                onClick={() => setUserRole('SuperAdmin')}
+              >
+                SuperAdmin
+              </Button>
+              <Button
+                variant={userRole === 'User' ? 'primary' : 'secondary'}
+                size="sm"
+                onClick={() => setUserRole('User')}
+              >
+                Standard User
+              </Button>
+            </div>
+          </div>
+
+          {isLockedForCurrentUser && (
+            <div
+              style={{
+                padding: '10px 12px',
+                borderRadius: 8,
+                background: 'var(--ug-warning-bg)',
+                borderInlineStart: '4px solid var(--ug-warning)',
+                fontSize: '0.85rem',
+                color: 'var(--ug-text)',
+              }}
+            >
+              <strong>Corporate Identity Locked:</strong> Your organization&apos;s theme &amp; layout are fixed by{' '}
+              <strong>SuperAdmin</strong> in the database and apply automatically to all logged-in users.
+            </div>
+          )}
+
+          <div style={isLockedForCurrentUser ? { opacity: 0.55, pointerEvents: 'none' } : undefined}>
           <Accordion
             defaultOpenIds={['menu-layout']}
             items={[
@@ -1230,12 +1298,53 @@ export const AppShell: React.FC<AppShellProps> = ({
               },
             ]}
           />
+          </div>
 
-          {/* Reset Button Outside All Accordions */}
-          <div style={{ paddingTop: 10, borderTop: '1px solid var(--ug-border)' }}>
-            <Button variant="secondary" size="sm" onClick={resetAppearance} style={{ width: '100%' }}>
-              Reset to UniGlobal Light Default
-            </Button>
+          {/* SuperAdmin Global DB Save & Reset Outside All Accordions */}
+          <div style={{ paddingTop: 12, borderTop: '1px solid var(--ug-border)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {userRole === 'SuperAdmin' && (
+              <>
+                <SwitchToggle
+                  label="Lock Corporate Theme for All Users"
+                  helpText="When enabled, all logged-in users inherit these exact Corporate Identity colors & styles from SQL Server."
+                  checked={lockCorporateTheme}
+                  onChange={setLockCorporateTheme}
+                />
+                <Button
+                  variant="primary"
+                  size="sm"
+                  disabled={isSavingToDb}
+                  onClick={async () => {
+                    const ok = await saveGlobalSettingsToDb(menuItems.map((m) => m.id));
+                    if (ok) {
+                      toast.success(
+                        'Corporate Settings Saved to DB',
+                        'All logged-in users will now receive this Corporate Identity theme automatically.'
+                      );
+                    } else {
+                      toast.danger(
+                        'API Not Reachable',
+                        'Ensure the .NET 8 HRMS.API backend is running on port 5050.'
+                      );
+                    }
+                  }}
+                  style={{ width: '100%' }}
+                >
+                  {isSavingToDb ? 'Saving to SQL Server...' : 'Save Corporate Settings to DB (All Users)'}
+                </Button>
+                {lastSavedAtUtc && (
+                  <div style={{ fontSize: '0.78rem', color: 'var(--ug-muted)', textAlign: 'center' }}>
+                    {dbConnected ? 'Synced with SQL Server' : 'Local Cache'} • Saved by <strong>{lastSavedBy}</strong> ({new Date(lastSavedAtUtc).toLocaleString()})
+                  </div>
+                )}
+              </>
+            )}
+
+            {!isLockedForCurrentUser && (
+              <Button variant="secondary" size="sm" onClick={resetAppearance} style={{ width: '100%' }}>
+                Reset to UniGlobal Light Default
+              </Button>
+            )}
           </div>
         </div>
       </Drawer>

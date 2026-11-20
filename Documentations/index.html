@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROMPT HRMS — Documentation Index</title>
+  <style>
+    :root { --navy: #1B365D; --crimson: #B31B34; --border: #e2e8f0; --bg: #f8fafc; --text: #1e293b; --muted: #64748b; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Segoe UI', Inter, sans-serif; background: #f1f5f9; color: var(--text); font-size: 13.5px; }
+    .wrap { max-width: 960px; margin: 28px auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 28px rgba(15,23,42,.08); border: 1px solid var(--border); }
+    .hdr { background: linear-gradient(135deg, #1B365D 0%, #142847 68%, #B31B34 100%); color: #fff; padding: 28px 36px; border-bottom: 4px solid var(--crimson); }
+    .hdr h1 { margin: 0 0 6px; font-size: 24px; }
+    .hdr p { margin: 0; color: #cbd5e1; font-size: 13px; }
+    .body { padding: 28px 36px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th { background: var(--navy); color: #fff; text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--crimson); font-size: 12.5px; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:nth-child(even) td { background: var(--bg); }
+    a.btn { display: inline-block; padding: 5px 11px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 6px; }
+    a.html { background: var(--navy); color: #fff; }
+    a.pdf { background: var(--crimson); color: #fff; }
+    .ftr { background: var(--bg); border-top: 1px solid var(--border); padding: 14px 36px; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hdr">
+      <h1>PROMPT HRMS — Technical Documentation Index</h1>
+      <p>UniGlobal Consultancy Services W.L.L. • UNIGLOBAL Suite | Engineered by SaNDS Lab Middle East W.L.L.</p>
+    </div>
+    <div class="body">
+      <table>
+        <thead>
+          <tr>
+            <th>Doc ID</th>
+            <th>Document Title</th>
+            <th>Description</th>
+            <th>Version</th>
+            <th>Files</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>DOC-INFRA-001</strong></td>
+            <td><strong>Server &amp; SQL Server 2022 Installation Guide</strong></td>
+            <td>AlmaLinux 8.10 zero-disturbance setup, verified versions, SQL Server 2022 RAM cap, ASP.NET Core 8.0, Apache proxy, backups &amp; Git deployment.</td>
+            <td>v1.0</td>
+            <td>
+              <a class="btn html" href="SQL_Server_Installation_Guide.html" target="_blank">HTML</a>
+              <a class="btn pdf" href="SQL_Server_Installation_Guide.pdf" target="_blank">PDF</a>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>DOC-DB-002</strong></td>
+            <td><strong>SQL Server SSMS Connection Procedure</strong></td>
+            <td>Verified encrypted SSH tunnel (<code>127.0.0.1,14330</code>) connection to <code>UniGlobalHRMS</code> in SSMS, security policy &amp; Error 1225 troubleshooting.</td>
+            <td>v1.0</td>
+            <td>
+              <a class="btn html" href="SQL_Server_SSMS_Connection_Guide.html" target="_blank">HTML</a>
+              <a class="btn pdf" href="SQL_Server_SSMS_Connection_Guide.pdf" target="_blank">PDF</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ftr">
+      <span>Repository: <code>Documentations/</code></span>
+      <span>Last Updated: 20 November 2026</span>
+    </div>
+  </div>
+</body>
+</html>

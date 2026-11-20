@@ -10,4 +10,16 @@ export default defineConfig({
       '@controls': path.resolve(__dirname, './src/common-controls'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5050',
+        changeOrigin: true,
+      },
+      '/swagger': {
+        target: 'http://127.0.0.1:5050',
+        changeOrigin: true,
+      },
+    },
+  },
 });

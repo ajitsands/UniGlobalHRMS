@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROMPT HRMS — Server &amp; SQL Server 2022 Installation Guide</title>
+  <style>
+    :root {
+      --navy: #1B365D;
+      --crimson: #B31B34;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Inter, -apple-system, sans-serif;
+      color: var(--text);
+      background: #f1f5f9;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .doc {
+      max-width: 960px;
+      margin: 24px auto;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+      border: 1px solid var(--border);
+    }
+    .header {
+      background: linear-gradient(135deg, #1B365D 0%, #142847 68%, #B31B34 100%);
+      color: #ffffff;
+      padding: 28px 36px;
+      border-bottom: 4px solid var(--crimson);
+    }
+    .header-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+    .badge {
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    h1 { margin: 0 0 6px; font-size: 24px; letter-spacing: -0.3px; }
+    .subtitle { margin: 0; font-size: 13px; color: #cbd5e1; }
+    .content { padding: 28px 36px; }
+    h2 {
+      font-size: 16px;
+      color: var(--navy);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 6px;
+      margin: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2 .step {
+      background: var(--navy);
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    h3 { font-size: 13.5px; color: var(--navy); margin: 14px 0 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px;
+      font-size: 12px;
+    }
+    th {
+      background: var(--navy);
+      color: #fff;
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--crimson);
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: var(--bg); }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 12px 14px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 8px 0 14px;
+    }
+    code {
+      font-family: Consolas, 'Courier New', monospace;
+      background: #e2e8f0;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+    .callout {
+      background: #f0f9ff;
+      border-left: 4px solid var(--navy);
+      padding: 12px 14px;
+      border-radius: 6px;
+      margin: 12px 0;
+      font-size: 12.5px;
+    }
+    .callout.warn {
+      background: #fffbeb;
+      border-left-color: #d97706;
+    }
+    .footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 14px 36px;
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    @media print {
+      body { background: #fff; }
+      .doc { margin: 0; box-shadow: none; border: none; max-width: 100%; }
+      h2, pre, table, .callout { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <div class="header">
+      <div class="header-meta">
+        <span>PROMPT HRMS • UNIGLOBAL Suite | SaNDS Lab Middle East W.L.L.</span>
+        <span class="badge">DOC-INFRA-001 • v1.0</span>
+      </div>
+      <h1>Server &amp; SQL Server 2022 Installation Guide</h1>
+      <p class="subtitle">AlmaLinux v8.10 (cPanel/WHM) Zero-Disturbance Setup for <strong>prompthrms.sandslab.com</strong></p>
+    </div>
+
+    <div class="content">
+      <div class="callout">
+        <strong>Isolation Guarantee:</strong> SQL Server 2022 runs on port <code>1433</code> (<code>/var/opt/mssql</code>) and PROMPT HRMS runs internally on <code>127.0.0.1:5050</code> (<code>/opt/prompt-hrms</code>). Existing <strong>MySQL/MariaDB (port 3306)</strong>, PHP, Apache, and all other cPanel domains remain 100% untouched.
+      </div>
+
+      <h2><span class="step">00</span> Required &amp; Verified Software Versions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Minimum Required</th>
+            <th>Verified on Server (<code>earth</code>)</th>
+            <th>Verified on Dev PC</th>
+            <th>Required On</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>SQL Server</strong></td>
+            <td>SQL Server 2022 (16.x) or higher</td>
+            <td><code>16.0.4325.4</code> (2022 CU28 Developer, Linux X64)</td>
+            <td><code>16.0.1000.6</code> (2022 Express)</td>
+            <td>Server &amp; Dev PCs</td>
+          </tr>
+          <tr>
+            <td><strong>SQL CLI / Driver</strong></td>
+            <td>ODBC Driver 18 / <code>sqlcmd 17+</code></td>
+            <td><code>mssql-tools18</code></td>
+            <td><code>Sqlcmd 17.0.925.4</code></td>
+            <td>Server &amp; Dev PCs</td>
+          </tr>
+          <tr>
+            <td><strong>.NET Runtime</strong></td>
+            <td>ASP.NET Core 8.0 Runtime (LTS)</td>
+            <td><code>Microsoft.AspNetCore.App 8.0.34</code></td>
+            <td><code>8.0.34</code></td>
+            <td>Production Server</td>
+          </tr>
+          <tr>
+            <td><strong>.NET SDK</strong></td>
+            <td>.NET 8.0 SDK (LTS)</td>
+            <td><em>Not needed on server</em></td>
+            <td><code>8.0.428</code> (+ <code>10.0.404</code>)</td>
+            <td>Dev PCs Only</td>
+          </tr>
+          <tr>
+            <td><strong>Node.js &amp; npm</strong></td>
+            <td>Node.js 20 LTS+ / npm 10+</td>
+            <td><em>Not needed on server</em></td>
+            <td>Node <code>v26.13.0</code> / npm <code>11.20.0</code></td>
+            <td>Dev PCs Only</td>
+          </tr>
+          <tr>
+            <td><strong>Git</strong></td>
+            <td>Git 2.40+</td>
+            <td>Installed</td>
+            <td><code>2.53.0.windows.2</code></td>
+            <td>Server &amp; Dev PCs</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        <strong>Licensing &amp; .NET Note:</strong> Legacy Windows <strong>.NET Framework 4.x</strong> is NOT required. SQL Server Developer Edition is free for Dev/Staging/UAT; for live Production go-live, use <strong>SQL Server 2022 Express</strong> (free up to 10 GB) or a licensed <strong>Standard / Enterprise</strong> edition.
+      </div>
+
+      <h2><span class="step">01</span> Pre-Flight Safety Check</h2>
+      <pre><code>free -h
+df -h /
+ss -tulpn | grep -E ':1433|:5050' || echo "Ports 1433 and 5050 are FREE"</code></pre>
+
+      <h2><span class="step">02</span> Install SQL Server 2022 on AlmaLinux 8.10</h2>
+      <pre><code>curl -o /etc/yum.repos.d/mssql-server.repo https://packages.microsoft.com/config/rhel/8/mssql-server-2022.repo
+dnf install -y mssql-server
+/opt/mssql/bin/mssql-conf setup</code></pre>
+      <p>Choose edition (<code>2</code> Developer, <code>3</code> Express, or licensed Standard/Enterprise) and set a strong <code>SA</code> password.</p>
+
+      <h3>Cap SQL Server Memory (Protects Existing MySQL &amp; Websites)</h3>
+      <pre><code>/opt/mssql/bin/mssql-conf set memory.memorylimitmb 4096
+systemctl enable --now mssql-server
+systemctl restart mssql-server
+systemctl status mssql-server --no-pager</code></pre>
+
+      <h2><span class="step">03</span> Install <code>sqlcmd</code> &amp; Create <code>UniGlobalHRMS</code> Database</h2>
+      <pre><code>curl -o /etc/yum.repos.d/msprod.repo https://packages.microsoft.com/config/rhel/8/prod.repo
+ACCEPT_EULA=Y dnf install -y mssql-tools18 unixODBC-devel
+echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' &gt;&gt; ~/.bashrc
+source ~/.bashrc</code></pre>
+      <pre><code>sqlcmd -S localhost -U sa -C -Q "
+CREATE DATABASE UniGlobalHRMS;
+GO
+CREATE LOGIN UniGlobalHRUser WITH PASSWORD = 'YourStrongPasswordHere';
+USE UniGlobalHRMS;
+CREATE USER UniGlobalHRUser FOR LOGIN UniGlobalHRUser;
+ALTER ROLE db_owner ADD MEMBER UniGlobalHRUser;
+GO"</code></pre>
+
+      <h2><span class="step">04</span> Install ASP.NET Core 8.0 Runtime &amp; Verify Stack</h2>
+      <pre><code>dnf install -y aspnetcore-runtime-8.0
+systemctl is-active mssql-server mysqld mariadb 2&gt;/dev/null
+dotnet --list-runtimes
+sqlcmd -S localhost -U UniGlobalHRUser -C -d UniGlobalHRMS -Q "SELECT DB_NAME() AS CurrentDB, @@VERSION AS Version"</code></pre>
+
+      <h2><span class="step">05</span> Isolated App Service (<code>systemd</code>) &amp; Apache Reverse Proxy</h2>
+      <pre><code>mkdir -p /opt/prompt-hrms/uploads /opt/prompt-hrms/logs
+useradd -r -s /sbin/nologin prompthrms 2&gt;/dev/null || true
+chown -R prompthrms:prompthrms /opt/prompt-hrms</code></pre>
+      <p>Create <code>/etc/systemd/system/prompt-hrms.service</code> listening only on <code>http://127.0.0.1:5050</code>, then configure the per-subdomain Apache include at <code>/etc/apache2/conf.d/userdata/ssl/2_4/prompthrms/prompthrms.sandslab.com/hrms_proxy.conf</code>:</p>
+      <pre><code>ProxyPreserveHost On
+ProxyPass / http://127.0.0.1:5050/
+ProxyPassReverse / http://127.0.0.1:5050/
+RequestHeader set X-Forwarded-Proto "https"</code></pre>
+      <pre><code>/usr/local/cpanel/scripts/rebuildhttpdconf
+/usr/local/cpanel/scripts/restartsrv_httpd</code></pre>
+
+      <h2><span class="step">06</span> Quick Frontend Deployment via Git (<code>prompthrms</code> User)</h2>
+      <pre><code># First-time clone:
+git clone https://github.com/ajitsands/UniGlobalHRMS.git ~/repo
+cp -r ~/repo/HRMS/frontend/dist/. ~/public_html/
+
+# Subsequent updates:
+cd ~/repo &amp;&amp; git pull origin main &amp;&amp; cp -r ~/repo/HRMS/frontend/dist/. ~/public_html/</code></pre>
+
+      <h2><span class="step">07</span> Automated Daily SQL Server Backup</h2>
+      <pre><code>mkdir -p /var/opt/mssql/backups &amp;&amp; chown mssql:mssql /var/opt/mssql/backups
+/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '&lt;SA_PASSWORD&gt;' -C -Q \
+"BACKUP DATABASE [UniGlobalHRMS] TO DISK = N'/var/opt/mssql/backups/UniGlobalHRMS_$(date +%F).bak' WITH COMPRESSION, STATS = 10"</code></pre>
+    </div>
+
+    <div class="footer">
+      <span>UniGlobal Consultancy Services W.L.L. • PROMPT HRMS</span>
+      <span>Prepared by SaNDS Lab Middle East W.L.L. • November 2026</span>
+    </div>
+  </div>
+</body>
+</html>

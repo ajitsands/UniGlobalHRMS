@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AppShell,
   Card,
   NavMenuItem,
   ThemeProvider,
   ToastProvider,
+  useTheme,
 } from '@controls';
 import {
   BookOpen,
@@ -74,11 +75,21 @@ function loadOrderedMenus(): NavMenuItem[] {
   }
 }
 
-export const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { dbMenuOrder } = useTheme();
   const [menus, setMenus] = useState<NavMenuItem[]>(loadOrderedMenus);
   const [activeMenuId, setActiveMenuId] = useState<string>(
     () => localStorage.getItem(ACTIVE_MENU_KEY) || 'ui-kit'
   );
+
+  // Apply SuperAdmin's menu order from SQL Server when loaded
+  useEffect(() => {
+    if (!dbMenuOrder || dbMenuOrder.length === 0) return;
+    const map = new Map(INITIAL_MENUS.map((m) => [m.id, m]));
+    const ordered = dbMenuOrder.map((id) => map.get(id)).filter((m): m is NavMenuItem => Boolean(m));
+    const missing = INITIAL_MENUS.filter((m) => !dbMenuOrder.includes(m.id));
+    if (ordered.length > 0) setMenus([...ordered, ...missing]);
+  }, [dbMenuOrder]);
 
   const handleReorderMenus = (next: NavMenuItem[]) => {
     setMenus(next);
@@ -99,40 +110,44 @@ export const App: React.FC = () => {
   };
 
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AppShell
-          menuItems={menus}
-          onReorderMenus={handleReorderMenus}
-          activeMenuId={activeMenuId}
-          onSelectMenu={handleSelectMenu}
+    <AppShell
+      menuItems={menus}
+      onReorderMenus={handleReorderMenus}
+      activeMenuId={activeMenuId}
+      onSelectMenu={handleSelectMenu}
+    >
+      {activeMenuId === 'ui-kit' ? (
+        <ControlGalleryPage />
+      ) : activeMenuId === 'manual' ? (
+        <Card title="UniGlobal HRMS — User Manual" subtitle="Step-by-step application guide">
+          <ol style={{ paddingInlineStart: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <li><strong>Corporate Identity &amp; Theme:</strong> SuperAdmin can customize colors, gradients, fonts, menu layouts, and card shadows, then click <em>Save Corporate Settings to DB (All Users)</em> so every logged-in user inherits the exact Corporate Identity.</li>
+            <li><strong>Quick Access:</strong> Click the Pin icon next to any sidebar menu item to pin it to the top Quick Access bar.</li>
+            <li><strong>Admin Menu Flow:</strong> SuperAdmin can drag and drop menu items in Vertical mode and click the Lock icon to fix the menu order.</li>
+            <li><strong>Interactive Dashboard:</strong> Use the Bar / Line / Pie / Table toggle on every dashboard widget to switch visualizations.</li>
+          </ol>
+        </Card>
+      ) : (
+        <Card
+          title={`Module: ${menus.find((m) => m.id === activeMenuId)?.label ?? activeMenuId}`}
+          subtitle="Ready for feature branch development (Ajit / Ancy) using @controls"
         >
-        {activeMenuId === 'ui-kit' ? (
-          <ControlGalleryPage />
-        ) : activeMenuId === 'manual' ? (
-          <Card title="UniGlobal HRMS — User Manual" subtitle="Step-by-step application guide">
-            <ol style={{ paddingInlineStart: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <li><strong>Workspace & Theme:</strong> Click <em>Customize</em> in the header to switch between Vertical, Horizontal, Floating/Docking, or Minimal menus and UniGlobal Light / Single / Gradient themes.</li>
-              <li><strong>Quick Access:</strong> Click the Pin icon next to any sidebar menu item to pin it to the top Quick Access bar.</li>
-              <li><strong>Admin Menu Flow:</strong> Admins can drag and drop menu items in Vertical mode and click the Lock icon to fix the menu order.</li>
-              <li><strong>Interactive Dashboard:</strong> Use the Bar / Line / Pie / Table toggle on every dashboard widget to switch visualizations.</li>
-            </ol>
-          </Card>
-        ) : (
-          <Card
-            title={`Module: ${menus.find((m) => m.id === activeMenuId)?.label}`}
-            subtitle="Ready for feature branch development (Ajit / Ancy) using @controls"
-          >
-            <p style={{ margin: 0, color: 'var(--ug-text-secondary)' }}>
-              This module placeholder will be built in the upcoming feature phase using the locked{' '}
-              <code>@controls</code> library.
-            </p>
-          </Card>
-        )}
-        </AppShell>
-      </ToastProvider>
-    </ThemeProvider>
+          <p style={{ margin: 0, color: 'var(--ug-text-secondary)' }}>
+            This module placeholder will be built in the upcoming feature phase using the locked{' '}
+            <code>@controls</code> library.
+          </p>
+        </Card>
+      )}
+    </AppShell>
   );
 };
+
+export const App: React.FC = () => (
+  <ThemeProvider>
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
+  </ThemeProvider>
+);
 
 export default App;

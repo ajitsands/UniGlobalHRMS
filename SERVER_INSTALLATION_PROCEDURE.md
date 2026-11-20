@@ -1,8 +1,26 @@
 # PROMPT HRMS — Server Installation & Connection Procedure
 
 **Target Server OS:** AlmaLinux v8.10 (RHEL 8 compatible, cPanel/WHM with existing MySQL/MariaDB & Apache)  
+**Domain:** `https://prompthrms.sandslab.com` (cPanel user: `prompthrms`)  
 **Application Stack:** ReactJS + ASP.NET Core 8.0 Web API (EF Core + Dapper) + SQL Server 2022  
 **Isolation Guarantee:** Runs on separate ports (`1433` SQL Server, `127.0.0.1:5050` HRMS API) and separate directories (`/var/opt/mssql`, `/opt/prompt-hrms`) — zero impact on existing MySQL (`3306`), PHP, or other cPanel domains.
+
+---
+
+## 0. Required & Verified Software Versions
+
+| Component | Minimum Required | Verified on Server (`earth`) | Verified on Dev PC (Ajit) | Required On |
+| :--- | :--- | :--- | :--- | :--- |
+| **SQL Server** | **SQL Server 2022 (16.x)** or higher | `16.0.4325.4` (2022 CU28 Developer, Linux X64) | `16.0.1000.6` (2022 Express, `.\SQLEXPRESS`) | Server & Dev PC |
+| **SQL CLI / Driver** | `ODBC Driver 18` / `sqlcmd 17+` | `mssql-tools18` | `Sqlcmd 17.0.925.4` / `ODBC 18` | Server & Dev PC |
+| **.NET Runtime** | **ASP.NET Core 8.0 Runtime (LTS)** *(or Hosting Bundle on IIS)* | `Microsoft.AspNetCore.App 8.0.34` | `8.0.34` | **Production Server** |
+| **.NET SDK** | **.NET 8.0 SDK (LTS)** | *Not needed on server* | `8.0.428` *(+ `10.0.404`)* | **Dev PCs Only (Ajit & Ancy)** |
+| **Node.js & npm** | **Node.js 20 LTS+** / `npm 10+` | *Not needed on server* | Node `v26.13.0` / npm `11.20.0` | **Dev PCs Only** |
+| **Git** | **Git 2.40+** | Installed (`git pull`) | `2.53.0.windows.2` | Server & Dev PC |
+
+> **Notes:**
+> - Old Windows **.NET Framework 4.x** is **NOT** required.
+> - **SQL Server Licensing:** Developer Edition is free for Dev/Staging/UAT; for live Production go-live, use **SQL Server 2022 Express** (free up to 10 GB) or licensed **Standard / Enterprise**.
 
 ---
 
@@ -175,3 +193,17 @@ Manual / Cron backup command:
 /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '<SA_PASSWORD>' -C -Q \
 "BACKUP DATABASE [UniGlobalHRMS] TO DISK = N'/var/opt/mssql/backups/UniGlobalHRMS_$(date +%F).bak' WITH COMPRESSION, STATS = 10"
 ```
+
+---
+
+## 9. Quick Frontend Deployment via Git (`prompthrms` cPanel User)
+Logged in as `prompthrms@earth`:
+```bash
+# First time clone:
+git clone https://github.com/ajitsands/UniGlobalHRMS.git ~/repo
+cp -r ~/repo/HRMS/frontend/dist/. ~/public_html/
+
+# Subsequent updates:
+cd ~/repo && git pull origin main && cp -r ~/repo/HRMS/frontend/dist/. ~/public_html/
+```
+

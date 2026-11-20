@@ -1,10 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import {
+  fetchGlobalUiSettings,
+  GlobalUiSettingsPayload,
+  saveGlobalUiSettings,
+} from '../../services/uiSettingsApi';
 
 export type ThemeMode = 'uniglobal-light' | 'single' | 'gradient';
 export type HeaderFooterStyle = 'light' | 'single' | 'gradient';
 export type MenuLayout = 'vertical' | 'horizontal' | 'docking' | 'minimal';
 export type AppLanguage = 'en' | 'ar';
 export type FontSizeScale = 'sm' | 'md' | 'lg' | 'xl';
+export type UserRole = 'SuperAdmin' | 'User';
 
 export const FONT_SIZE_PRESETS: { id: FontSizeScale; label: string; px: number }[] = [
   { id: 'sm', label: 'S', px: 11.5 },
@@ -129,10 +135,20 @@ interface ThemeContextValue {
   setScrollbarColor: (hex: string) => void;
   quickAccessIds: string[];
   toggleQuickAccess: (menuId: string) => void;
+  userRole: UserRole;
+  setUserRole: (role: UserRole) => void;
   isAdmin: boolean;
   setIsAdmin: (v: boolean) => void;
   isMenuLocked: boolean;
   setIsMenuLocked: (v: boolean) => void;
+  lockCorporateTheme: boolean;
+  setLockCorporateTheme: (v: boolean) => void;
+  dbMenuOrder: string[];
+  isSavingToDb: boolean;
+  dbConnected: boolean;
+  lastSavedBy: string;
+  lastSavedAtUtc: string;
+  saveGlobalSettingsToDb: (menuOrder?: string[]) => Promise<boolean>;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -227,8 +243,103 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [cardShadowLevel, setCardShadowLevel] = useState<number>(initial.cardShadowLevel);
   const [scrollbarColor, setScrollbarColor] = useState<string>(initial.scrollbarColor);
   const [quickAccessIds, setQuickAccessIds] = useState<string[]>(initial.quickAccessIds);
+  const [userRole, setUserRoleState] = useState<UserRole>('SuperAdmin');
   const [isAdmin, setIsAdmin] = useState<boolean>(true);
   const [isMenuLocked, setIsMenuLocked] = useState<boolean>(initial.isMenuLocked);
+  const [lockCorporateTheme, setLockCorporateTheme] = useState<boolean>(true);
+  const [dbMenuOrder, setDbMenuOrder] = useState<string[]>([]);
+  const [isSavingToDb, setIsSavingToDb] = useState<boolean>(false);
+  const [dbConnected, setDbConnected] = useState<boolean>(false);
+  const [lastSavedBy, setLastSavedBy] = useState<string>('');
+  const [lastSavedAtUtc, setLastSavedAtUtc] = useState<string>('');
+
+  const setUserRole = (role: UserRole) => {
+    setUserRoleState(role);
+    setIsAdmin(role === 'SuperAdmin');
+  };
+
+  // Load Global Corporate Identity Settings from SQL Server 2022 on startup
+  useEffect(() => {
+    let active = true;
+    fetchGlobalUiSettings().then((remote) => {
+      if (!active || !remote) return;
+      setDbConnected(true);
+      setThemeMode(remote.themeMode);
+      setPrimaryColor(remote.primaryColor);
+      setGradientId(remote.gradientId);
+      setMenuLayout(remote.menuLayout);
+      setMenuSticky(remote.menuSticky);
+      setIsMenuLocked(remote.isMenuLocked);
+      if (remote.menuOrder && remote.menuOrder.length > 0) setDbMenuOrder(remote.menuOrder);
+      if (remote.quickAccessIds && remote.quickAccessIds.length > 0) setQuickAccessIds(remote.quickAccessIds);
+      setHeaderFooterStyleState(remote.headerFooterStyle);
+      setHeaderFooterColor(remote.headerFooterColor);
+      setHfTextColor(remote.hfTextColor);
+      setHfGradStart(remote.hfGradStart);
+      setHfGradEnd(remote.hfGradEnd);
+      setHfGradAngle(remote.hfGradAngle);
+      setMenuBgStyleState(remote.menuBgStyle);
+      setMenuBgColor(remote.menuBgColor);
+      setMenuTextColor(remote.menuTextColor);
+      setMenuGradStart(remote.menuGradStart);
+      setMenuGradEnd(remote.menuGradEnd);
+      setMenuGradAngle(remote.menuGradAngle);
+      setLanguage(remote.language);
+      setFontSizePx(Number(remote.fontSizePx) || 13.5);
+      setFontFamilyId(remote.fontFamilyId);
+      setCardShadowLevel(remote.cardShadowLevel);
+      setScrollbarColor(remote.scrollbarColor);
+      setLockCorporateTheme(remote.lockCorporateTheme);
+      setLastSavedBy(remote.updatedBy ?? 'SuperAdmin');
+      setLastSavedAtUtc(remote.updatedAtUtc ?? '');
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const saveGlobalSettingsToDb = async (menuOrder?: string[]): Promise<boolean> => {
+    setIsSavingToDb(true);
+    try {
+      const payload: GlobalUiSettingsPayload = {
+        themeMode,
+        primaryColor,
+        gradientId,
+        menuLayout,
+        menuSticky,
+        isMenuLocked,
+        menuOrder: menuOrder ?? dbMenuOrder,
+        quickAccessIds,
+        headerFooterStyle,
+        headerFooterColor,
+        hfTextColor,
+        hfGradStart,
+        hfGradEnd,
+        hfGradAngle,
+        menuBgStyle,
+        menuBgColor,
+        menuTextColor,
+        menuGradStart,
+        menuGradEnd,
+        menuGradAngle,
+        language,
+        fontSizePx,
+        fontFamilyId,
+        cardShadowLevel,
+        scrollbarColor,
+        lockCorporateTheme,
+      };
+      const saved = await saveGlobalUiSettings(payload, 'SuperAdmin', userRole);
+      setDbConnected(true);
+      setLastSavedBy(saved.updatedBy ?? 'SuperAdmin');
+      setLastSavedAtUtc(saved.updatedAtUtc ?? new Date().toISOString());
+      return true;
+    } catch {
+      return false;
+    } finally {
+      setIsSavingToDb(false);
+    }
+  };
 
   const setHeaderFooterStyle = (style: HeaderFooterStyle) => {
     setHeaderFooterStyleState(style);
@@ -434,10 +545,20 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setScrollbarColor,
         quickAccessIds,
         toggleQuickAccess,
+        userRole,
+        setUserRole,
         isAdmin,
         setIsAdmin,
         isMenuLocked,
         setIsMenuLocked,
+        lockCorporateTheme,
+        setLockCorporateTheme,
+        dbMenuOrder,
+        isSavingToDb,
+        dbConnected,
+        lastSavedBy,
+        lastSavedAtUtc,
+        saveGlobalSettingsToDb,
       }}
     >
       {children}
