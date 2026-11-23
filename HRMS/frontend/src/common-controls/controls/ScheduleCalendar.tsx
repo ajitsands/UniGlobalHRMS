@@ -25,13 +25,19 @@ export interface Stakeholder {
 export interface ScheduleAppointment {
   id: string;
   title: string;
-  stakeholderId: string;
+  stakeholderId?: string;
+  stakeholderIds?: string[];
   date: string; // YYYY-MM-DD
   startHour: number; // 8..18
   durationHours: number; // 1..4
   allDay?: boolean;
   category?: 'Interview' | 'Payroll' | 'Review' | 'Training' | 'Meeting';
   notes?: string;
+}
+
+function getApptStakeholderIds(a: ScheduleAppointment): string[] {
+  if (a.stakeholderIds && a.stakeholderIds.length > 0) return a.stakeholderIds;
+  return a.stakeholderId ? [a.stakeholderId] : [];
 }
 
 export interface ScheduleCalendarProps {
@@ -95,13 +101,16 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     stakeholders.map((s) => s.id)
   );
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [draggingFromStakeholder, setDraggingFromStakeholder] = useState<string | null>(null);
   const [dragOverKey, setDragOverKey] = useState<string | null>(null);
 
   // Create / Edit Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formTitle, setFormTitle] = useState('');
-  const [formStakeholder, setFormStakeholder] = useState(stakeholders[0]?.id ?? '');
+  const [formStakeholders, setFormStakeholders] = useState<string[]>(
+    stakeholders[0] ? [stakeholders[0].id] : []
+  );
   const [formDate, setFormDate] = useState(anchorDate);
   const [formHour, setFormHour] = useState('9');
   const [formDuration, setFormDuration] = useState('1');
@@ -120,7 +129,10 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   );
 
   const visibleAppointments = useMemo(
-    () => appointments.filter((a) => visibleStakeholders.includes(a.stakeholderId)),
+    () =>
+      appointments.filter((a) =>
+        getApptStakeholderIds(a).some((id) => visibleStakeholders.includes(id))
+      ),
     [appointments, visibleStakeholders]
   );
 
@@ -164,7 +176,17 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   const openCreateModal = (preset?: Partial<ScheduleAppointment>) => {
     setEditingId(null);
     setFormTitle(preset?.title ?? '');
-    setFormStakeholder(preset?.stakeholderId ?? activeStakeholders[0]?.id ?? stakeholders[0]?.id ?? '');
+    const defaultSt =
+      preset?.stakeholderIds && preset.stakeholderIds.length > 0
+        ? preset.stakeholderIds
+        : preset?.stakeholderId
+        ? [preset.stakeholderId]
+        : activeStakeholders[0]
+        ? [activeStakeholders[0].id]
+        : stakeholders[0]
+        ? [stakeholders[0].id]
+        : [];
+    setFormStakeholders(defaultSt);
     setFormDate(preset?.date ?? anchorDate);
     setFormHour(String(preset?.startHour ?? 9));
     setFormDuration(String(preset?.durationHours ?? 1));
@@ -177,7 +199,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   const openEditModal = (appt: ScheduleAppointment) => {
     setEditingId(appt.id);
     setFormTitle(appt.title);
-    setFormStakeholder(appt.stakeholderId);
+    setFormStakeholders(getApptStakeholderIds(appt));
     setFormDate(appt.date);
     setFormHour(String(appt.startHour));
     setFormDuration(String(appt.durationHours));
@@ -188,14 +210,15 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   };
 
   const handleSave = () => {
-    if (!formTitle.trim()) return;
+    if (!formTitle.trim() || formStakeholders.length === 0) return;
     if (editingId) {
       const next = appointments.map((a) =>
         a.id === editingId
           ? {
               ...a,
               title: formTitle.trim(),
-              stakeholderId: formStakeholder,
+              stakeholderId: formStakeholders[0],
+              stakeholderIds: formStakeholders,
               date: formDate,
               startHour: Number(formHour),
               durationHours: Number(formDuration),
@@ -206,12 +229,13 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
           : a
       );
       onChange(next);
-      onNotify?.(`Updated "${formTitle.trim()}"`);
+      onNotify?.(`Updated "${formTitle.trim()}" (${formStakeholders.length} stakeholder${formStakeholders.length > 1 ? 's' : ''})`);
     } else {
       const created: ScheduleAppointment = {
         id: `apt-${Date.now()}`,
         title: formTitle.trim(),
-        stakeholderId: formStakeholder,
+        stakeholderId: formStakeholders[0],
+        stakeholderIds: formStakeholders,
         date: formDate,
         startHour: Number(formHour),
         durationHours: Number(formDuration),
@@ -220,7 +244,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
         notes: formNotes,
       };
       onChange([...appointments, created]);
-      onNotify?.(`Scheduled "${created.title}"`);
+      onNotify?.(`Scheduled "${created.title}" for ${formStakeholders.length} stakeholder${formStakeholders.length > 1 ? 's' : ''}`);
     }
     setModalOpen(false);
   };
@@ -239,35 +263,53 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     const moving = appointments.find((a) => a.id === draggingId);
     if (!moving) return;
 
+    let nextIds = getApptStakeholderIds(moving);
+    if (target.stakeholderId) {
+      if (draggingFromStakeholder && draggingFromStakeholder !== target.stakeholderId) {
+        const replaced = nextIds.map((id) => (id === draggingFromStakeholder ? target.stakeholderId! : id));
+        nextIds = Array.from(new Set(replaced));
+      } else if (!nextIds.includes(target.stakeholderId)) {
+        nextIds = [target.stakeholderId];
+      }
+    }
+
     const updated: ScheduleAppointment = {
       ...moving,
       date: target.date ?? moving.date,
       startHour: target.hour ?? moving.startHour,
       allDay: target.allDay !== undefined ? target.allDay : moving.allDay,
-      stakeholderId: target.stakeholderId ?? moving.stakeholderId,
+      stakeholderId: nextIds[0],
+      stakeholderIds: nextIds,
     };
 
     onChange(appointments.map((a) => (a.id === draggingId ? updated : a)));
-    const stName = stakeholderMap.get(updated.stakeholderId)?.name ?? '';
+    const stNames = nextIds.map((id) => stakeholderMap.get(id)?.name.split(' ')[0]).filter(Boolean).join(', ');
     const timeLabel = updated.allDay ? 'All Day' : formatHour(updated.startHour);
-    onNotify?.(`Moved "${updated.title}" → ${updated.date} (${timeLabel})${stName ? ` • ${stName}` : ''}`);
+    onNotify?.(`Moved "${updated.title}" → ${updated.date} (${timeLabel})${stNames ? ` • ${stNames}` : ''}`);
     setDraggingId(null);
+    setDraggingFromStakeholder(null);
   };
 
-  const renderEventChip = (appt: ScheduleAppointment, compact = false) => {
-    const st = stakeholderMap.get(appt.stakeholderId);
-    const color = st?.color ?? 'var(--ug-primary)';
+  const renderEventChip = (appt: ScheduleAppointment, compact = false, columnStakeholderId?: string) => {
+    const ids = getApptStakeholderIds(appt);
+    const primarySt = stakeholderMap.get(columnStakeholderId ?? ids[0]);
+    const color = primarySt?.color ?? 'var(--ug-primary)';
+    const allNames = ids.map((id) => stakeholderMap.get(id)?.name.split(' ')[0]).filter(Boolean);
+    const isMulti = ids.length > 1;
+
     return (
       <div
-        key={appt.id}
+        key={`${appt.id}-${columnStakeholderId ?? 'all'}`}
         draggable
         onDragStart={(e) => {
           e.stopPropagation();
           setDraggingId(appt.id);
+          setDraggingFromStakeholder(columnStakeholderId ?? null);
           e.dataTransfer.setData('text/plain', appt.id);
         }}
         onDragEnd={() => {
           setDraggingId(null);
+          setDraggingFromStakeholder(null);
           setDragOverKey(null);
         }}
         onClick={(e) => {
@@ -280,15 +322,34 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
           background: `${color}15`,
           opacity: draggingId === appt.id ? 0.5 : 1,
         }}
-        title={`${appt.title} — ${st?.name ?? ''} (${appt.allDay ? 'All Day' : formatHour(appt.startHour)}) • Drag to reschedule`}
+        title={`${appt.title} — ${allNames.join(', ')} (${appt.allDay ? 'All Day' : formatHour(appt.startHour)}) • Drag to reschedule`}
       >
-        <div style={{ fontWeight: 700, fontSize: compact ? '0.78rem' : '0.83rem', color: 'var(--ug-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {appt.title}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
+          <span style={{ fontWeight: 700, fontSize: compact ? '0.78rem' : '0.83rem', color: 'var(--ug-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {appt.title}
+          </span>
+          {isMulti && (
+            <span
+              style={{
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                background: color,
+                color: '#ffffff',
+                padding: '1px 5px',
+                borderRadius: 999,
+                flexShrink: 0,
+              }}
+            >
+              {ids.length}
+            </span>
+          )}
         </div>
         {!compact && (
           <div style={{ fontSize: '0.75rem', color: 'var(--ug-muted)', display: 'flex', justifyContent: 'space-between', gap: 6 }}>
             <span>{appt.allDay ? 'All Day' : `${formatHour(appt.startHour)} (${appt.durationHours}h)`}</span>
-            <span style={{ color, fontWeight: 600 }}>{st?.name.split(' ')[0]}</span>
+            <span style={{ color, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {allNames.join(', ')}
+            </span>
           </div>
         )}
       </div>
@@ -418,7 +479,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {activeStakeholders.map((st) => {
               const stItems = visibleAppointments
-                .filter((a) => a.date === anchorDate && a.stakeholderId === st.id)
+                .filter((a) => a.date === anchorDate && getApptStakeholderIds(a).includes(st.id))
                 .sort((a, b) => (a.allDay ? -1 : b.allDay ? 1 : a.startHour - b.startHour));
               const key = `mob-st-${st.id}`;
               return (
@@ -466,7 +527,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                         No appointments scheduled for {anchorDate}
                       </div>
                     ) : (
-                      stItems.map((a) => renderEventChip(a))
+                      stItems.map((a) => renderEventChip(a, false, st.id))
                     )}
                   </div>
                 </div>
@@ -495,7 +556,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
               {activeStakeholders.map((st) => {
                 const key = `st-allday-${st.id}`;
                 const items = visibleAppointments.filter(
-                  (a) => a.date === anchorDate && a.stakeholderId === st.id && a.allDay
+                  (a) => a.date === anchorDate && getApptStakeholderIds(a).includes(st.id) && a.allDay
                 );
                 return (
                   <div
@@ -504,9 +565,9 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                     onDragOver={(e) => { e.preventDefault(); setDragOverKey(key); }}
                     onDragLeave={() => setDragOverKey(null)}
                     onDrop={() => handleDropOnTarget({ date: anchorDate, allDay: true, stakeholderId: st.id })}
-                    onClick={() => openCreateModal({ date: anchorDate, allDay: true, stakeholderId: st.id })}
+                    onClick={() => openCreateModal({ date: anchorDate, allDay: true, stakeholderIds: [st.id] })}
                   >
-                    {items.map((a) => renderEventChip(a))}
+                    {items.map((a) => renderEventChip(a, false, st.id))}
                   </div>
                 );
               })}
@@ -518,7 +579,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                   {activeStakeholders.map((st) => {
                     const key = `st-${st.id}-${hour}`;
                     const items = visibleAppointments.filter(
-                      (a) => a.date === anchorDate && a.stakeholderId === st.id && !a.allDay && a.startHour === hour
+                      (a) => a.date === anchorDate && getApptStakeholderIds(a).includes(st.id) && !a.allDay && a.startHour === hour
                     );
                     return (
                       <div
@@ -527,9 +588,9 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                         onDragOver={(e) => { e.preventDefault(); setDragOverKey(key); }}
                         onDragLeave={() => setDragOverKey(null)}
                         onDrop={() => handleDropOnTarget({ date: anchorDate, hour, allDay: false, stakeholderId: st.id })}
-                        onClick={() => openCreateModal({ date: anchorDate, startHour: hour, allDay: false, stakeholderId: st.id })}
+                        onClick={() => openCreateModal({ date: anchorDate, startHour: hour, allDay: false, stakeholderIds: [st.id] })}
                       >
-                        {items.map((a) => renderEventChip(a))}
+                        {items.map((a) => renderEventChip(a, false, st.id))}
                       </div>
                     );
                   })}
@@ -698,7 +759,15 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
               [...visibleAppointments]
                 .sort((a, b) => `${a.date}-${String(a.startHour).padStart(2, '0')}`.localeCompare(`${b.date}-${String(b.startHour).padStart(2, '0')}`))
                 .map((a) => {
-                  const st = stakeholderMap.get(a.stakeholderId);
+                  const ids = getApptStakeholderIds(a);
+                  const primarySt = stakeholderMap.get(ids[0]);
+                  const namesLabel = ids
+                    .map((id) => {
+                      const s = stakeholderMap.get(id);
+                      return s ? `${s.name} (${s.role})` : '';
+                    })
+                    .filter(Boolean)
+                    .join(', ');
                   return (
                     <div
                       key={a.id}
@@ -711,16 +780,16 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                         padding: '10px 14px',
                         borderRadius: 8,
                         border: '1px solid var(--ug-border)',
-                        borderInlineStart: `4px solid ${st?.color ?? 'var(--ug-primary)'}`,
+                        borderInlineStart: `4px solid ${primarySt?.color ?? 'var(--ug-primary)'}`,
                         cursor: 'pointer',
                         background: 'var(--ug-surface)',
                       }}
                     >
                       <div>
                         <div style={{ fontWeight: 700 }}>{a.title}</div>
-                        <div style={{ fontSize: '0.82rem', color: 'var(--ug-muted)', display: 'flex', gap: 10, marginTop: 2 }}>
+                        <div style={{ fontSize: '0.82rem', color: 'var(--ug-muted)', display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 2 }}>
                           <span><Clock size={12} style={{ verticalAlign: 'middle' }} /> {a.date} • {a.allDay ? 'All Day' : `${formatHour(a.startHour)} (${a.durationHours}h)`}</span>
-                          <span>• {st?.name} ({st?.role})</span>
+                          <span>• {namesLabel}</span>
                         </div>
                       </div>
                       <Badge variant="primary">{a.category ?? 'Meeting'}</Badge>
@@ -767,10 +836,13 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
           />
           <div className="ug-grid-2">
             <SelectControl
-              label="Stakeholder"
+              label="Stakeholders"
               required
-              value={formStakeholder}
-              onChange={(v) => setFormStakeholder(String(v))}
+              multiple
+              helpText="Select one or multiple stakeholders to schedule this joint appointment across their calendars."
+              placeholder="Select stakeholders..."
+              value={formStakeholders}
+              onChange={(v) => setFormStakeholders(Array.isArray(v) ? v : v ? [v] : [])}
               options={stakeholders.map((s) => ({ value: s.id, label: `${s.name} (${s.role})` }))}
             />
             <SelectControl

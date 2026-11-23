@@ -68,7 +68,7 @@ const DEMO_STAKEHOLDERS: Stakeholder[] = [
 const INITIAL_APPOINTMENTS: ScheduleAppointment[] = [
   { id: 'a1', title: 'Bahrain SIO Monthly Cut-off', stakeholderId: 'fin', date: '2026-11-19', startHour: 9, durationHours: 1, allDay: true, category: 'Payroll' },
   { id: 'a2', title: 'Senior Sales Candidate Interview', stakeholderId: 'hr', date: '2026-11-19', startHour: 9, durationHours: 1, category: 'Interview' },
-  { id: 'a3', title: 'Payroll 4-Eyes Sign-off', stakeholderId: 'fin', date: '2026-11-19', startHour: 11, durationHours: 1, category: 'Payroll' },
+  { id: 'a3', title: 'Payroll 4-Eyes Sign-off', stakeholderIds: ['hr', 'fin'], date: '2026-11-19', startHour: 11, durationHours: 1, category: 'Payroll' },
   { id: 'a4', title: 'BU-1 Probation Appraisal Review', stakeholderId: 'bu1', date: '2026-11-19', startHour: 10, durationHours: 1, category: 'Review' },
   { id: 'a5', title: 'Kuwait Biometric Clock Sync Test', stakeholderId: 'it', date: '2026-11-19', startHour: 14, durationHours: 2, category: 'Training' },
   { id: 'a6', title: 'Onboarding Induction Batch #4', stakeholderId: 'hr', date: '2026-11-20', startHour: 10, durationHours: 2, category: 'Training' },
