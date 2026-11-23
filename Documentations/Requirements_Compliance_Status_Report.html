@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROMPT HRMS — Requirements Compliance &amp; Progress Report</title>
+  <style>
+    :root {
+      --navy: #1B365D;
+      --crimson: #B31B34;
+      --emerald: #059669;
+      --amber: #d97706;
+      --blue: #0284c7;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Inter, -apple-system, sans-serif;
+      color: var(--text);
+      background: #f1f5f9;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .doc {
+      max-width: 980px;
+      margin: 24px auto;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+      border: 1px solid var(--border);
+    }
+    .header {
+      background: linear-gradient(135deg, #1B365D 0%, #142847 68%, #B31B34 100%);
+      color: #ffffff;
+      padding: 28px 36px;
+      border-bottom: 4px solid var(--crimson);
+    }
+    .header-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+    .badge-hdr {
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    h1 { margin: 0 0 6px; font-size: 24px; letter-spacing: -0.3px; }
+    .subtitle { margin: 0; font-size: 13px; color: #cbd5e1; }
+    .content { padding: 28px 36px; }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .kpi {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--navy);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .kpi.green { border-top-color: var(--emerald); }
+    .kpi.crimson { border-top-color: var(--crimson); }
+    .kpi.amber { border-top-color: var(--amber); }
+    .kpi-label { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+    .kpi-val { font-size: 20px; font-weight: 800; color: var(--navy); margin-top: 2px; }
+    .kpi-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+    h2 {
+      font-size: 16px;
+      color: var(--navy);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 6px;
+      margin: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2 .tag {
+      background: var(--navy);
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 18px;
+      font-size: 12px;
+    }
+    th {
+      background: var(--navy);
+      color: #fff;
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid var(--crimson);
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: var(--bg); }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .pill-done { background: #ecfdf5; color: var(--emerald); border: 1px solid #a7f3d0; }
+    .pill-part { background: #f0f9ff; color: var(--blue); border: 1px solid #bae6fd; }
+    .pill-ui   { background: #fffbeb; color: var(--amber); border: 1px solid #fde68a; }
+    .pill-plan { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    .callout {
+      background: #f0f9ff;
+      border-left: 4px solid var(--navy);
+      padding: 12px 14px;
+      border-radius: 6px;
+      margin: 14px 0;
+      font-size: 12.5px;
+    }
+    code {
+      font-family: Consolas, monospace;
+      background: #e2e8f0;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 11.5px;
+    }
+    .footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 14px 36px;
+      font-size: 11.5px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    @media print {
+      body { background: #fff; }
+      .doc { margin: 0; box-shadow: none; border: none; max-width: 100%; }
+      h2, table, .callout, .kpi-grid { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <div class="header">
+      <div class="header-meta">
+        <span>PROMPT HRMS • UG Suite | UniGlobal Consultancy Services W.L.L.</span>
+        <span class="badge-hdr">DOC-COMP-004 • Status Snapshot (24 Nov 2026)</span>
+      </div>
+      <h1>Requirements Compliance &amp; Progress Report</h1>
+      <p class="subtitle">Audit of Completed Phase 0 Platform Deliverables &amp; Traceability Against All 92 UniGlobal Functional Requirements</p>
+    </div>
+
+    <div class="content">
+      <div class="kpi-grid">
+        <div class="kpi green">
+          <div class="kpi-label">Phase 0 Platform</div>
+          <div class="kpi-val">100%</div>
+          <div class="kpi-sub">UI Kit, .NET 8 API &amp; Server Live</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Live Environment</div>
+          <div class="kpi-val">Healthy</div>
+          <div class="kpi-sub">prompthrms.sandslab.com</div>
+        </div>
+        <div class="kpi crimson">
+          <div class="kpi-label">Client Spec Scope</div>
+          <div class="kpi-val">92 Reqs</div>
+          <div class="kpi-sub">Sections 3.1 – 3.12 Mapped</div>
+        </div>
+        <div class="kpi amber">
+          <div class="kpi-label">Next Milestone</div>
+          <div class="kpi-val">Phase 1</div>
+          <div class="kpi-sub">Auth, RBAC, Hangfire &amp; Core HR</div>
+        </div>
+      </div>
+
+      <h2><span class="tag">01</span> Phase 0 Platform, UI Kit &amp; Infrastructure Compliance (100% Complete)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Requirement Area</th>
+            <th>Status</th>
+            <th>Verified Deliverable</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Technology Stack</strong> (ReactJS + .NET 8 + SQL Server 2022)</td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td>Live on AlmaLinux 8.10 (<code>earth</code>) via Kestrel + Nginx/Apache (`https://prompthrms.sandslab.com/`) connected to SQL Server 2022 CU28 (`UniGlobalHRMS`).</td>
+          </tr>
+          <tr>
+            <td><strong>Hybrid Data Access Layer</strong> (EF Core + Dapper)</td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td>EF Core 8 (`HrmsDbContext`) for CRUD/transactions/audit + Dapper (`DapperConnectionFactory`) for fast reads &amp; reports.</td>
+          </tr>
+          <tr>
+            <td><strong>Centralized <code>@controls</code> UI Kit</strong> (Multi-Branch Uniformity)</td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td>DataTable, Select2 Combo, DateCalendar, Multi-Stakeholder ScheduleCalendar, Vertical/Horizontal Timeline, Image/File Upload, Sliders, Radio, Switch, Accordion, Tabs, Modal, Drawer, Popups, Toasts, Tooltip Themes, Danger Delete Icons.</td>
+          </tr>
+          <tr>
+            <td><strong>4 Menu Layouts + Sticky/Scroll + Mobile Ready</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td>Vertical Sidebar, Horizontal Topbar, Draggable Floating Dock, Minimal Icon Rail with flyouts, Sticky vs Scroll toggle, and Mobile Slide-Out Drawer.</td>
+          </tr>
+          <tr>
+            <td><strong>Branding, Dark/Light &amp; 6 Elegant Themes + Customizer</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td>Official UniGlobal <code>LogoIcon.png</code> + Animated Loader, Light/Dark Sun-Moon toggle, 6 Elegant Presets, Single/Gradient Color Builders (Header/Footer/Menu/Scrollbar), Font Size (`A-`/`A`/`A+` &amp; Slider), 6 Font Families, Card Shadow Depth.</td>
+          </tr>
+          <tr>
+            <td><strong>SuperAdmin Global Corporate Identity DB Persistence</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td><code>GET/PUT /api/v1/ui-settings</code> saves to <code>dbo.AppUiSettings</code> with <code>LockCorporateTheme</code> and Nginx <code>X-Accel-Expires: 0</code> instant refresh for all users.</td>
+          </tr>
+          <tr>
+            <td><strong>Admin Drag-and-Drop Menu Flow + User Quick Access</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td>Admin menu ordering + lock, per-user Quick Access pinned bar + scroll-aware Quick Access dropdown next to Help.</td>
+          </tr>
+          <tr>
+            <td><strong>Customizable Interactive Dashboard Widget</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td><code>DashboardWidget</code> switching live between Bar, Line, Pie, and Tabular views.</td>
+          </tr>
+          <tr>
+            <td><strong>Audit &amp; User Interaction Logs (Backend Engine)</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td><code>dbo.DataAuditLogs</code> (EF Core Old/New JSON values) + <code>dbo.UserInteractionLogs</code> + <code>/api/v1/audit-logs/*</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Bilingual EN (LTR) / AR (RTL) Shell (Req 3.7.11)</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td>Live <code>dir="rtl"</code> switcher and bilingual Arabic/English navigation.</td>
+          </tr>
+          <tr>
+            <td><strong>Help Tags, Help Popups &amp; User Manual Framework</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td><code>HelpTag</code>, <code>HelpPopup</code>, and integrated User Manual screen.</td>
+          </tr>
+          <tr>
+            <td><strong>API Documentation (Swagger/OpenAPI + Markdown)</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td>Live at <code>https://prompthrms.sandslab.com/swagger</code> + <code>HRMS/docs/API_PHASE_0.md</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Git Repository &amp; Team Branches</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td><code>main</code>, <code>develop</code>, <code>Ajit</code>, and <code>Ancy</code> synced on <code>github.com/ajitsands/UniGlobalHRMS.git</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Infrastructure, SSMS &amp; Architecture Docs (HTML + PDF)</strong></td>
+            <td><span class="pill pill-done">Done</span></td>
+            <td><code>DOC-INFRA-001</code>, <code>DOC-DB-002</code>, <code>DOC-ARCH-003</code> (incl. Hangfire queuing strategy) + Documentation Index.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2><span class="tag">02</span> UniGlobal Client Functional Requirements (92 Items) — Roadmap Traceability</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Section</th>
+            <th>Functional Domain</th>
+            <th>Req Range</th>
+            <th>Status</th>
+            <th>Target Phase / Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>3.1</strong></td>
+            <td>Employee Records, Self-Service &amp; Documents (Master, Profile Approvals, Expiry Alerts &amp; Versioning, Bulk Import, Timeline, Medical Insurance, Directory)</td>
+            <td><code>3.1.01–3.1.13</code></td>
+            <td><span class="pill pill-ui">UI Kit Ready</span></td>
+            <td><strong>Phase 1</strong> — <code>Timeline</code>, <code>DataTable</code>, <code>ImageUpload</code>, <code>FileUpload</code> already built.</td>
+          </tr>
+          <tr>
+            <td><strong>3.2</strong></td>
+            <td>Employee Letters &amp; Asset Management (Bilingual Templates, CR Letterheads, Sequential Log, Asset Custody &amp; Exit Clearance)</td>
+            <td><code>3.2.01–3.2.08</code></td>
+            <td><span class="pill pill-plan">Planned</span></td>
+            <td><strong>Phase 2</strong></td>
+          </tr>
+          <tr>
+            <td><strong>3.3</strong></td>
+            <td>Pay &amp; Benefits (Bahrain SIO / Kuwait PIFSS, EOSB Indemnity, GL Reversals, Accruals, Loans/Advances, VAT Claims, 4-Eyes Approval, WPS, CRM Commissions)</td>
+            <td><code>3.3.01–3.3.17</code></td>
+            <td><span class="pill pill-plan">Planned</span></td>
+            <td><strong>Phase 3</strong></td>
+          </tr>
+          <tr>
+            <td><strong>3.4</strong></td>
+            <td>Time, Attendance, Biometric Integration &amp; Leave (TCP/IP Biometric Sync, Shifts, Ramadan Hours, Leave Accruals, Clash Calendar, Mobile GPS Check-in)</td>
+            <td><code>3.4.01–3.4.11</code></td>
+            <td><span class="pill pill-ui">UI Kit Ready</span></td>
+            <td><strong>Phase 2</strong> — <code>ScheduleCalendar</code> &amp; <code>DateCalendar</code> already built.</td>
+          </tr>
+          <tr>
+            <td><strong>3.5</strong></td>
+            <td>People Processes (Onboarding/Offboarding Checklists, Probation, Training &amp; Budget, Appraisals, Recruitment, Org Chart, Restricted Disciplinary)</td>
+            <td><code>3.5.01–3.5.09</code></td>
+            <td><span class="pill pill-plan">Planned</span></td>
+            <td><strong>Phase 4</strong></td>
+          </tr>
+          <tr>
+            <td><strong>3.6</strong></td>
+            <td>Organisation &amp; 5 Business Unit Cost Allocation (5 BUs, 4 CRs, Front/Back-Office Classification, Shared Overhead Apportionment to GL)</td>
+            <td><code>3.6.01–3.6.05</code></td>
+            <td><span class="pill pill-plan">Planned</span></td>
+            <td><strong>Phase 1</strong> (Org Structure) &amp; <strong>Phase 3</strong> (Cost Allocation Engine)</td>
+          </tr>
+          <tr>
+            <td><strong>3.7</strong></td>
+            <td>Reporting, Analytics, Integration &amp; Platform (HR Dashboard, Report Builder, PROMPT ERP GL/CRM API, Hangfire Error Queue, Bilingual RTL, API Docs)</td>
+            <td><code>3.7.01–3.7.21</code></td>
+            <td><span class="pill pill-part">Partially Done</span></td>
+            <td><code>3.7.10</code> (Swagger), <code>3.7.11</code> (RTL), <code>3.7.18</code> (API Docs) live; Hangfire Queue &amp; Reports in Phases 1–4.</td>
+          </tr>
+          <tr>
+            <td><strong>3.8</strong></td>
+            <td>Security, Privacy &amp; Audit (Field-Level Salary RBAC, Old/New Audit Trail, Delegation, Consent/Export, Encryption, 4-Eyes Payroll Lock)</td>
+            <td><code>3.8.01–3.8.07</code></td>
+            <td><span class="pill pill-part">Partially Done</span></td>
+            <td><code>3.8.02</code> (<code>DataAuditLogs</code>) &amp; <code>3.8.05</code> (HTTPS) live; JWT Auth, Field-Level RBAC &amp; Delegation in <strong>Phase 1</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>3.9–3.12</strong></td>
+            <td>Requirement 92 — React Native Employee Mobile App (iOS &amp; Android ESS, Offline Punch SQLite + GPS Geofence, Biometric Login)</td>
+            <td><code>3.9.01–3.12.06</code></td>
+            <td><span class="pill pill-plan">Planned</span></td>
+            <td><strong>Phase 5</strong> (Milestone 5)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Immediate Next Milestone — Phase 1 Kickoff (Branch: <code>Ajit</code> &amp; <code>Ancy</code>):</strong>
+        JWT Authentication + Field-Level RBAC (<code>3.8.01</code>), Hangfire SQL Server Queue &amp; Admin Error Queue (<code>3.7.12</code>), 5 Business Units &amp; 4 Commercial Registrations (<code>3.6</code>), Employee Master + Self-Service + Document Expiry Alerts (<code>3.1</code>), and the live in-app <strong>Audit &amp; Logs</strong> screen (<code>3.8.02</code>).
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>UniGlobal Consultancy Services W.L.L. • PROMPT HRMS (UG Suite)</span>
+      <span>Prepared by SaNDS Lab Middle East W.L.L. • 24 November 2026</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -12,6 +12,7 @@ import {
   Calculator,
   Clock,
   FileText,
+  GitCommitHorizontal,
   LayoutDashboard,
   Layers,
   ShieldCheck,
@@ -19,9 +20,11 @@ import {
   Users,
 } from 'lucide-react';
 import { ControlGalleryPage } from './pages/ControlGalleryPage';
+import { ReleaseTimelinePage } from './pages/ReleaseTimelinePage';
 
 const INITIAL_MENUS: NavMenuItem[] = [
   { id: 'ui-kit', label: 'Common Controls', labelAr: 'مكتبة العناصر', icon: <Layers size={16} /> },
+  { id: 'releases', label: 'Release Timeline', labelAr: 'سجل الإصدارات', icon: <GitCommitHorizontal size={16} /> },
   { id: 'dashboard', label: 'Dashboard', labelAr: 'لوحة التحكم', icon: <LayoutDashboard size={16} /> },
   {
     id: 'employees',
@@ -118,6 +121,8 @@ const AppContent: React.FC = () => {
     >
       {activeMenuId === 'ui-kit' ? (
         <ControlGalleryPage />
+      ) : activeMenuId === 'releases' ? (
+        <ReleaseTimelinePage />
       ) : activeMenuId === 'manual' ? (
         <Card title="UniGlobal HRMS — User Manual" subtitle="Step-by-step application guide">
           <ol style={{ paddingInlineStart: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
