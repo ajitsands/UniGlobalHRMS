@@ -472,7 +472,7 @@ export const AppShell: React.FC<AppShellProps> = ({
               className="ug-header-sub"
               style={{ fontSize: '0.778rem', fontWeight: 500, color: hfTextColor, opacity: 0.78 }}
             >
-              {isAr ? 'بوابة إدارة الموارد البشرية والرواتب' : 'UniGlobal Consultancy • UNIGLOBAL Suite'}
+              {isAr ? 'بوابة إدارة الموارد البشرية والرواتب' : 'UniGlobal Consultancy • UG Suite'}
             </div>
           </div>
         </div>
