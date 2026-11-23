@@ -31,13 +31,15 @@ import {
   Tabs,
   TextArea,
   TextInput,
+  Timeline,
+  TimelineEvent,
   ToastPosition,
   Tooltip,
   UniGlobalLoader,
   UniGlobalLogoIcon,
   useToast,
 } from '@controls';
-import { Plus, Trash2, User } from 'lucide-react';
+import { Award, Briefcase, CheckCircle2, FileCheck2, Plane, Plus, Trash2, User } from 'lucide-react';
 
 interface DemoEmployee {
   id: number;
@@ -72,6 +74,64 @@ const INITIAL_APPOINTMENTS: ScheduleAppointment[] = [
   { id: 'a4', title: 'BU-1 Probation Appraisal Review', stakeholderId: 'bu1', date: '2026-11-19', startHour: 10, durationHours: 1, category: 'Review' },
   { id: 'a5', title: 'Kuwait Biometric Clock Sync Test', stakeholderId: 'it', date: '2026-11-19', startHour: 14, durationHours: 2, category: 'Training' },
   { id: 'a6', title: 'Onboarding Induction Batch #4', stakeholderId: 'hr', date: '2026-11-20', startHour: 10, durationHours: 2, category: 'Training' },
+];
+
+const DEMO_TIMELINE_EVENTS: TimelineEvent[] = [
+  {
+    id: 'tl-1',
+    date: '15 Nov 2026',
+    title: 'Annual Leave Approved (12 Days)',
+    category: 'Leave',
+    actor: 'Tariq Al-Sabah (Line Manager)',
+    description: 'Annual paid leave with air ticket entitlement approved and synced to payroll accruals.',
+    tone: 'info',
+    icon: <Plane size={12} />,
+    tags: ['Annual Leave', 'Air Ticket Accrued'],
+  },
+  {
+    id: 'tl-2',
+    date: '02 Oct 2026',
+    title: 'CPR & LMRA Work Permit Renewed',
+    category: 'Documents',
+    actor: 'Amina Al-Bahrani (HR Manager)',
+    description: 'New expiry set to 02 Oct 2028. Previous document version archived automatically (Req 3.1.06).',
+    tone: 'success',
+    icon: <FileCheck2 size={12} />,
+    tags: ['CPR', 'LMRA', 'v2 Archived'],
+  },
+  {
+    id: 'tl-3',
+    date: '01 Jul 2026',
+    title: 'Promoted to Senior Sales Executive & Increment',
+    category: 'Promotion',
+    actor: 'HR & Finance Approval',
+    description: 'Appraisal rating 4.8/5 triggered grade upgrade and basic salary revision.',
+    tone: 'primary',
+    icon: <Award size={12} />,
+    tags: ['BHD 1,050 → BHD 1,250.500', 'Grade G5'],
+  },
+  {
+    id: 'tl-4',
+    date: '15 Apr 2026',
+    title: 'Probation Completed & Confirmed',
+    category: 'Career',
+    actor: 'Amina Al-Bahrani (HR Manager)',
+    description: '90-day probation review signed off; permanent employment status activated.',
+    tone: 'success',
+    icon: <CheckCircle2 size={12} />,
+    tags: ['Permanent'],
+  },
+  {
+    id: 'tl-5',
+    date: '15 Jan 2026',
+    title: 'Joined UniGlobal — BU-1 Sales (Bahrain CR)',
+    category: 'Career',
+    actor: 'HR Onboarding',
+    description: 'Onboarding checklist 100% completed (Contract, Bank IBAN, Laptop Custody, SIO Registration).',
+    tone: 'warning',
+    icon: <Briefcase size={12} />,
+    tags: ['BU-1 Sales', 'Bahrain SIO'],
+  },
 ];
 
 export const ControlGalleryPage: React.FC = () => {
@@ -165,6 +225,14 @@ export const ControlGalleryPage: React.FC = () => {
         onNotify={(msg) => toast.info('Schedule Updated', msg)}
         defaultView="stakeholders"
         initialDate="2026-11-19"
+      />
+
+      {/* Employee History Timeline Control (Req 3.1.11) */}
+      <Timeline
+        title="Employee History Timeline Control (Vertical / Horizontal)"
+        helpText="Chronological employee lifecycle timeline combining joining, probation, promotions, documents, and leave (Req 3.1.11)."
+        events={DEMO_TIMELINE_EVENTS}
+        defaultOrientation="vertical"
       />
 
       {/* Form Controls, Combo (Select2), Calendars, Radio, Switches & Uploads */}

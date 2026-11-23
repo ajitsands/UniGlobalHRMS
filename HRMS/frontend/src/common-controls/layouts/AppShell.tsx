@@ -7,9 +7,11 @@ import {
   GripVertical,
   Lock,
   Menu,
+  Moon,
   Palette,
   Pin,
   SlidersHorizontal,
+  Sun,
   Unlock,
   X,
 } from 'lucide-react';
@@ -21,6 +23,7 @@ import {
   HeaderFooterStyle,
   MenuLayout,
   SINGLE_COLOR_PRESETS,
+  SURFACE_THEME_PRESETS,
   TEXT_COLOR_PRESETS,
   ThemeMode,
   useTheme,
@@ -55,6 +58,10 @@ export const AppShell: React.FC<AppShellProps> = ({
   children,
 }) => {
   const {
+    surfaceTheme,
+    applySurfaceTheme,
+    isDarkTheme,
+    toggleDarkMode,
     themeMode,
     setThemeMode,
     primaryColor,
@@ -586,6 +593,17 @@ export const AppShell: React.FC<AppShellProps> = ({
             </Tooltip>
           </div>
 
+          {/* Quick Light / Dark Mode Toggle */}
+          <Tooltip content={isDarkTheme ? 'Switch to Light Theme' : 'Switch to Dark Theme'} placement="bottom">
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={isDarkTheme ? <Sun size={14} style={{ color: '#f59e0b' }} /> : <Moon size={14} />}
+              onClick={toggleDarkMode}
+              aria-label="Toggle Light or Dark Theme"
+            />
+          </Tooltip>
+
           <HelpPopup
             title="Navigation & Workspace Help"
             summary="Customize your workspace layout, theme colors, language (EN/AR), and Quick Access shortcuts."
@@ -867,8 +885,58 @@ export const AppShell: React.FC<AppShellProps> = ({
 
           <div style={isLockedForCurrentUser ? { opacity: 0.55, pointerEvents: 'none' } : undefined}>
           <Accordion
-            defaultOpenIds={['menu-layout']}
+            defaultOpenIds={['elegant-themes', 'menu-layout']}
             items={[
+              {
+                id: 'elegant-themes',
+                title: 'Light, Dark & Elegant Theme Presets',
+                content: (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    {SURFACE_THEME_PRESETS.map((preset) => {
+                      const active = surfaceTheme === preset.id;
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => applySurfaceTheme(preset.id)}
+                          style={{
+                            padding: '8px 10px',
+                            borderRadius: 8,
+                            border: active ? `2px solid ${preset.primary}` : '1px solid var(--ug-border-strong)',
+                            background: preset.cardPreview,
+                            color: preset.mode === 'dark' ? '#f8fafc' : '#0f172a',
+                            cursor: 'pointer',
+                            textAlign: 'start',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 5,
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                            <span style={{ fontWeight: 700, fontSize: '0.82rem' }}>{preset.name}</span>
+                            <span
+                              style={{
+                                width: 12,
+                                height: 12,
+                                borderRadius: '50%',
+                                background: preset.primary,
+                                flexShrink: 0,
+                              }}
+                            />
+                          </div>
+                          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                            <span style={{ width: 18, height: 6, borderRadius: 3, background: preset.bgPreview, border: '1px solid rgba(128,128,128,0.25)' }} />
+                            <span style={{ width: 18, height: 6, borderRadius: 3, background: preset.primary }} />
+                            <span style={{ fontSize: '0.7rem', opacity: 0.7, textTransform: 'uppercase' }}>
+                              {preset.mode}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ),
+              },
               {
                 id: 'menu-layout',
                 title: 'Menu Layout & Scroll Behavior',

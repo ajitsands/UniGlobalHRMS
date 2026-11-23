@@ -6,7 +6,88 @@ import {
 } from '../../services/uiSettingsApi';
 
 export type ThemeMode = 'uniglobal-light' | 'single' | 'gradient';
+export type SurfaceThemeId =
+  | 'uniglobal-light'
+  | 'midnight-dark'
+  | 'obsidian-gold'
+  | 'royal-ivory'
+  | 'emerald-glass'
+  | 'nordic-slate';
 export type HeaderFooterStyle = 'light' | 'single' | 'gradient';
+
+export interface SurfaceThemePreset {
+  id: SurfaceThemeId;
+  name: string;
+  mode: 'light' | 'dark';
+  primary: string;
+  bgPreview: string;
+  cardPreview: string;
+  hfText: string;
+  menuText: string;
+}
+
+export const SURFACE_THEME_PRESETS: SurfaceThemePreset[] = [
+  {
+    id: 'uniglobal-light',
+    name: 'UniGlobal Light',
+    mode: 'light',
+    primary: '#1B365D',
+    bgPreview: '#f5f7fa',
+    cardPreview: '#ffffff',
+    hfText: '#1B365D',
+    menuText: '#334155',
+  },
+  {
+    id: 'midnight-dark',
+    name: 'Midnight Dark',
+    mode: 'dark',
+    primary: '#3b82f6',
+    bgPreview: '#0b1120',
+    cardPreview: '#111827',
+    hfText: '#f8fafc',
+    menuText: '#e2e8f0',
+  },
+  {
+    id: 'obsidian-gold',
+    name: 'Obsidian Gold',
+    mode: 'dark',
+    primary: '#d4af37',
+    bgPreview: '#0c0c0f',
+    cardPreview: '#16161b',
+    hfText: '#f8fafc',
+    menuText: '#e4e4e7',
+  },
+  {
+    id: 'royal-ivory',
+    name: 'Royal Ivory',
+    mode: 'light',
+    primary: '#7f1d1d',
+    bgPreview: '#f8f5f0',
+    cardPreview: '#fffdf9',
+    hfText: '#7f1d1d',
+    menuText: '#3f3f46',
+  },
+  {
+    id: 'emerald-glass',
+    name: 'Emerald Executive',
+    mode: 'light',
+    primary: '#065f46',
+    bgPreview: '#eff7f4',
+    cardPreview: '#ffffff',
+    hfText: '#065f46',
+    menuText: '#1e3a34',
+  },
+  {
+    id: 'nordic-slate',
+    name: 'Nordic Slate',
+    mode: 'light',
+    primary: '#334155',
+    bgPreview: '#edf1f7',
+    cardPreview: '#f8fafd',
+    hfText: '#1e293b',
+    menuText: '#334155',
+  },
+];
 export type MenuLayout = 'vertical' | 'horizontal' | 'docking' | 'minimal';
 export type AppLanguage = 'en' | 'ar';
 export type FontSizeScale = 'sm' | 'md' | 'lg' | 'xl';
@@ -88,6 +169,10 @@ export const SINGLE_COLOR_PRESETS = [
 ];
 
 interface ThemeContextValue {
+  surfaceTheme: SurfaceThemeId;
+  applySurfaceTheme: (id: SurfaceThemeId) => void;
+  isDarkTheme: boolean;
+  toggleDarkMode: () => void;
   themeMode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
   primaryColor: string;
@@ -155,6 +240,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 const STORAGE_KEY = 'uniglobal_hrms_ui_settings_v1';
 
 interface PersistedSettings {
+  surfaceTheme: SurfaceThemeId;
   themeMode: ThemeMode;
   primaryColor: string;
   gradientId: string;
@@ -182,6 +268,7 @@ interface PersistedSettings {
 }
 
 const DEFAULT_SETTINGS: PersistedSettings = {
+  surfaceTheme: 'uniglobal-light',
   themeMode: 'uniglobal-light',
   primaryColor: '#1B365D',
   gradientId: 'uniglobal-brand',
@@ -220,6 +307,7 @@ function loadInitialSettings(): PersistedSettings {
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const initial = loadInitialSettings();
+  const [surfaceTheme, setSurfaceTheme] = useState<SurfaceThemeId>(initial.surfaceTheme);
   const [themeMode, setThemeMode] = useState<ThemeMode>(initial.themeMode);
   const [primaryColor, setPrimaryColor] = useState<string>(initial.primaryColor);
   const [gradientId, setGradientId] = useState<string>(initial.gradientId);
@@ -341,6 +429,28 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  const isDarkTheme = surfaceTheme === 'midnight-dark' || surfaceTheme === 'obsidian-gold';
+
+  const applySurfaceTheme = (id: SurfaceThemeId) => {
+    const preset = SURFACE_THEME_PRESETS.find((p) => p.id === id) ?? SURFACE_THEME_PRESETS[0];
+    setSurfaceTheme(preset.id);
+    setThemeMode(preset.id === 'uniglobal-light' ? 'uniglobal-light' : 'single');
+    setPrimaryColor(preset.primary);
+    setHeaderFooterStyleState('light');
+    setMenuBgStyleState('light');
+    setHfTextColor(preset.hfText);
+    setMenuTextColor(preset.menuText);
+    setScrollbarColor(preset.primary);
+  };
+
+  const toggleDarkMode = () => {
+    applySurfaceTheme(isDarkTheme ? 'uniglobal-light' : 'midnight-dark');
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-surface-theme', surfaceTheme);
+  }, [surfaceTheme]);
+
   const setHeaderFooterStyle = (style: HeaderFooterStyle) => {
     setHeaderFooterStyleState(style);
     setHfTextColor(style === 'light' ? '#1B365D' : '#ffffff');
@@ -354,6 +464,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     try {
       const payload: PersistedSettings = {
+        surfaceTheme,
         themeMode,
         primaryColor,
         gradientId,
@@ -384,6 +495,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // ignore storage quota errors
     }
   }, [
+    surfaceTheme,
     themeMode,
     primaryColor,
     gradientId,
@@ -472,6 +584,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const resetAppearance = () => {
+    setSurfaceTheme('uniglobal-light');
     setThemeMode('uniglobal-light');
     setPrimaryColor('#1B365D');
     setGradientId('uniglobal-brand');
@@ -498,6 +611,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <ThemeContext.Provider
       value={{
+        surfaceTheme,
+        applySurfaceTheme,
+        isDarkTheme,
+        toggleDarkMode,
         themeMode,
         setThemeMode,
         primaryColor,

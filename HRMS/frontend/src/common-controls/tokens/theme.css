@@ -1293,3 +1293,169 @@ body {
     padding: 7px 10px;
   }
 }
+
+/* ==========================================================================
+   Elegant Surface Themes (Light, Dark & Executive Presets)
+   ========================================================================== */
+[data-surface-theme='midnight-dark'] {
+  --ug-bg: #0b1120;
+  --ug-surface: #111827;
+  --ug-surface-alt: #1e293b;
+  --ug-header-bg: #0f172a;
+  --ug-header-text: #f8fafc;
+  --ug-footer-bg: #0f172a;
+  --ug-footer-text: #94a3b8;
+  --ug-sidebar-bg: #0f172a;
+  --ug-sidebar-text: #e2e8f0;
+  --ug-text: #f1f5f9;
+  --ug-text-secondary: #cbd5e1;
+  --ug-muted: #94a3b8;
+  --ug-border: #273549;
+  --ug-border-strong: #3b4d68;
+  --ug-scrollbar-track: #0f172a;
+  --ug-success-bg: rgba(5, 150, 105, 0.18);
+  --ug-warning-bg: rgba(217, 119, 6, 0.2);
+  --ug-danger-bg: rgba(220, 38, 38, 0.2);
+  --ug-info-bg: rgba(2, 132, 199, 0.2);
+}
+
+[data-surface-theme='obsidian-gold'] {
+  --ug-bg: #0c0c0f;
+  --ug-surface: #16161b;
+  --ug-surface-alt: #202028;
+  --ug-header-bg: #121217;
+  --ug-header-text: #f8fafc;
+  --ug-footer-bg: #121217;
+  --ug-footer-text: #a1a1aa;
+  --ug-sidebar-bg: #121217;
+  --ug-sidebar-text: #e4e4e7;
+  --ug-text: #fafafa;
+  --ug-text-secondary: #d4d4d8;
+  --ug-muted: #a1a1aa;
+  --ug-border: #2a2a35;
+  --ug-border-strong: #3f3f4e;
+  --ug-scrollbar-track: #121217;
+  --ug-success-bg: rgba(5, 150, 105, 0.18);
+  --ug-warning-bg: rgba(212, 175, 55, 0.2);
+  --ug-danger-bg: rgba(220, 38, 38, 0.2);
+  --ug-info-bg: rgba(2, 132, 199, 0.2);
+}
+
+[data-surface-theme='royal-ivory'] {
+  --ug-bg: #f8f5f0;
+  --ug-surface: #ffffff;
+  --ug-surface-alt: #f3eee6;
+  --ug-header-bg: #fffdf9;
+  --ug-footer-bg: #f3eee6;
+  --ug-sidebar-bg: #fffdf9;
+  --ug-border: #e7dfd2;
+  --ug-border-strong: #d5c7b2;
+  --ug-scrollbar-track: #f3eee6;
+}
+
+[data-surface-theme='emerald-glass'] {
+  --ug-bg: #eff7f4;
+  --ug-surface: #ffffff;
+  --ug-surface-alt: #e6f3ee;
+  --ug-header-bg: #ffffff;
+  --ug-footer-bg: #e6f3ee;
+  --ug-sidebar-bg: #ffffff;
+  --ug-border: #d1e7de;
+  --ug-border-strong: #a7d5c3;
+  --ug-scrollbar-track: #e6f3ee;
+}
+
+[data-surface-theme='nordic-slate'] {
+  --ug-bg: #edf1f7;
+  --ug-surface: #ffffff;
+  --ug-surface-alt: #e4eaf3;
+  --ug-header-bg: #f8fafd;
+  --ug-footer-bg: #e4eaf3;
+  --ug-sidebar-bg: #f8fafd;
+  --ug-border: #d5deec;
+  --ug-border-strong: #b8c7dc;
+  --ug-scrollbar-track: #e4eaf3;
+}
+
+[data-surface-theme='midnight-dark'] .ug-dock-nav,
+[data-surface-theme='obsidian-gold'] .ug-dock-nav {
+  background: rgba(17, 24, 39, 0.94);
+}
+
+/* ==========================================================================
+   Timeline Control (Vertical & Horizontal)
+   ========================================================================== */
+.ug-timeline-vertical {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-inline-start: 28px;
+}
+
+.ug-timeline-vertical::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  inset-inline-start: 11px;
+  width: 2px;
+  background: var(--ug-border-strong);
+}
+
+.ug-timeline-item {
+  position: relative;
+}
+
+.ug-timeline-node {
+  position: absolute;
+  top: 10px;
+  inset-inline-start: -28px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 0 3px var(--ug-surface);
+  z-index: 1;
+}
+
+.ug-timeline-node-inline {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ug-timeline-card {
+  background: var(--ug-surface-alt);
+  border: 1px solid var(--ug-border);
+  border-radius: var(--ug-radius-sm);
+  padding: 12px 14px;
+  transition: border-color var(--ug-transition), box-shadow var(--ug-transition);
+}
+
+.ug-timeline-card:hover {
+  border-color: var(--ug-primary);
+  box-shadow: var(--ug-shadow-sm);
+}
+
+.ug-timeline-horizontal {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ug-timeline-h-item {
+  min-width: 240px;
+  max-width: 280px;
+  flex: 1 0 240px;
+  display: flex;
+  flex-direction: column;
+}

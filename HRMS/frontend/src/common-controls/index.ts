@@ -14,3 +14,4 @@ export * from './controls/DashboardWidget';
 export * from './controls/BrandAndLoader';
 export * from './controls/ToastSystem';
 export * from './controls/ScheduleCalendar';
+export * from './controls/Timeline';
