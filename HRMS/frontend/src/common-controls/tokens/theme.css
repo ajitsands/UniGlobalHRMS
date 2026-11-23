@@ -993,9 +993,25 @@ body {
   gap: 2px;
 }
 
+/* Invisible hover bridge so moving slowly from trigger to panel never closes the menu */
+.ug-nav-dropdown-panel::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -8px;
+  right: -8px;
+  height: 12px;
+}
+
 .ug-nav-dropdown-panel.opens-up {
   top: auto;
   bottom: calc(100% + 8px);
+}
+
+.ug-nav-dropdown-panel.opens-up::before {
+  top: auto;
+  bottom: -12px;
+  height: 14px;
 }
 
 /* Range Slider */

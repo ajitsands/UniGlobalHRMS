@@ -130,6 +130,25 @@ export const AppShell: React.FC<AppShellProps> = ({
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [expandedIds, setExpandedIds] = useState<string[]>(['employees']);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const closeDropdownTimerRef = useRef<number | null>(null);
+
+  const openHoverDropdown = (id: string) => {
+    if (closeDropdownTimerRef.current !== null) {
+      window.clearTimeout(closeDropdownTimerRef.current);
+      closeDropdownTimerRef.current = null;
+    }
+    setOpenDropdownId(id);
+  };
+
+  const scheduleCloseDropdown = () => {
+    if (closeDropdownTimerRef.current !== null) {
+      window.clearTimeout(closeDropdownTimerRef.current);
+    }
+    closeDropdownTimerRef.current = window.setTimeout(() => {
+      setOpenDropdownId(null);
+      closeDropdownTimerRef.current = null;
+    }, 180);
+  };
   const [isScrolled, setIsScrolled] = useState(false);
   const [quickDropdownOpen, setQuickDropdownOpen] = useState(false);
   const quickDropdownRef = useRef<HTMLDivElement>(null);
@@ -261,8 +280,8 @@ export const AppShell: React.FC<AppShellProps> = ({
         <div
           key={item.id}
           className="ug-nav-dropdown-wrap"
-          onMouseEnter={() => setOpenDropdownId(item.id)}
-          onMouseLeave={() => setOpenDropdownId(null)}
+          onMouseEnter={() => openHoverDropdown(item.id)}
+          onMouseLeave={scheduleCloseDropdown}
         >
           <button
             type="button"
@@ -317,8 +336,8 @@ export const AppShell: React.FC<AppShellProps> = ({
         <div
           key={item.id}
           className="ug-nav-dropdown-wrap"
-          onMouseEnter={() => setOpenDropdownId(item.id)}
-          onMouseLeave={() => setOpenDropdownId(null)}
+          onMouseEnter={() => openHoverDropdown(item.id)}
+          onMouseLeave={scheduleCloseDropdown}
         >
           <button
             type="button"
