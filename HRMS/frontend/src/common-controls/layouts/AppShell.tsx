@@ -533,6 +533,59 @@ export const AppShell: React.FC<AppShellProps> = ({
             </div>
           )}
 
+          {/* Quick User Comfort Font Size Controls (A- / A / A+) in Header */}
+          <div
+            className="ug-hide-mobile"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              border: '1px solid var(--ug-border-strong)',
+              borderRadius: 'var(--ug-radius-sm)',
+              background: 'var(--ug-surface)',
+              overflow: 'hidden',
+            }}
+            aria-label="Adjust font size for reading comfort"
+          >
+            <Tooltip content="Decrease font size" placement="bottom">
+              <button
+                type="button"
+                className="ug-btn ug-btn-ghost ug-btn-sm"
+                style={{ borderRadius: 0, padding: '4px 8px', color: 'var(--ug-text)' }}
+                disabled={fontSizePx <= 10}
+                onClick={() => setFontSizePx(Math.max(10, Number((fontSizePx - 1).toFixed(1))))}
+              >
+                A-
+              </button>
+            </Tooltip>
+            <Tooltip content={`Current: ${fontSizePx}px (click to reset)`} placement="bottom">
+              <button
+                type="button"
+                className="ug-btn ug-btn-ghost ug-btn-sm"
+                style={{
+                  borderRadius: 0,
+                  padding: '4px 7px',
+                  borderInline: '1px solid var(--ug-border)',
+                  color: 'var(--ug-primary)',
+                  fontWeight: 700,
+                }}
+                onClick={() => setFontSizePx(13.5)}
+              >
+                A
+              </button>
+            </Tooltip>
+            <Tooltip content="Increase font size" placement="bottom">
+              <button
+                type="button"
+                className="ug-btn ug-btn-ghost ug-btn-sm"
+                style={{ borderRadius: 0, padding: '4px 8px', color: 'var(--ug-text)' }}
+                disabled={fontSizePx >= 20}
+                onClick={() => setFontSizePx(Math.min(20, Number((fontSizePx + 1).toFixed(1))))}
+              >
+                A+
+              </button>
+            </Tooltip>
+          </div>
+
           <HelpPopup
             title="Navigation & Workspace Help"
             summary="Customize your workspace layout, theme colors, language (EN/AR), and Quick Access shortcuts."
