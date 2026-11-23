@@ -59,6 +59,28 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseCors("HrmsCors");
+
+// Prevent Nginx (ea-nginx) & browser caching on dynamic /api/* and index.html
+// so SuperAdmin DB changes and deployments take effect immediately for all users.
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value ?? string.Empty;
+    if (path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) ||
+        path.Equals("/", StringComparison.OrdinalIgnoreCase) ||
+        path.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+    {
+        context.Response.OnStarting(() =>
+        {
+            context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+            context.Response.Headers["Pragma"] = "no-cache";
+            context.Response.Headers["Expires"] = "0";
+            context.Response.Headers["X-Accel-Expires"] = "0";
+            return Task.CompletedTask;
+        });
+    }
+    await next();
+});
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 

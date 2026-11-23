@@ -35,9 +35,13 @@ export interface GlobalUiSettingsPayload {
 
 export async function fetchGlobalUiSettings(): Promise<GlobalUiSettingsPayload | null> {
   try {
-    const res = await fetch('/api/v1/ui-settings', {
+    const res = await fetch(`/api/v1/ui-settings?_t=${Date.now()}`, {
       method: 'GET',
-      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+      headers: {
+        Accept: 'application/json',
+        'Cache-Control': 'no-cache',
+      },
     });
     if (!res.ok) return null;
     return (await res.json()) as GlobalUiSettingsPayload;
