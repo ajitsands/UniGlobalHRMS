@@ -64,12 +64,13 @@ export const TextInput: React.FC<TextInputProps> = ({
   );
 };
 
-/* ---------------- NumberInput (Supports Currency like BHD/KWD) ---------------- */
+/* ---------------- NumberInput (Supports Gulf Currency & Automatic Precision) ---------------- */
 export interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label?: string;
   helpText?: string;
   error?: string;
-  currency?: string;
+  currency?: string; // Pass 'AUTO' to bind automatically to Application Settings currency
+  useGlobalCurrency?: boolean;
   required?: boolean;
 }
 
@@ -78,37 +79,51 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   helpText,
   error,
   currency,
+  useGlobalCurrency = false,
   required,
+  step,
   ...rest
-}) => (
-  <div className="ug-field">
-    {label && (
-      <label className="ug-label">
-        {label}
-        {required && <span className="ug-required">*</span>}
-        {helpText && <HelpTag text={helpText} />}
-      </label>
-    )}
-    <div className="ug-input-wrap">
-      {currency && (
-        <span
-          className="ug-input-icon-start"
-          style={{ fontSize: '0.852rem', fontWeight: 700, color: 'var(--ug-primary)' }}
-        >
-          {currency}
-        </span>
+}) => {
+  const { currencyMeta } = useTheme();
+  const activeCurrency = useGlobalCurrency || currency === 'AUTO' ? currencyMeta.code : currency;
+  const effectiveStep =
+    step ??
+    (activeCurrency
+      ? ['BHD', 'KWD', 'OMR'].includes(activeCurrency.toUpperCase())
+        ? '0.001'
+        : '0.01'
+      : '0.001');
+
+  return (
+    <div className="ug-field">
+      {label && (
+        <label className="ug-label">
+          {label}
+          {required && <span className="ug-required">*</span>}
+          {helpText && <HelpTag text={helpText} />}
+        </label>
       )}
-      <input
-        type="number"
-        step="0.001"
-        className={`ug-input ${currency ? 'ug-input-prefix' : ''} ${error ? 'has-error' : ''}`}
-        style={currency ? { paddingInlineStart: 46 } : undefined}
-        {...rest}
-      />
+      <div className="ug-input-wrap">
+        {activeCurrency && (
+          <span
+            className="ug-input-icon-start"
+            style={{ fontSize: '0.852rem', fontWeight: 700, color: 'var(--ug-primary)' }}
+          >
+            {activeCurrency}
+          </span>
+        )}
+        <input
+          type="number"
+          step={effectiveStep}
+          className={`ug-input ${activeCurrency ? 'ug-input-prefix' : ''} ${error ? 'has-error' : ''}`}
+          style={activeCurrency ? { paddingInlineStart: 48 } : undefined}
+          {...rest}
+        />
+      </div>
+      {error && <span className="ug-error-text">{error}</span>}
     </div>
-    {error && <span className="ug-error-text">{error}</span>}
-  </div>
-);
+  );
+};
 
 /* ---------------- TextArea ---------------- */
 export interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {

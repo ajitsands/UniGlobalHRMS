@@ -18,10 +18,12 @@ import {
   KeyRound,
   LayoutDashboard,
   Layers,
+  Settings,
   ShieldCheck,
   UserPlus,
   Users,
 } from 'lucide-react';
+import { ApplicationSettingsPage } from './pages/ApplicationSettingsPage';
 import { ControlGalleryPage } from './pages/ControlGalleryPage';
 import { ReleaseTimelinePage } from './pages/ReleaseTimelinePage';
 import { AuthenticatedSession, LoginScreensPage } from './pages/LoginScreensPage';
@@ -70,6 +72,7 @@ const INITIAL_MENUS: NavMenuItem[] = [
     ],
   },
   { id: 'audit', label: 'Audit & Logs', labelAr: 'سجلات التدقيق', icon: <ShieldCheck size={16} /> },
+  { id: 'app-settings', label: 'Application Settings', labelAr: 'إعدادات النظام العامة', icon: <Settings size={16} /> },
   { id: 'manual', label: 'User Manual', labelAr: 'دليل المستخدم', icon: <BookOpen size={16} /> },
 ];
 
@@ -356,11 +359,14 @@ const AppContent: React.FC = () => {
     >
       {activeMenuId === 'ui-kit' ? (
         <ControlGalleryPage />
+      ) : activeMenuId === 'app-settings' ? (
+        <ApplicationSettingsPage />
       ) : activeMenuId === 'releases' ? (
         <ReleaseTimelinePage />
       ) : activeMenuId === 'manual' ? (
         <Card title="PROMPT HRMS — User Manual" subtitle="Step-by-step application guide">
           <ol style={{ paddingInlineStart: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <li><strong>Global Application Settings (Gulf / Bahrain Default):</strong> Click the <em>Settings</em> gear icon in the top header to configure Date Format (default <code>DD-MM-YYYY</code>), Time Format (<code>12h</code> / <code>24h</code>), Gulf Currency &amp; Decimal Precision (default <code>BHD</code> 3 decimals), and Time Zone (default <code>Asia/Bahrain</code>). Every calendar, schedule, timestamp, and salary input across the system adapts immediately.</li>
             <li><strong>Interactive Login Screens:</strong> Click <em>Login Screens (3 Styles)</em> in the menu or <em>Sign Out</em> in the header to explore the Studio Split, Horizon Portal, and Nocturne &amp; Pulse login experiences with 16 PROMPT brand palettes, OTP, and ERP SSO.</li>
             <li><strong>Per-User Top-10 Recent Menus &amp; Hybrid Sync:</strong> Click the <em>Recent</em> button in the top header to slide open the Right-Side Canvas showing your last 10 accessed menus with exact Date &amp; Time stamps. On Login, your personal list loads once from SQL Server (<code>dbo.UserRecentMenuStates</code>) into Local Storage; menu clicks update Local Storage in <code>0ms</code> with zero DB calls; and changes automatically batch-save to SQL Server after 20 seconds of page idle, on tab hide/window close (<code>keepalive</code>), or on Sign Out.</li>
             <li><strong>Corporate Identity &amp; Theme:</strong> SuperAdmin can customize colors, gradients, fonts, menu layouts, and card shadows, then click <em>Save Corporate Settings to DB (All Users)</em> so every logged-in user inherits the exact Corporate Identity.</li>

@@ -61,6 +61,26 @@ using (var scope = app.Services.CreateScope())
             BEGIN
                 ALTER TABLE dbo.AppUiSettings
                 ADD RecentMenusLimit INT NOT NULL CONSTRAINT DF_AppUiSettings_RecentMenusLimit DEFAULT(10);
+            END
+            IF COL_LENGTH(N'dbo.AppUiSettings', N'DateFormat') IS NULL
+            BEGIN
+                ALTER TABLE dbo.AppUiSettings
+                ADD DateFormat NVARCHAR(32) NOT NULL CONSTRAINT DF_AppUiSettings_DateFormat DEFAULT(N'DD-MM-YYYY');
+            END
+            IF COL_LENGTH(N'dbo.AppUiSettings', N'TimeFormat') IS NULL
+            BEGIN
+                ALTER TABLE dbo.AppUiSettings
+                ADD TimeFormat NVARCHAR(16) NOT NULL CONSTRAINT DF_AppUiSettings_TimeFormat DEFAULT(N'12h');
+            END
+            IF COL_LENGTH(N'dbo.AppUiSettings', N'CurrencyCode') IS NULL
+            BEGIN
+                ALTER TABLE dbo.AppUiSettings
+                ADD CurrencyCode NVARCHAR(16) NOT NULL CONSTRAINT DF_AppUiSettings_CurrencyCode DEFAULT(N'BHD');
+            END
+            IF COL_LENGTH(N'dbo.AppUiSettings', N'TimeZoneId') IS NULL
+            BEGIN
+                ALTER TABLE dbo.AppUiSettings
+                ADD TimeZoneId NVARCHAR(64) NOT NULL CONSTRAINT DF_AppUiSettings_TimeZoneId DEFAULT(N'Asia/Bahrain');
             END");
     }
     catch (Exception ex)

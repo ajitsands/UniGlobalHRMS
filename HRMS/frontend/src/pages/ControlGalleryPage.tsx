@@ -37,6 +37,7 @@ import {
   Tooltip,
   UniGlobalLoader,
   UniGlobalLogoIcon,
+  useTheme,
   useToast,
 } from '@controls';
 import { Award, Briefcase, CheckCircle2, FileCheck2, Plane, Plus, Trash2, User } from 'lucide-react';
@@ -136,6 +137,7 @@ const DEMO_TIMELINE_EVENTS: TimelineEvent[] = [
 
 export const ControlGalleryPage: React.FC = () => {
   const toast = useToast();
+  const { currencyCode, currencyMeta, formatCurrency, formatDate } = useTheme();
   const [appointments, setAppointments] = useState<ScheduleAppointment[]>(INITIAL_APPOINTMENTS);
   const [empName, setEmpName] = useState('Ahmed Al-Khalifa');
   const [salary, setSalary] = useState('1250.500');
@@ -165,9 +167,9 @@ export const ControlGalleryPage: React.FC = () => {
     { key: 'country', header: 'Jurisdiction', sortable: true },
     {
       key: 'salaryBhd',
-      header: 'Gross (BHD)',
+      header: `Gross (${currencyCode})`,
       sortable: true,
-      render: (r) => <strong>BHD {r.salaryBhd.toFixed(3)}</strong>,
+      render: (r) => <strong>{formatCurrency(r.salaryBhd, true)}</strong>,
     },
     {
       key: 'status',
@@ -231,7 +233,7 @@ export const ControlGalleryPage: React.FC = () => {
       <Timeline
         title="Employee History Timeline Control (Vertical / Horizontal)"
         helpText="Chronological employee lifecycle timeline combining joining, probation, promotions, documents, and leave (Req 3.1.11)."
-        events={DEMO_TIMELINE_EVENTS}
+        events={DEMO_TIMELINE_EVENTS.map((ev) => ({ ...ev, date: formatDate(ev.date) }))}
         defaultOrientation="vertical"
       />
 
@@ -261,10 +263,10 @@ export const ControlGalleryPage: React.FC = () => {
           />
 
           <NumberInput
-            label="Basic Salary"
+            label={`Basic Salary (${currencyCode})`}
             required
-            currency="BHD"
-            helpText="3-decimal fils precision for Bahrain & Kuwait payroll."
+            useGlobalCurrency
+            helpText={`${currencyMeta.decimals}-decimal precision (${currencyMeta.subUnit}) from Application Settings.`}
             value={salary}
             onChange={(e) => setSalary(e.target.value)}
           />
@@ -404,12 +406,12 @@ export const ControlGalleryPage: React.FC = () => {
             onChange={setGeofenceRadius}
           />
           <DualRangeSlider
-            label="Salary Grade Filter (BHD)"
+            label={`Salary Grade Filter (${currencyCode})`}
             helpText="Filter reports or payroll runs by min-max salary range."
             min={300}
             max={5000}
             step={50}
-            unit=" BHD"
+            unit={` ${currencyCode}`}
             minValue={salaryMin}
             maxValue={salaryMax}
             onChange={(lo, hi) => {

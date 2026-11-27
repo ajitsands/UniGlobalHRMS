@@ -12,6 +12,8 @@ import { Badge, Button, HelpTag } from './HelpAndFeedback';
 import { Modal } from './ContainersAndPopups';
 import { SwitchToggle, TextArea, TextInput } from './FormControls';
 import { SelectControl } from './SelectControl';
+import { DateCalendar } from './DateCalendar';
+import { useTheme } from '../tokens/ThemeContext';
 
 export type ScheduleViewMode = 'day' | 'week' | 'month' | 'stakeholders' | 'agenda';
 
@@ -71,12 +73,6 @@ function addDays(iso: string, delta: number): string {
   return formatIso(d);
 }
 
-function formatHour(h: number): string {
-  const suffix = h >= 12 ? 'PM' : 'AM';
-  const hr12 = h % 12 === 0 ? 12 : h % 12;
-  return `${String(hr12).padStart(2, '0')}:00 ${suffix}`;
-}
-
 export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   title = 'Appointments & Multi-Stakeholder Scheduler',
   stakeholders,
@@ -86,6 +82,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
   defaultView = 'stakeholders',
   initialDate = '2026-11-19',
 }) => {
+  const { formatDate, formatHour } = useTheme();
   const [view, setView] = useState<ScheduleViewMode>(defaultView);
   const [anchorDate, setAnchorDate] = useState<string>(initialDate);
   const [isMobile, setIsMobile] = useState<boolean>(
@@ -285,7 +282,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     onChange(appointments.map((a) => (a.id === draggingId ? updated : a)));
     const stNames = nextIds.map((id) => stakeholderMap.get(id)?.name.split(' ')[0]).filter(Boolean).join(', ');
     const timeLabel = updated.allDay ? 'All Day' : formatHour(updated.startHour);
-    onNotify?.(`Moved "${updated.title}" → ${updated.date} (${timeLabel})${stNames ? ` • ${stNames}` : ''}`);
+    onNotify?.(`Moved "${updated.title}" → ${formatDate(updated.date)} (${timeLabel})${stNames ? ` • ${stNames}` : ''}`);
     setDraggingId(null);
     setDraggingFromStakeholder(null);
   };
@@ -361,8 +358,8 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
     view === 'month'
       ? `${MONTHS[anchorObj.getMonth()]} ${anchorObj.getFullYear()}`
       : view === 'week'
-      ? `${weekDates[0]}  –  ${weekDates[6]}`
-      : `${WEEKDAYS[anchorObj.getDay()]}, ${MONTHS[anchorObj.getMonth()]} ${anchorObj.getDate()}, ${anchorObj.getFullYear()}`;
+      ? `${formatDate(weekDates[0])}  –  ${formatDate(weekDates[6])}`
+      : `${WEEKDAYS[anchorObj.getDay()]}, ${formatDate(anchorDate)}`;
 
   return (
     <div className="ug-card">
@@ -524,7 +521,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                   <div style={{ padding: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {stItems.length === 0 ? (
                       <div style={{ fontSize: '0.82rem', color: 'var(--ug-muted)', padding: '6px 2px' }}>
-                        No appointments scheduled for {anchorDate}
+                        No appointments scheduled for {formatDate(anchorDate)}
                       </div>
                     ) : (
                       stItems.map((a) => renderEventChip(a, false, st.id))
@@ -658,7 +655,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                 style={iso === anchorDate ? { background: 'var(--ug-primary-soft)', color: 'var(--ug-primary)' } : undefined}
               >
                 <div>{WEEKDAYS[i]}</div>
-                <div style={{ fontSize: '0.78rem', fontWeight: 500 }}>{iso.slice(5)}</div>
+                <div style={{ fontSize: '0.76rem', fontWeight: 500 }}>{formatDate(iso)}</div>
               </div>
             ))}
 
@@ -788,7 +785,7 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
                       <div>
                         <div style={{ fontWeight: 700 }}>{a.title}</div>
                         <div style={{ fontSize: '0.82rem', color: 'var(--ug-muted)', display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 2 }}>
-                          <span><Clock size={12} style={{ verticalAlign: 'middle' }} /> {a.date} • {a.allDay ? 'All Day' : `${formatHour(a.startHour)} (${a.durationHours}h)`}</span>
+                          <span><Clock size={12} style={{ verticalAlign: 'middle' }} /> {formatDate(a.date)} • {a.allDay ? 'All Day' : `${formatHour(a.startHour)} (${a.durationHours}h)`}</span>
                           <span>• {namesLabel}</span>
                         </div>
                       </div>
@@ -859,11 +856,11 @@ export const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
             />
           </div>
           <div className="ug-grid-3">
-            <TextInput
+            <DateCalendar
               label="Date"
-              type="date"
+              required
               value={formDate}
-              onChange={(e) => setFormDate(e.target.value)}
+              onChange={(iso) => setFormDate(iso)}
             />
             <SelectControl
               label="Start Hour"

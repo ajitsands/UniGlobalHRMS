@@ -296,6 +296,9 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
     setUserRole,
     setThemeMode,
     setPrimaryColor,
+    formatDate,
+    formatTime,
+    timeZone,
   } = useTheme();
   const toast = useToast();
   const isAr = language === 'ar';
@@ -722,17 +725,8 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
     </div>
   );
 
-  const formattedClock = liveNow.toLocaleDateString(isAr ? 'ar-BH' : 'en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-  const formattedTime = liveNow.toLocaleTimeString(isAr ? 'ar-BH' : 'en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
+  const formattedClock = `${formatDate(liveNow)} (${timeZone})`;
+  const formattedTime = formatTime(liveNow, true);
 
   return (
     <div className={`ug-login-scope ${loginDark ? 'is-dark' : ''}`} style={scopedThemeVars}>

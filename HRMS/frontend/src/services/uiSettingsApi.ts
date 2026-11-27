@@ -30,6 +30,10 @@ export interface GlobalUiSettingsPayload {
 
   lockCorporateTheme: boolean;
   recentMenusLimit: number;
+  dateFormat: string;
+  timeFormat: string;
+  currencyCode: string;
+  timeZoneId: string;
   updatedBy?: string;
   updatedAtUtc?: string;
 }

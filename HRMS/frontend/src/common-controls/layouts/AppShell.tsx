@@ -15,6 +15,7 @@ import {
   Palette,
   Pin,
   RefreshCw,
+  Settings,
   SlidersHorizontal,
   Sun,
   Trash2,
@@ -147,6 +148,10 @@ export const AppShell: React.FC<AppShellProps> = ({
     setLockCorporateTheme,
     recentMenusLimit,
     setRecentMenusLimit,
+    dateFormat,
+    currencyCode,
+    timeZone,
+    formatDateTime,
     isSavingToDb,
     dbConnected,
     lastSavedBy,
@@ -721,6 +726,26 @@ export const AppShell: React.FC<AppShellProps> = ({
             </Button>
           </Tooltip>
 
+          {/* Global Application Settings Icon -> Navigates to Application Settings Page */}
+          <Tooltip
+            content={
+              isAr
+                ? `إعدادات النظام (${currencyCode} • ${dateFormat} • ${timeZone})`
+                : `Application Settings (${currencyCode} • ${dateFormat} • ${timeZone})`
+            }
+            placement="bottom"
+          >
+            <Button
+              variant={activeMenuId === 'app-settings' ? 'primary' : 'secondary'}
+              size="sm"
+              icon={<Settings size={15} />}
+              onClick={() => onSelectMenu('app-settings')}
+              aria-label="Open Application Settings"
+            >
+              <span className="ug-hide-mobile">{isAr ? 'الإعدادات' : 'Settings'}</span>
+            </Button>
+          </Tooltip>
+
           <Button
             variant="primary"
             size="sm"
@@ -994,14 +1019,7 @@ export const AppShell: React.FC<AppShellProps> = ({
             {recentLastSyncedAtUtc && (
               <div style={{ fontSize: '0.778rem', color: 'var(--ug-muted)' }}>
                 {isAr ? 'آخر مزامنة مع قاعدة البيانات: ' : 'Last DB Sync: '}
-                {new Date(recentLastSyncedAtUtc).toLocaleString(isAr ? 'ar-BH' : 'en-GB', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                })}
+                {formatDateTime(recentLastSyncedAtUtc)}
               </div>
             )}
           </div>
@@ -1061,15 +1079,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                 const dt = new Date(rec.accessedAtUtc);
                 const formattedStamp = Number.isNaN(dt.getTime())
                   ? rec.accessedAtUtc
-                  : dt.toLocaleString(isAr ? 'ar-BH' : 'en-GB', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit',
-                      hour12: true,
-                    });
+                  : formatDateTime(dt);
                 const diffSec = Math.max(0, Math.floor((Date.now() - dt.getTime()) / 1000));
                 const relativeStr =
                   diffSec < 45
@@ -1886,7 +1896,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                 </Button>
                 {lastSavedAtUtc && (
                   <div style={{ fontSize: '0.78rem', color: 'var(--ug-muted)', textAlign: 'center' }}>
-                    {dbConnected ? 'Synced with SQL Server' : 'Local Cache'} • Saved by <strong>{lastSavedBy}</strong> ({new Date(lastSavedAtUtc).toLocaleString()})
+                    {dbConnected ? 'Synced with SQL Server' : 'Local Cache'} • Saved by <strong>{lastSavedBy}</strong> ({formatDateTime(lastSavedAtUtc)})
                   </div>
                 )}
               </>

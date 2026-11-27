@@ -4,6 +4,21 @@ import {
   GlobalUiSettingsPayload,
   saveGlobalUiSettings,
 } from '../../services/uiSettingsApi';
+import {
+  AppDateFormat,
+  AppTimeFormat,
+  CurrencyMetadata,
+  formatAppCurrencyValue,
+  formatAppDateTimeValue,
+  formatAppDateValue,
+  formatAppHourSlot,
+  formatAppTimeValue,
+  getCurrencyMeta,
+  getTodayIsoInTimeZone,
+  GULF_COUNTRY_PRESETS,
+  GulfCurrencyCode,
+  GulfTimeZoneId,
+} from './regionalSettings';
 
 export type ThemeMode = 'uniglobal-light' | 'single' | 'gradient';
 export type SurfaceThemeId =
@@ -248,6 +263,22 @@ interface ThemeContextValue {
   setLockCorporateTheme: (v: boolean) => void;
   recentMenusLimit: number;
   setRecentMenusLimit: (n: number) => void;
+  dateFormat: AppDateFormat;
+  setDateFormat: (fmt: AppDateFormat) => void;
+  timeFormat: AppTimeFormat;
+  setTimeFormat: (fmt: AppTimeFormat) => void;
+  currencyCode: GulfCurrencyCode;
+  setCurrencyCode: (code: GulfCurrencyCode) => void;
+  currencyMeta: CurrencyMetadata;
+  timeZone: GulfTimeZoneId;
+  setTimeZone: (tz: GulfTimeZoneId) => void;
+  applyGulfCountryPreset: (presetId: string) => void;
+  formatDate: (input: string | Date | undefined | null) => string;
+  formatTime: (input: Date | string, includeSeconds?: boolean) => string;
+  formatHour: (hour24: number) => string;
+  formatDateTime: (input: Date | string, includeSeconds?: boolean) => string;
+  formatCurrency: (amount: number, convertFromBhd?: boolean) => string;
+  todayIso: () => string;
   dbMenuOrder: string[];
   isSavingToDb: boolean;
   dbConnected: boolean;
@@ -286,6 +317,10 @@ interface PersistedSettings {
   quickAccessIds: string[];
   isMenuLocked: boolean;
   recentMenusLimit: number;
+  dateFormat: AppDateFormat;
+  timeFormat: AppTimeFormat;
+  currencyCode: GulfCurrencyCode;
+  timeZone: GulfTimeZoneId;
 }
 
 const DEFAULT_SETTINGS: PersistedSettings = {
@@ -315,6 +350,10 @@ const DEFAULT_SETTINGS: PersistedSettings = {
   quickAccessIds: ['dashboard', 'ui-kit', 'emp-directory', 'pay-run'],
   isMenuLocked: false,
   recentMenusLimit: 10,
+  dateFormat: 'DD-MM-YYYY',
+  timeFormat: '12h',
+  currencyCode: 'BHD',
+  timeZone: 'Asia/Bahrain',
 };
 
 function loadInitialSettings(): PersistedSettings {
@@ -360,7 +399,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [recentMenusLimit, setRecentMenusLimitState] = useState<number>(
     Math.min(50, Math.max(1, Number(initial.recentMenusLimit) || 10))
   );
+  const [dateFormat, setDateFormat] = useState<AppDateFormat>(initial.dateFormat || 'DD-MM-YYYY');
+  const [timeFormat, setTimeFormat] = useState<AppTimeFormat>(initial.timeFormat || '12h');
+  const [currencyCode, setCurrencyCode] = useState<GulfCurrencyCode>(initial.currencyCode || 'BHD');
+  const [timeZone, setTimeZone] = useState<GulfTimeZoneId>(initial.timeZone || 'Asia/Bahrain');
   const [dbMenuOrder, setDbMenuOrder] = useState<string[]>([]);
+
+  const applyGulfCountryPreset = (presetId: string) => {
+    const preset = GULF_COUNTRY_PRESETS.find((p) => p.id === presetId) ?? GULF_COUNTRY_PRESETS[0];
+    setCurrencyCode(preset.currency);
+    setTimeZone(preset.timeZone);
+    setDateFormat(preset.dateFormat);
+    setTimeFormat(preset.timeFormat);
+  };
 
   const setRecentMenusLimit = (n: number) => {
     setRecentMenusLimitState(Math.min(50, Math.max(1, Math.round(Number(n) || 10))));
@@ -410,6 +461,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (remote.recentMenusLimit && remote.recentMenusLimit > 0) {
         setRecentMenusLimitState(Math.min(50, Math.max(1, Number(remote.recentMenusLimit))));
       }
+      if (remote.dateFormat) setDateFormat(remote.dateFormat as AppDateFormat);
+      if (remote.timeFormat) setTimeFormat(remote.timeFormat as AppTimeFormat);
+      if (remote.currencyCode) setCurrencyCode(remote.currencyCode as GulfCurrencyCode);
+      if (remote.timeZoneId) setTimeZone(remote.timeZoneId as GulfTimeZoneId);
       setLastSavedBy(remote.updatedBy ?? 'SuperAdmin');
       setLastSavedAtUtc(remote.updatedAtUtc ?? '');
     });
@@ -449,6 +504,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         scrollbarColor,
         lockCorporateTheme,
         recentMenusLimit,
+        dateFormat,
+        timeFormat,
+        currencyCode,
+        timeZoneId: timeZone,
       };
       const saved = await saveGlobalUiSettings(payload, 'SuperAdmin', userRole);
       setDbConnected(true);
@@ -523,6 +582,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         quickAccessIds,
         isMenuLocked,
         recentMenusLimit,
+        dateFormat,
+        timeFormat,
+        currencyCode,
+        timeZone,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch {
@@ -555,6 +618,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     quickAccessIds,
     isMenuLocked,
     recentMenusLimit,
+    dateFormat,
+    timeFormat,
+    currencyCode,
+    timeZone,
   ]);
 
   useEffect(() => {
@@ -707,6 +774,22 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setLockCorporateTheme,
         recentMenusLimit,
         setRecentMenusLimit,
+        dateFormat,
+        setDateFormat,
+        timeFormat,
+        setTimeFormat,
+        currencyCode,
+        setCurrencyCode,
+        currencyMeta: getCurrencyMeta(currencyCode),
+        timeZone,
+        setTimeZone,
+        applyGulfCountryPreset,
+        formatDate: (val) => formatAppDateValue(val, dateFormat, timeZone),
+        formatTime: (val, sec = false) => formatAppTimeValue(val, timeFormat, timeZone, sec),
+        formatHour: (h) => formatAppHourSlot(h, timeFormat),
+        formatDateTime: (val, sec = true) => formatAppDateTimeValue(val, dateFormat, timeFormat, timeZone, sec),
+        formatCurrency: (amt, conv = false) => formatAppCurrencyValue(amt, currencyCode, conv),
+        todayIso: () => getTodayIsoInTimeZone(timeZone),
         dbMenuOrder,
         isSavingToDb,
         dbConnected,

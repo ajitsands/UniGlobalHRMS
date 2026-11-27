@@ -5,12 +5,14 @@ import {
   Card,
   DataColumn,
   DataTable,
+  DateCalendar,
   Modal,
   SelectControl,
   TextArea,
   TextInput,
   Timeline,
   TimelineEvent,
+  useTheme,
   useToast,
 } from '@controls';
 import {
@@ -49,6 +51,27 @@ export interface ReleaseRecord {
 const STORAGE_KEY = 'uniglobal_hrms_release_timeline_v1';
 
 const INITIAL_RELEASES: ReleaseRecord[] = [
+  {
+    id: 'rel-170',
+    version: '1.7.0',
+    type: 'Minor',
+    revision: 1,
+    title: 'Global Application Settings Hub — Gulf Regional Defaults (Bahrain)',
+    completionDate: '2026-11-28',
+    branch: 'main',
+    author: 'Ajit',
+    description:
+      'Added top Header Settings gear icon and extensible Application Settings page with 1-click GCC Country Presets (Default: Kingdom of Bahrain — BHD 3-decimal fils, Asia/Bahrain UTC+03:00, DD-MM-YYYY, 12h AM/PM). Wired all @controls (DateCalendar, ScheduleCalendar, NumberInput, AppShell Recent Timestamps, Tables & Clocks) to obey Application Settings dynamically and persist via dbo.AppUiSettings.',
+    tags: ['Application Settings', 'Gulf / Bahrain Defaults', 'Date/Time/Currency/TZ', 'Global Formatting'],
+    revisions: [
+      {
+        revNumber: 1,
+        date: '2026-11-28',
+        note: 'Delivered ApplicationSettingsPage, regionalSettings engine, Header Settings icon, and SQL Server dbo.AppUiSettings schema columns',
+        author: 'Ajit',
+      },
+    ],
+  },
   {
     id: 'rel-160',
     version: '1.6.0',
@@ -246,6 +269,7 @@ function suggestNextVersion(latest: string, type: ReleaseType): string {
 
 export const ReleaseTimelinePage: React.FC = () => {
   const toast = useToast();
+  const { formatDate, todayIso } = useTheme();
   const [releases, setReleases] = useState<ReleaseRecord[]>(loadReleases);
 
   // Add New Version modal
@@ -353,7 +377,7 @@ export const ReleaseTimelinePage: React.FC = () => {
     () =>
       releases.map((r) => ({
         id: r.id,
-        date: `${r.completionDate} • Rev ${r.revision}`,
+        date: `${formatDate(r.completionDate)} • Rev ${r.revision}`,
         title: `v${r.version} — ${r.title}`,
         category: r.type,
         actor: `${r.author} (branch: ${r.branch})`,
@@ -380,7 +404,7 @@ export const ReleaseTimelinePage: React.FC = () => {
           ),
         tags: [`v${r.version}`, `Rev ${r.revision}`, ...r.tags],
       })),
-    [releases]
+    [releases, formatDate]
   );
 
   const totalRevisions = releases.reduce((acc, r) => acc + r.revision, 0);
@@ -424,7 +448,13 @@ export const ReleaseTimelinePage: React.FC = () => {
       exportValue: (r) => `Rev ${r.revision}`,
     },
     { key: 'title', header: 'Milestone / Update Title', sortable: true },
-    { key: 'completionDate', header: 'Date of Completion', sortable: true },
+    {
+      key: 'completionDate',
+      header: 'Date of Completion',
+      sortable: true,
+      render: (r) => <span>{formatDate(r.completionDate)}</span>,
+      exportValue: (r) => formatDate(r.completionDate),
+    },
     {
       key: 'branch',
       header: 'Branch / By',
@@ -458,7 +488,7 @@ export const ReleaseTimelinePage: React.FC = () => {
               v{releases[0]?.version ?? '1.0.0'}
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--ug-muted)' }}>
-              Rev {releases[0]?.revision ?? 1} • {releases[0]?.completionDate}
+              Rev {releases[0]?.revision ?? 1} • {formatDate(releases[0]?.completionDate)}
             </div>
           </div>
 
@@ -579,11 +609,11 @@ export const ReleaseTimelinePage: React.FC = () => {
           />
 
           <div className="ug-grid-3">
-            <TextInput
+            <DateCalendar
               label="Date of Completion"
-              type="date"
+              required
               value={formDate}
-              onChange={(e) => setFormDate(e.target.value)}
+              onChange={(iso) => setFormDate(iso || todayIso())}
             />
             <SelectControl
               label="Git Branch"

@@ -22,6 +22,10 @@ public class HrmsDbContext : DbContext
             e.Property(x => x.ScopeKey).HasMaxLength(64).IsRequired();
             e.HasIndex(x => x.ScopeKey).IsUnique();
             e.Property(x => x.FontSizePx).HasPrecision(5, 2);
+            e.Property(x => x.DateFormat).HasMaxLength(32);
+            e.Property(x => x.TimeFormat).HasMaxLength(16);
+            e.Property(x => x.CurrencyCode).HasMaxLength(16);
+            e.Property(x => x.TimeZoneId).HasMaxLength(64);
             e.Property(x => x.UpdatedBy).HasMaxLength(100);
         });
 

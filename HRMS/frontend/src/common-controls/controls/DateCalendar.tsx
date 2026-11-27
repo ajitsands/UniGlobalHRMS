@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useTheme } from '../tokens/ThemeContext';
 import { HelpTag } from './HelpAndFeedback';
 
 export interface DateCalendarProps {
@@ -20,13 +21,6 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
-function toIso(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
 export const DateCalendar: React.FC<DateCalendarProps> = ({
   label,
   helpText,
@@ -38,6 +32,7 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
   highlightedDates = {},
   required,
 }) => {
+  const { formatDate, todayIso } = useTheme();
   const [open, setOpen] = useState(false);
   const baseDate = value ? new Date(value + 'T00:00:00') : new Date();
   const [viewYear, setViewYear] = useState(baseDate.getFullYear());
@@ -93,9 +88,13 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
 
   const displayValue = rangeMode
     ? value && endDate
-      ? `${value} → ${endDate}`
-      : value || 'Select date range...'
-    : value || 'Select date...';
+      ? `${formatDate(value)} → ${formatDate(endDate)}`
+      : value
+      ? formatDate(value)
+      : 'Select date range...'
+    : value
+    ? formatDate(value)
+    : 'Select date...';
 
   return (
     <div className="ug-field" ref={ref} style={{ position: 'relative' }}>
@@ -197,7 +196,7 @@ export const DateCalendar: React.FC<DateCalendarProps> = ({
               type="button"
               className="ug-btn ug-btn-ghost ug-btn-sm"
               onClick={() => {
-                const today = toIso(new Date());
+                const today = todayIso();
                 onChange(today);
                 if (!rangeMode) setOpen(false);
               }}

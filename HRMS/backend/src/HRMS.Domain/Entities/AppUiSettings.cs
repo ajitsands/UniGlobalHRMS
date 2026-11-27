@@ -48,6 +48,12 @@ public class AppUiSettings
     public bool LockCorporateTheme { get; set; } = true;
     public int RecentMenusLimit { get; set; } = 10;
 
+    // Global Regional & Gulf Formatting Settings (Default: Kingdom of Bahrain)
+    public string DateFormat { get; set; } = "DD-MM-YYYY";
+    public string TimeFormat { get; set; } = "12h";
+    public string CurrencyCode { get; set; } = "BHD";
+    public string TimeZoneId { get; set; } = "Asia/Bahrain";
+
     public string UpdatedBy { get; set; } = "SuperAdmin";
     public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
 }

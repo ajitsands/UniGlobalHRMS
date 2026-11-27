@@ -1,6 +1,7 @@
 // Centralized Barrel Export for UniGlobal HRMS Common Controls
 // All feature branches (Ajit, Ancy) MUST import UI controls from '@controls'
 
+export * from './tokens/regionalSettings';
 export * from './tokens/ThemeContext';
 export * from './layouts/AppShell';
 export * from './controls/HelpAndFeedback';

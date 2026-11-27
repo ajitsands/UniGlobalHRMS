@@ -88,6 +88,10 @@ public class UiSettingsService : IUiSettingsService
         entity.ScrollbarColor = dto.ScrollbarColor;
         entity.LockCorporateTheme = dto.LockCorporateTheme;
         entity.RecentMenusLimit = Math.Clamp(dto.RecentMenusLimit <= 0 ? 10 : dto.RecentMenusLimit, 1, 50);
+        entity.DateFormat = string.IsNullOrWhiteSpace(dto.DateFormat) ? "DD-MM-YYYY" : dto.DateFormat.Trim();
+        entity.TimeFormat = string.IsNullOrWhiteSpace(dto.TimeFormat) ? "12h" : dto.TimeFormat.Trim();
+        entity.CurrencyCode = string.IsNullOrWhiteSpace(dto.CurrencyCode) ? "BHD" : dto.CurrencyCode.Trim().ToUpperInvariant();
+        entity.TimeZoneId = string.IsNullOrWhiteSpace(dto.TimeZoneId) ? "Asia/Bahrain" : dto.TimeZoneId.Trim();
         entity.UpdatedBy = updatedBy;
         entity.UpdatedAtUtc = DateTime.UtcNow;
 
@@ -126,6 +130,10 @@ public class UiSettingsService : IUiSettingsService
         ScrollbarColor = e.ScrollbarColor,
         LockCorporateTheme = e.LockCorporateTheme,
         RecentMenusLimit = Math.Clamp(e.RecentMenusLimit <= 0 ? 10 : e.RecentMenusLimit, 1, 50),
+        DateFormat = string.IsNullOrWhiteSpace(e.DateFormat) ? "DD-MM-YYYY" : e.DateFormat,
+        TimeFormat = string.IsNullOrWhiteSpace(e.TimeFormat) ? "12h" : e.TimeFormat,
+        CurrencyCode = string.IsNullOrWhiteSpace(e.CurrencyCode) ? "BHD" : e.CurrencyCode,
+        TimeZoneId = string.IsNullOrWhiteSpace(e.TimeZoneId) ? "Asia/Bahrain" : e.TimeZoneId,
         UpdatedBy = e.UpdatedBy,
         UpdatedAtUtc = e.UpdatedAtUtc
     };
