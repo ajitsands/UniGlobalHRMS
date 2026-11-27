@@ -905,7 +905,7 @@ body {
 /* Tooltip Semantic Themes */
 .ug-tooltip-dark    { background: #0f172a; color: #ffffff; }
 .ug-tooltip-gray    { background: #475569; color: #ffffff; }
-.ug-tooltip-primary { background: var(--ug-primary); color: #ffffff; }
+.ug-tooltip-primary { background: var(--ug-active-bg); color: #ffffff; }
 .ug-tooltip-success { background: var(--ug-success); color: #ffffff; }
 .ug-tooltip-danger  { background: var(--ug-danger); color: #ffffff; }
 .ug-tooltip-warning { background: var(--ug-warning); color: #ffffff; }

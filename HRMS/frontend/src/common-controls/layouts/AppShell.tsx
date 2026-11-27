@@ -544,15 +544,21 @@ export const AppShell: React.FC<AppShellProps> = ({
           {/* Compact Quick Access Menu near Help when page is scrolled */}
           {isScrolled && (
             <div ref={quickDropdownRef} className="ug-nav-dropdown-wrap">
-              <Button
-                variant="secondary"
-                size="sm"
-                icon={<Pin size={13} style={{ color: 'var(--ug-amber)' }} />}
-                onClick={() => setQuickDropdownOpen((o) => !o)}
+              <Tooltip
+                content={isAr ? 'القوائم المثبتة للوصول السريع' : 'Pinned Quick Access Menus'}
+                theme="primary"
+                placement="bottom"
               >
-                {isAr ? 'الوصول السريع' : 'Quick Access'} ({quickItems.length})
-                <ChevronDown size={13} />
-              </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<Pin size={13} style={{ color: 'var(--ug-amber)' }} />}
+                  onClick={() => setQuickDropdownOpen((o) => !o)}
+                >
+                  {isAr ? 'الوصول السريع' : 'Quick Access'} ({quickItems.length})
+                  <ChevronDown size={13} />
+                </Button>
+              </Tooltip>
 
               {quickDropdownOpen && (
                 <div
@@ -609,7 +615,7 @@ export const AppShell: React.FC<AppShellProps> = ({
             }}
             aria-label="Adjust font size for reading comfort"
           >
-            <Tooltip content="Decrease font size" placement="bottom">
+            <Tooltip content="Decrease font size" theme="primary" placement="bottom">
               <button
                 type="button"
                 className="ug-btn ug-btn-ghost ug-btn-sm"
@@ -620,7 +626,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                 A-
               </button>
             </Tooltip>
-            <Tooltip content={`Current: ${fontSizePx}px (click to reset)`} placement="bottom">
+            <Tooltip content={`Current: ${fontSizePx}px (click to reset)`} theme="primary" placement="bottom">
               <button
                 type="button"
                 className="ug-btn ug-btn-ghost ug-btn-sm"
@@ -636,7 +642,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                 A
               </button>
             </Tooltip>
-            <Tooltip content="Increase font size" placement="bottom">
+            <Tooltip content="Increase font size" theme="primary" placement="bottom">
               <button
                 type="button"
                 className="ug-btn ug-btn-ghost ug-btn-sm"
@@ -650,7 +656,11 @@ export const AppShell: React.FC<AppShellProps> = ({
           </div>
 
           {/* Quick Light / Dark Mode Toggle */}
-          <Tooltip content={isDarkTheme ? 'Switch to Light Theme' : 'Switch to Dark Theme'} placement="bottom">
+          <Tooltip
+            content={isDarkTheme ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+            theme="primary"
+            placement="bottom"
+          >
             <Button
               variant="secondary"
               size="sm"
@@ -660,35 +670,53 @@ export const AppShell: React.FC<AppShellProps> = ({
             />
           </Tooltip>
 
-          <HelpPopup
-            title="Navigation & Workspace Help"
-            summary="Customize your workspace layout, theme colors, language (EN/AR), and Quick Access shortcuts."
-            steps={[
-              'Click the Pin icon next to any menu item to add it to your Easy Access bar.',
-              'Open Appearance & Layout Studio to switch between Vertical, Horizontal, Docking, or Minimal menus.',
-              'Admins can drag and drop menu items in Vertical mode and lock the menu flow.',
-            ]}
-            manualSection="Section 1.2 — Workspace & Menu Customization"
-            onOpenManual={() => onSelectMenu('manual')}
-          />
-
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<Globe size={14} />}
-            onClick={() => setLanguage(isAr ? 'en' : 'ar')}
+          <Tooltip
+            content={isAr ? 'مساعدة التنقل ومساحة العمل' : 'Navigation & Workspace Quick Help'}
+            theme="primary"
+            placement="bottom"
           >
-            <span className="ug-hide-mobile">{isAr ? 'English' : 'العربية'}</span>
-          </Button>
+            <HelpPopup
+              title="Navigation & Workspace Help"
+              summary="Customize your workspace layout, theme colors, language (EN/AR), and Quick Access shortcuts."
+              steps={[
+                'Click the Pin icon next to any menu item to add it to your Easy Access bar.',
+                'Open Appearance & Layout Studio to switch between Vertical, Horizontal, Docking, or Minimal menus.',
+                'Admins can drag and drop menu items in Vertical mode and lock the menu flow.',
+              ]}
+              manualSection="Section 1.2 — Workspace & Menu Customization"
+              onOpenManual={() => onSelectMenu('manual')}
+            />
+          </Tooltip>
 
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<BookOpen size={14} />}
-            onClick={() => onSelectMenu('manual')}
+          <Tooltip
+            content={isAr ? 'Switch to English (LTR)' : 'التبديل إلى اللغة العربية (RTL)'}
+            theme="primary"
+            placement="bottom"
           >
-            <span className="ug-hide-mobile">{isAr ? 'دليل المستخدم' : 'Manual'}</span>
-          </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<Globe size={14} />}
+              onClick={() => setLanguage(isAr ? 'en' : 'ar')}
+            >
+              <span className="ug-hide-mobile">{isAr ? 'English' : 'العربية'}</span>
+            </Button>
+          </Tooltip>
+
+          <Tooltip
+            content={isAr ? 'دليل استخدام النظام خطوة بخطوة' : 'Open Step-by-Step User Manual'}
+            theme="primary"
+            placement="bottom"
+          >
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<BookOpen size={14} />}
+              onClick={() => onSelectMenu('manual')}
+            >
+              <span className="ug-hide-mobile">{isAr ? 'دليل المستخدم' : 'Manual'}</span>
+            </Button>
+          </Tooltip>
 
           {/* Per-User Recently Accessed Menus -> Opens Right-Side Sliding Canvas */}
           <Tooltip
@@ -697,6 +725,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                 ? `آخر ${recentMenusLimit} قوائم تم فتحها مع التاريخ والوقت`
                 : `Recently Accessed Menus (Last ${recentMenusLimit} with Date & Time Stamp)`
             }
+            theme="primary"
             placement="bottom"
           >
             <Button
@@ -733,6 +762,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                 ? `إعدادات النظام (${currencyCode} • ${dateFormat} • ${timeZone})`
                 : `Application Settings (${currencyCode} • ${dateFormat} • ${timeZone})`
             }
+            theme="primary"
             placement="bottom"
           >
             <Button
@@ -746,14 +776,20 @@ export const AppShell: React.FC<AppShellProps> = ({
             </Button>
           </Tooltip>
 
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<SlidersHorizontal size={14} />}
-            onClick={() => setSettingsOpen(true)}
+          <Tooltip
+            content={isAr ? 'تخصيص المظهر والألوان والقوائم' : 'Customize Theme, Colors & Menu Layout'}
+            theme="primary"
+            placement="bottom"
           >
-            <span className="ug-hide-mobile">{isAr ? 'التخصيص' : 'Customize'}</span>
-          </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<SlidersHorizontal size={14} />}
+              onClick={() => setSettingsOpen(true)}
+            >
+              <span className="ug-hide-mobile">{isAr ? 'التخصيص' : 'Customize'}</span>
+            </Button>
+          </Tooltip>
 
           {onSignOut && (
             <Tooltip
@@ -762,6 +798,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                   ? `${currentUserLabel} — Click to Sign Out / Switch Login Screen`
                   : 'Sign Out to Login Screen'
               }
+              theme="primary"
               placement="bottom"
             >
               <Button

@@ -916,8 +916,12 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
             </button>
           </div>
 
-          {/* Light / Dark Mode */}
-          <Tooltip content={loginDark ? 'Switch Login to Light Mode' : 'Switch Login to Dark Mode'} placement="bottom">
+                  {/* Light / Dark Mode */}
+          <Tooltip
+            content={loginDark ? 'Switch Login to Light Mode' : 'Switch Login to Dark Mode'}
+            theme="primary"
+            placement="bottom"
+          >
             <Button
               type="button"
               variant="secondary"

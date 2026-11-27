@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { HelpCircle, Info, CheckCircle2, AlertTriangle, XCircle, X, BookOpen } from 'lucide-react';
 
 /* ---------------- Button ---------------- */
@@ -103,17 +103,44 @@ export const Tooltip: React.FC<TooltipProps> = ({
   children,
 }) => {
   const [visible, setVisible] = useState(false);
+  const [edgeAlign, setEdgeAlign] = useState<'center' | 'left' | 'right'>('center');
+  const wrapRef = useRef<HTMLSpanElement>(null);
+
+  const showWithEdgeCheck = () => {
+    if (wrapRef.current && (placement === 'top' || placement === 'bottom')) {
+      const rect = wrapRef.current.getBoundingClientRect();
+      if (window.innerWidth - rect.right < 140) {
+        setEdgeAlign('right');
+      } else if (rect.left < 140) {
+        setEdgeAlign('left');
+      } else {
+        setEdgeAlign('center');
+      }
+    } else {
+      setEdgeAlign('center');
+    }
+    setVisible(true);
+  };
+
+  const edgeStyle: React.CSSProperties | undefined =
+    edgeAlign === 'right'
+      ? { left: 'auto', right: 0, transform: 'none' }
+      : edgeAlign === 'left'
+      ? { left: 0, right: 'auto', transform: 'none' }
+      : undefined;
+
   return (
     <span
+      ref={wrapRef}
       className="ug-tooltip-wrap"
-      onMouseEnter={() => setVisible(true)}
+      onMouseEnter={showWithEdgeCheck}
       onMouseLeave={() => setVisible(false)}
-      onFocus={() => setVisible(true)}
+      onFocus={showWithEdgeCheck}
       onBlur={() => setVisible(false)}
     >
       {children}
       {visible && (
-        <span className={`ug-tooltip-box ug-tooltip-${theme} pos-${placement}`}>
+        <span className={`ug-tooltip-box ug-tooltip-${theme} pos-${placement}`} style={edgeStyle}>
           {content}
         </span>
       )}

@@ -52,6 +52,27 @@ const STORAGE_KEY = 'uniglobal_hrms_release_timeline_v1';
 
 const INITIAL_RELEASES: ReleaseRecord[] = [
   {
+    id: 'rel-171',
+    version: '1.7.1',
+    type: 'Patch',
+    revision: 1,
+    title: 'Theme-Matched & Viewport Edge-Aware Header Icon Tooltips',
+    completionDate: '2026-11-28',
+    branch: 'main',
+    author: 'Ajit',
+    description:
+      'Updated all top Header action & icon tooltips (A-/A/A+, Light/Dark, Help, Language, Manual, Recent, Settings, Customize, Sign Out) to dynamically inherit the active Theme Color (Single or Gradient via --ug-active-bg), and added automatic left/right viewport edge clamping so right-edge header tooltips never clip off-screen.',
+    tags: ['Header Tooltips', 'Theme Color Sync', 'Edge Clamping'],
+    revisions: [
+      {
+        revNumber: 1,
+        date: '2026-11-28',
+        note: 'Applied theme="primary" (--ug-active-bg) across all header icons and added viewport boundary clamping in Tooltip',
+        author: 'Ajit',
+      },
+    ],
+  },
+  {
     id: 'rel-170',
     version: '1.7.0',
     type: 'Minor',
