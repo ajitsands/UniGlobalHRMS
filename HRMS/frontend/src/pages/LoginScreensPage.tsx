@@ -308,7 +308,7 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
   const [swatchHex, setSwatchHex] = useState<string>(
     () => localStorage.getItem('prompt_hrms_login_swatch') || '#A1077E'
   );
-  const [loginDark, setLoginDark] = useState<boolean>(() => concept === 'nocturne');
+  const [loginDark, setLoginDark] = useState<boolean>(false);
   const [paletteOpen, setPaletteOpen] = useState<boolean>(false);
   const [syncThemeOnLogin, setSyncThemeOnLogin] = useState<boolean>(true);
   const paletteRef = useRef<HTMLDivElement>(null);
@@ -348,10 +348,9 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
   const [erpModalOpen, setErpModalOpen] = useState<boolean>(false);
   const [erpTenantCode, setErpTenantCode] = useState<string>('PROMPT-BH-PROD');
 
-  // Switch concept -> default Nocturne to Dark and Studio/Horizon to Light for authentic preview
+  // Switch concept while keeping White / Light theme as the default across all 3 screens
   const handleSelectConcept = (next: LoginConceptId) => {
     setConcept(next);
-    setLoginDark(next === 'nocturne');
     setFormError('');
     try {
       localStorage.setItem('prompt_hrms_login_concept', next);
@@ -1644,7 +1643,10 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
           Executive Architectural Grid + Live Clock + Self-Service / OTP Floating Card
           ==================================================================== */}
       {concept === 'nocturne' && (
-        <div className="ug-login-nocturne-wrap ug-login-fade-panel">
+        <div
+          className="ug-login-nocturne-wrap ug-login-fade-panel"
+          style={{ backgroundColor: loginDark ? '#0B0F14' : '#FFFFFF' }}
+        >
           {/* Ambient Brand Glow Orb */}
           <div
             aria-hidden="true"
@@ -1653,7 +1655,7 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
               width: 520,
               height: 520,
               borderRadius: '50%',
-              background: `radial-gradient(circle, ${hexToRgba(swatchHex, loginDark ? 0.28 : 0.14)} 0%, transparent 70%)`,
+              background: `radial-gradient(circle, ${hexToRgba(swatchHex, loginDark ? 0.28 : 0.1)} 0%, transparent 70%)`,
               top: -120,
               insetInlineStart: -80,
               pointerEvents: 'none',
@@ -1801,7 +1803,7 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
               justifyContent: 'center',
               padding: '32px 28px',
               borderInlineStart: '1px solid var(--ug-border)',
-              background: loginDark ? 'rgba(18, 24, 32, 0.72)' : 'rgba(255, 255, 255, 0.68)',
+              background: loginDark ? 'rgba(18, 24, 32, 0.72)' : 'rgba(248, 250, 252, 0.86)',
               backdropFilter: 'blur(12px)',
             }}
           >
@@ -1813,7 +1815,9 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
                 border: '1px solid var(--ug-border-strong)',
                 borderRadius: 24,
                 padding: '28px 30px',
-                boxShadow: '0 28px 60px -20px rgba(0, 0, 0, 0.38)',
+                boxShadow: loginDark
+                  ? '0 28px 60px -20px rgba(0, 0, 0, 0.38)'
+                  : '0 20px 48px -18px rgba(15, 23, 42, 0.14)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 16,
