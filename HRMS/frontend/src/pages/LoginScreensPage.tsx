@@ -1147,8 +1147,11 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
             </div>
 
             {/* Hero Footer */}
-            <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, fontSize: '0.852rem', opacity: 0.86 }}>
-              <span>© 2026 Prompt Solutions · UniGlobal Consultancy W.L.L.</span>
+            <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, fontSize: '0.852rem', opacity: 0.9 }}>
+              <span>
+                © 2026 Prompt Solutions · UniGlobal Consultancy W.L.L. ·{' '}
+                <strong>{isAr ? 'تطوير SaNDS Lab Middle East W.L.L.' : 'Engineered by SaNDS Lab Middle East W.L.L.'}</strong>
+              </span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <ShieldCheck size={15} />
                 TLS 1.3 Encrypted · SQL Server 2022 Audit Ready
@@ -1289,7 +1292,10 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, fontSize: '0.815rem', color: 'var(--ug-muted)' }}>
-              <span>{isAr ? 'تحتاج مساعدة؟ تواصل مع قسم تقنية المعلومات.' : 'Need help? Contact HR System Administrator.'}</span>
+              <span>
+                {isAr ? 'تطوير ' : 'Engineered by '}
+                <strong style={{ color: 'var(--ug-text)' }}>SaNDS Lab Middle East W.L.L.</strong>
+              </span>
               <span>Privacy · SLA Terms · Audit Policy</span>
             </div>
           </section>
@@ -1633,6 +1639,10 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
           >
             <span>© 2026 Prompt Solutions</span>
             <span>UniGlobal Consultancy • UG Suite v2.0</span>
+            <span>
+              {isAr ? 'تطوير ' : 'Engineered by '}
+              <strong style={{ color: 'var(--ug-text)' }}>SaNDS Lab Middle East W.L.L.</strong>
+            </span>
             <span>Privacy &amp; Data Protection</span>
           </footer>
         </div>
@@ -1791,7 +1801,9 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
             </div>
 
             <div style={{ fontSize: '0.815rem', color: 'var(--ug-muted)' }}>
-              © 2026 Prompt Solutions · PROMPT HRMS Executive &amp; Pulse Edition
+              © 2026 Prompt Solutions · PROMPT HRMS Executive &amp; Pulse Edition ·{' '}
+              {isAr ? 'تطوير ' : 'Engineered by '}
+              <strong style={{ color: 'var(--ug-text)' }}>SaNDS Lab Middle East W.L.L.</strong>
             </div>
           </section>
 
@@ -1996,6 +2008,11 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
                 >
                   {isAr ? 'حساب ERP' : 'PROMPT ERP SSO'}
                 </Button>
+              </div>
+
+              <div style={{ textAlign: 'center', fontSize: '0.778rem', color: 'var(--ug-muted)', paddingTop: 2 }}>
+                {isAr ? 'تطوير ' : 'Engineered by '}
+                <strong style={{ color: 'var(--ug-text)' }}>SaNDS Lab Middle East W.L.L.</strong>
               </div>
             </div>
           </section>

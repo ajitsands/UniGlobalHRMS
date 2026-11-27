@@ -53,22 +53,42 @@ const INITIAL_RELEASES: ReleaseRecord[] = [
     id: 'rel-150',
     version: '1.5.0',
     type: 'Minor',
-    revision: 1,
+    revision: 2,
     title: 'Client-Approved @controls & 3 Interactive PROMPT Login Screens',
-    completionDate: '2026-11-27',
+    completionDate: '2026-11-28',
     branch: 'main',
     author: 'Ajit',
     description:
-      'Delivered 3 interactive client-branded Login Screen concepts (Studio Split, Horizon Portal, Nocturne & Pulse) using approved @controls, official Prompt Solutions logos, #A1077E Maroon + 16 PROMPT brand swatches, 6-digit OTP verification, Multi-CR branch selector, and PROMPT ERP SSO.',
-    tags: ['3 Login Screens', 'Prompt Branding #A1077E', 'OTP & ERP SSO', '@controls Approved'],
+      'Delivered 3 interactive client-branded Login Screen concepts (Studio Split, Horizon Portal, Nocturne & Pulse) using approved @controls, official Prompt Solutions logos, #A1077E Maroon + 16 PROMPT brand swatches, 6-digit OTP verification, Multi-CR branch selector, PROMPT ERP SSO, and Engineered by SaNDS Lab Middle East W.L.L. attribution.',
+    tags: ['3 Login Screens', 'Prompt Branding #A1077E', 'OTP & ERP SSO', 'SaNDS Lab Credit'],
     revisions: [
       {
         revNumber: 1,
         date: '2026-11-27',
-        note: 'Initial release of Studio Split, Horizon Portal & Nocturne Pulse login screens + hover dropdown fix',
+        note: 'Initial release of Studio Split, Horizon Portal & Nocturne Pulse login screens',
+        author: 'Ajit',
+      },
+      {
+        revNumber: 2,
+        date: '2026-11-28',
+        note: 'Set Nocturne & Pulse default to White/Light, added Start_Local_5173.bat, and added Engineered by SaNDS Lab Middle East W.L.L. credit across all 3 login screens',
         author: 'Ajit',
       },
     ],
+  },
+  {
+    id: 'rel-141',
+    version: '1.4.1',
+    type: 'Patch',
+    revision: 1,
+    title: 'Navigation Hover Dropdown Menu Stability Fix',
+    completionDate: '2026-11-24',
+    branch: 'main',
+    author: 'Ajit',
+    description:
+      'Fixed hover dropdown menus closing when moving the cursor downward by adding an invisible CSS hover bridge (::before) and a 180ms grace timer across Horizontal, Docking, and Minimal Icon Rail layouts.',
+    tags: ['Hover Menu Fix', 'AppShell', 'UX Polish'],
+    revisions: [{ revNumber: 1, date: '2026-11-24', note: 'Verified smooth slow-cursor menu entry', author: 'Ajit' }],
   },
   {
     id: 'rel-140',
@@ -168,9 +188,16 @@ function loadReleases(): ReleaseRecord[] {
     if (!raw) return INITIAL_RELEASES;
     const parsed = JSON.parse(raw) as ReleaseRecord[];
     if (parsed.length === 0) return INITIAL_RELEASES;
-    const existingIds = new Set(parsed.map((r) => r.id));
-    const newlyShipped = INITIAL_RELEASES.filter((r) => !existingIds.has(r.id));
-    return [...newlyShipped, ...parsed];
+    const cachedById = new Map(parsed.map((r) => [r.id, r]));
+    const codeIds = new Set(INITIAL_RELEASES.map((r) => r.id));
+    // Always pick whichever has the higher revision between shipped code and cached localStorage
+    const mergedFromCode = INITIAL_RELEASES.map((shipped) => {
+      const cached = cachedById.get(shipped.id);
+      if (!cached) return shipped;
+      return shipped.revision >= cached.revision ? shipped : cached;
+    });
+    const customOnly = parsed.filter((r) => !codeIds.has(r.id));
+    return [...customOnly, ...mergedFromCode];
   } catch {
     return INITIAL_RELEASES;
   }
