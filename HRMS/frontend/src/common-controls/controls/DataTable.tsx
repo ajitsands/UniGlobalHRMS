@@ -6,6 +6,7 @@ export interface DataColumn<T> {
   key: keyof T | string;
   header: string;
   sortable?: boolean;
+  align?: 'start' | 'center' | 'end';
   render?: (row: T) => React.ReactNode;
   exportValue?: (row: T) => string | number;
 }
@@ -173,13 +174,29 @@ export function DataTable<T extends { id: string | number }>({
             <tr>
               {visibleCols.map((col) => {
                 const k = String(col.key);
+                const cellAlign = col.align ?? 'start';
                 return (
                   <th
                     key={k}
                     onClick={() => col.sortable && toggleSort(k)}
-                    style={{ cursor: col.sortable ? 'pointer' : 'default' }}
+                    style={{
+                      cursor: col.sortable ? 'pointer' : 'default',
+                      textAlign: cellAlign,
+                    }}
                   >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
+                        justifyContent:
+                          cellAlign === 'end'
+                            ? 'flex-end'
+                            : cellAlign === 'center'
+                            ? 'center'
+                            : 'flex-start',
+                      }}
+                    >
                       {col.header}
                       {col.sortable && sortKey === k && (sortDir === 'asc' ? <ArrowUp size={13} /> : <ArrowDown size={13} />)}
                     </span>
@@ -200,7 +217,7 @@ export function DataTable<T extends { id: string | number }>({
               pageRows.map((row) => (
                 <tr key={row.id}>
                   {visibleCols.map((col) => (
-                    <td key={String(col.key)}>
+                    <td key={String(col.key)} style={{ textAlign: col.align ?? 'start' }}>
                       {col.render
                         ? col.render(row)
                         : String((row as Record<string, unknown>)[String(col.key)] ?? '')}
@@ -227,6 +244,7 @@ export function DataTable<T extends { id: string | number }>({
                       key={String(col.key)}
                       style={{
                         padding: '10px 14px',
+                        textAlign: col.align ?? 'start',
                         color: sRow.highlight ? 'var(--ug-primary)' : 'var(--ug-text)',
                         fontWeight: sRow.highlight ? 800 : 700,
                       }}

@@ -124,7 +124,11 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           type="number"
           step={effectiveStep}
           className={`ug-input ${activeCurrency ? 'ug-input-prefix' : ''} ${error ? 'has-error' : ''}`}
-          style={activeCurrency ? { paddingInlineStart: 44, fontVariantNumeric: 'tabular-nums' } : { fontVariantNumeric: 'tabular-nums' }}
+          style={{
+            ...(activeCurrency ? { paddingInlineStart: 44 } : {}),
+            ...(rawCurrency ? { textAlign: 'end' } : {}),
+            fontVariantNumeric: 'tabular-nums',
+          }}
           {...rest}
         />
       </div>
@@ -153,6 +157,7 @@ export const CurrencyAmount: React.FC<CurrencyAmountProps> = ({
 
   return (
     <span
+      dir="ltr"
       style={{
         display: 'inline-flex',
         alignItems: 'baseline',

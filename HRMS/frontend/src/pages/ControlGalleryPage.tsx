@@ -170,6 +170,7 @@ export const ControlGalleryPage: React.FC = () => {
       key: 'salaryBhd',
       header: showCurrencyCode ? `Gross (${currencyCode})` : 'Gross Salary',
       sortable: true,
+      align: 'end',
       render: (r) => <CurrencyAmount amount={r.salaryBhd} convertFromBhd bold />,
     },
     {

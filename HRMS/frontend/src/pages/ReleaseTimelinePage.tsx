@@ -55,14 +55,14 @@ const INITIAL_RELEASES: ReleaseRecord[] = [
     id: 'rel-170',
     version: '1.7.0',
     type: 'Minor',
-    revision: 3,
+    revision: 4,
     title: 'Global Application Settings Hub — Gulf Regional Defaults (Bahrain)',
     completionDate: '2026-11-28',
     branch: 'main',
     author: 'Ajit',
     description:
-      'Added top Header Settings gear icon and extensible Application Settings page with 1-click GCC Country Presets (Default: Kingdom of Bahrain — BHD 3-decimal fils, Asia/Bahrain UTC+03:00, DD-MM-YYYY / DD-MMM-YYYY, 12h AM/PM), refined smaller 0.72em currency code typography, global Show/Hide Currency Code toggle, and separate Report Subtotal/Total Currency Code toggle.',
-    tags: ['Application Settings', 'Gulf / Bahrain Defaults', 'Currency Display Rules', 'DD-MMM-YYYY'],
+      'Added top Header Settings gear icon and extensible Application Settings page with 1-click GCC Country Presets (Default: Kingdom of Bahrain — BHD 3-decimal fils, Asia/Bahrain UTC+03:00, DD-MM-YYYY / DD-MMM-YYYY, 12h AM/PM), refined smaller 0.72em currency code typography, inline-end currency alignment (Right in English, Left in Arabic), global Show/Hide Currency Code toggle, and separate Report Subtotal/Total Currency Code toggle.',
+    tags: ['Application Settings', 'Gulf / Bahrain Defaults', 'Currency Display & Align', 'DD-MMM-YYYY'],
     revisions: [
       {
         revNumber: 1,
@@ -80,6 +80,12 @@ const INITIAL_RELEASES: ReleaseRecord[] = [
         revNumber: 3,
         date: '2026-11-28',
         note: 'Styled currency code smaller than figures (0.72em), added Display Currency Code Across Application toggle, and added Display Currency Code on Totals & Subtotals option with DataTable footer totals',
+        author: 'Ajit',
+      },
+      {
+        revNumber: 4,
+        date: '2026-11-28',
+        note: 'Enforced logical inline-end alignment (Right-aligned in English LTR, Left-aligned in Arabic RTL) across DataTable currency columns, summary totals, and currency NumberInputs',
         author: 'Ajit',
       },
     ],

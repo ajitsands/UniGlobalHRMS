@@ -139,6 +139,7 @@ export const ApplicationSettingsPage: React.FC = () => {
         ? 'القيمة'
         : 'Converted Amount',
       sortable: true,
+      align: 'end',
       render: (r) => <CurrencyAmount amount={r.baseBhd} convertFromBhd bold />,
     },
   ];
@@ -526,7 +527,7 @@ export const ApplicationSettingsPage: React.FC = () => {
                         <div style={{ fontSize: '0.74rem', color: 'var(--ug-muted)', fontWeight: 600 }}>
                           {isAr ? 'معاينة بند عادي (Line Item)' : 'Regular Line Item Preview'}
                         </div>
-                        <div style={{ fontSize: '1.08rem', marginTop: 2 }}>
+                        <div style={{ fontSize: '1.08rem', marginTop: 2, textAlign: 'end' }}>
                           <CurrencyAmount amount={1250.5} convertFromBhd bold />
                         </div>
                       </div>
@@ -535,7 +536,7 @@ export const ApplicationSettingsPage: React.FC = () => {
                         <div style={{ fontSize: '0.74rem', color: 'var(--ug-primary)', fontWeight: 700 }}>
                           {isAr ? 'معاينة المجموع الفرعي / الإجمالي (Subtotal / Total)' : 'Report Subtotal / Grand Total Preview'}
                         </div>
-                        <div style={{ fontSize: '1.08rem', marginTop: 2, color: 'var(--ug-primary)' }}>
+                        <div style={{ fontSize: '1.08rem', marginTop: 2, color: 'var(--ug-primary)', textAlign: 'end' }}>
                           <CurrencyAmount amount={6916.5} convertFromBhd isTotal bold />
                         </div>
                       </div>
