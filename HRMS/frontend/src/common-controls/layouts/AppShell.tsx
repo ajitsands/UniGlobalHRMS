@@ -145,6 +145,8 @@ export const AppShell: React.FC<AppShellProps> = ({
     setIsMenuLocked,
     lockCorporateTheme,
     setLockCorporateTheme,
+    recentMenusLimit,
+    setRecentMenusLimit,
     isSavingToDb,
     dbConnected,
     lastSavedBy,
@@ -683,12 +685,12 @@ export const AppShell: React.FC<AppShellProps> = ({
             <span className="ug-hide-mobile">{isAr ? 'دليل المستخدم' : 'Manual'}</span>
           </Button>
 
-          {/* Per-User Top-10 Recently Accessed Menus -> Opens Right-Side Sliding Canvas */}
+          {/* Per-User Recently Accessed Menus -> Opens Right-Side Sliding Canvas */}
           <Tooltip
             content={
               isAr
-                ? 'آخر 10 قوائم تم فتحها مع التاريخ والوقت'
-                : 'Recently Accessed Menus (Top 10 with Date & Time Stamp)'
+                ? `آخر ${recentMenusLimit} قوائم تم فتحها مع التاريخ والوقت`
+                : `Recently Accessed Menus (Last ${recentMenusLimit} with Date & Time Stamp)`
             }
             placement="bottom"
           >
@@ -714,7 +716,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                   fontWeight: 800,
                 }}
               >
-                {recentMenus.length}
+                {Math.min(recentMenus.length, recentMenusLimit)}
               </span>
             </Button>
           </Tooltip>
@@ -931,11 +933,15 @@ export const AppShell: React.FC<AppShellProps> = ({
         </div>
       )}
 
-      {/* Right-Side Sliding Canvas: Per-User Recently Accessed Menus (Top 10 with Date & Time) */}
+      {/* Right-Side Sliding Canvas: Per-User Recently Accessed Menus (SuperAdmin-Configured Limit) */}
       <Drawer
         open={recentDrawerOpen}
         onClose={() => setRecentDrawerOpen(false)}
-        title={isAr ? 'آخر القوائم المفتوحة (حتى 10)' : 'Recently Accessed Menus (Last 10)'}
+        title={
+          isAr
+            ? `آخر القوائم المفتوحة (حتى ${recentMenusLimit})`
+            : `Recently Accessed Menus (Last ${recentMenusLimit})`
+        }
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* User Identity & Hybrid Sync Status Card */}
@@ -955,7 +961,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                 {currentUserLabel || (isAr ? 'المستخدم الحالي' : 'Active User Session')}
               </div>
               <Badge variant="primary">
-                {recentMenus.length} / 10 {isAr ? 'قوائم' : 'Menus'}
+                {Math.min(recentMenus.length, recentMenusLimit)} / {recentMenusLimit} {isAr ? 'قوائم' : 'Menus'}
               </Badge>
             </div>
 
@@ -1050,7 +1056,7 @@ export const AppShell: React.FC<AppShellProps> = ({
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {recentMenus.slice(0, 10).map((rec, index) => {
+              {recentMenus.slice(0, recentMenusLimit).map((rec, index) => {
                 const matchedMenu = allFlatItems.find((m) => m.id === rec.menuId);
                 const dt = new Date(rec.accessedAtUtc);
                 const formattedStamp = Number.isNaN(dt.getTime())
@@ -1778,8 +1784,80 @@ export const AppShell: React.FC<AppShellProps> = ({
           />
           </div>
 
-          {/* SuperAdmin Global DB Save & Reset Outside All Accordions */}
-          <div style={{ paddingTop: 12, borderTop: '1px solid var(--ug-border)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {/* SuperAdmin Global DB Save & Application Settings Governance Outside All Accordions */}
+          <div style={{ paddingTop: 12, borderTop: '1px solid var(--ug-border)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* SuperAdmin-Only System Recent Menu Cache Limit */}
+            <div
+              style={{
+                padding: '11px 12px',
+                borderRadius: 8,
+                background: 'var(--ug-surface-alt)',
+                border: '1px solid var(--ug-border)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <History size={14} style={{ color: 'var(--ug-primary)' }} />
+                  {isAr ? 'عدد القوائم الأخيرة المحفوظة (للنظام)' : 'Recent Menus Cache Count (System-Wide)'}
+                </span>
+                <Badge variant="primary">{recentMenusLimit} {isAr ? 'قوائم' : 'Menus'}</Badge>
+              </div>
+
+              {userRole === 'SuperAdmin' ? (
+                <>
+                  <input
+                    type="range"
+                    className="ug-slider"
+                    min={1}
+                    max={30}
+                    step={1}
+                    value={Math.min(30, recentMenusLimit)}
+                    onChange={(e) => setRecentMenusLimit(Number(e.target.value))}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      {[5, 10, 15, 20, 25].map((preset) => (
+                        <Button
+                          key={preset}
+                          type="button"
+                          size="sm"
+                          variant={recentMenusLimit === preset ? 'primary' : 'secondary'}
+                          onClick={() => setRecentMenusLimit(preset)}
+                        >
+                          {preset}
+                        </Button>
+                      ))}
+                    </div>
+                    <label style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '0.8rem', color: 'var(--ug-muted)' }}>
+                      Exact:
+                      <input
+                        type="number"
+                        min={1}
+                        max={50}
+                        value={recentMenusLimit}
+                        onChange={(e) => setRecentMenusLimit(Number(e.target.value))}
+                        className="ug-input"
+                        style={{ width: 64, padding: '3px 8px', minHeight: 28 }}
+                      />
+                    </label>
+                  </div>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--ug-muted)' }}>
+                    Fixed by <strong>SuperAdmin</strong>. Click <em>Save Corporate Settings to DB</em> below to enforce {recentMenusLimit} cached menus for every user.
+                  </div>
+                </>
+              ) : (
+                <div style={{ fontSize: '0.8rem', color: 'var(--ug-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Lock size={13} style={{ color: 'var(--ug-warning)', flexShrink: 0 }} />
+                  <span>
+                    Fixed at <strong>{recentMenusLimit} menus</strong> per user by <strong>SuperAdmin</strong>. Standard users cannot modify this system cache limit.
+                  </span>
+                </div>
+              )}
+            </div>
+
             {userRole === 'SuperAdmin' && (
               <>
                 <SwitchToggle

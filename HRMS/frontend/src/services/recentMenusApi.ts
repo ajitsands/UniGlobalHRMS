@@ -16,15 +16,26 @@ export interface LocalRecentMenusCache {
 }
 
 const API_BASE = '/api/v1/recent-menus';
-const MAX_RECENT_ITEMS = 10;
+const DEFAULT_MAX_RECENT_ITEMS = 10;
+
+function clampLimit(limit?: number): number {
+  const n = Number(limit);
+  if (!Number.isFinite(n) || n <= 0) return DEFAULT_MAX_RECENT_ITEMS;
+  return Math.min(50, Math.max(1, Math.round(n)));
+}
 
 function getStorageKey(userId: string): string {
   const clean = (userId || 'ADMIN-01').trim().toUpperCase();
   return `prompt_hrms_recent_menus_v1_${clean}`;
 }
 
-export function readLocalRecentCache(userId: string, displayName = ''): LocalRecentMenusCache {
+export function readLocalRecentCache(
+  userId: string,
+  displayName = '',
+  maxItems = DEFAULT_MAX_RECENT_ITEMS
+): LocalRecentMenusCache {
   const cleanId = (userId || 'ADMIN-01').trim().toUpperCase();
+  const cap = clampLimit(maxItems);
   try {
     const raw = localStorage.getItem(getStorageKey(cleanId));
     if (!raw) {
@@ -39,7 +50,7 @@ export function readLocalRecentCache(userId: string, displayName = ''): LocalRec
     return {
       userId: cleanId,
       userDisplayName: displayName || parsed.userDisplayName || cleanId,
-      items: Array.isArray(parsed.items) ? parsed.items.slice(0, MAX_RECENT_ITEMS) : [],
+      items: Array.isArray(parsed.items) ? parsed.items.slice(0, cap) : [],
       dirty: Boolean(parsed.dirty),
       lastSyncedAtUtc: parsed.lastSyncedAtUtc,
     };
@@ -63,15 +74,17 @@ function writeLocalRecentCache(cache: LocalRecentMenusCache): void {
 
 /**
  * STAGE 1 (ON LOGIN):
- * Fetches the user's Top-10 recent menus once from SQL Server and stores them in Local Storage.
- * If the browser had unsynced local items from an earlier crash/power-loss, merges both sets cleanly.
+ * Fetches the user's recent menus once from SQL Server (capped to SuperAdmin's RecentMenusLimit)
+ * and stores them in Local Storage.
  */
 export async function hydrateRecentMenusOnLogin(
   userId: string,
-  userDisplayName: string
+  userDisplayName: string,
+  maxItems = DEFAULT_MAX_RECENT_ITEMS
 ): Promise<LocalRecentMenusCache> {
   const cleanId = (userId || 'ADMIN-01').trim().toUpperCase();
-  const local = readLocalRecentCache(cleanId, userDisplayName);
+  const cap = clampLimit(maxItems);
+  const local = readLocalRecentCache(cleanId, userDisplayName, cap);
 
   try {
     const res = await fetch(`${API_BASE}/${encodeURIComponent(cleanId)}?_t=${Date.now()}`, {
@@ -106,7 +119,7 @@ export async function hydrateRecentMenusOnLogin(
       }
       const mergedItems = Array.from(mergedMap.values())
         .sort((a, b) => b.accessedAtUtc.localeCompare(a.accessedAtUtc))
-        .slice(0, MAX_RECENT_ITEMS);
+        .slice(0, cap);
 
       const mergedCache: LocalRecentMenusCache = {
         userId: cleanId,
@@ -116,7 +129,7 @@ export async function hydrateRecentMenusOnLogin(
         lastSyncedAtUtc: remote.updatedAtUtc,
       };
       writeLocalRecentCache(mergedCache);
-      return await flushRecentMenusToDb(cleanId);
+      return await flushRecentMenusToDb(cleanId, false, cap);
     }
 
     const hydrated: LocalRecentMenusCache = {
@@ -124,7 +137,7 @@ export async function hydrateRecentMenusOnLogin(
       userDisplayName: userDisplayName || remote.userDisplayName || cleanId,
       items: remoteItems
         .sort((a, b) => b.accessedAtUtc.localeCompare(a.accessedAtUtc))
-        .slice(0, MAX_RECENT_ITEMS),
+        .slice(0, cap),
       dirty: false,
       lastSyncedAtUtc: remote.updatedAtUtc || new Date().toISOString(),
     };
@@ -138,15 +151,17 @@ export async function hydrateRecentMenusOnLogin(
 /**
  * STAGE 2 (ON MENU ACCESS — LOCAL ONLY, 0 DB CALLS):
  * Updates Local Storage instantaneously (< 1 ms) with the latest Date & Time stamp,
- * deduplicating by menuId and strictly capping at 10 items. Marks cache dirty for later batch flush.
+ * deduplicating by menuId and strictly capping at SuperAdmin's configured RecentMenusLimit.
  */
 export function recordMenuAccessLocal(
   userId: string,
   userDisplayName: string,
-  menu: { menuId: string; label: string; labelAr: string; parentLabel?: string }
+  menu: { menuId: string; label: string; labelAr: string; parentLabel?: string },
+  maxItems = DEFAULT_MAX_RECENT_ITEMS
 ): LocalRecentMenusCache {
   const cleanId = (userId || 'ADMIN-01').trim().toUpperCase();
-  const current = readLocalRecentCache(cleanId, userDisplayName);
+  const cap = clampLimit(maxItems);
+  const current = readLocalRecentCache(cleanId, userDisplayName, 50);
   const existing = current.items.find((i) => i.menuId === menu.menuId);
 
   const updatedEntry: RecentMenuEntry = {
@@ -159,7 +174,7 @@ export function recordMenuAccessLocal(
   };
 
   const remaining = current.items.filter((i) => i.menuId !== menu.menuId);
-  const nextItems = [updatedEntry, ...remaining].slice(0, MAX_RECENT_ITEMS);
+  const nextItems = [updatedEntry, ...remaining].slice(0, cap);
 
   const nextCache: LocalRecentMenusCache = {
     userId: cleanId,
@@ -175,21 +190,22 @@ export function recordMenuAccessLocal(
 
 /**
  * STAGE 3 (ON IDLE / TAB HIDE / WINDOW CLOSE / SIGN-OUT):
- * Batch-flushes the user's Top-10 recent menus from Local Storage to SQL Server in one call.
- * Uses `keepalive: true` when closing/hiding the browser tab so the request completes reliably.
+ * Batch-flushes the user's recent menus from Local Storage to SQL Server in one call.
  */
 export async function flushRecentMenusToDb(
   userId: string,
-  useKeepalive = false
+  useKeepalive = false,
+  maxItems = DEFAULT_MAX_RECENT_ITEMS
 ): Promise<LocalRecentMenusCache> {
   const cleanId = (userId || 'ADMIN-01').trim().toUpperCase();
-  const current = readLocalRecentCache(cleanId);
+  const cap = clampLimit(maxItems);
+  const current = readLocalRecentCache(cleanId, '', cap);
   if (!current.dirty) return current;
 
   const payload = {
     userId: current.userId,
     userDisplayName: current.userDisplayName,
-    items: current.items.slice(0, MAX_RECENT_ITEMS),
+    items: current.items.slice(0, cap),
   };
 
   try {
@@ -201,8 +217,10 @@ export async function flushRecentMenusToDb(
     });
 
     if (res.ok) {
+      const savedDto = (await res.json()) as { items?: RecentMenuEntry[] };
       const synced: LocalRecentMenusCache = {
         ...current,
+        items: Array.isArray(savedDto.items) ? savedDto.items.slice(0, cap) : current.items.slice(0, cap),
         dirty: false,
         lastSyncedAtUtc: new Date().toISOString(),
       };

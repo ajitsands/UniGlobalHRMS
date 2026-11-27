@@ -56,6 +56,11 @@ using (var scope = app.Services.CreateScope())
                     UpdatedAtUtc DATETIME2 NOT NULL CONSTRAINT DF_UserRecentMenuStates_Updated DEFAULT(SYSUTCDATETIME())
                 );
                 CREATE UNIQUE INDEX IX_UserRecentMenuStates_UserId ON dbo.UserRecentMenuStates(UserId);
+            END
+            IF COL_LENGTH(N'dbo.AppUiSettings', N'RecentMenusLimit') IS NULL
+            BEGIN
+                ALTER TABLE dbo.AppUiSettings
+                ADD RecentMenusLimit INT NOT NULL CONSTRAINT DF_AppUiSettings_RecentMenusLimit DEFAULT(10);
             END");
     }
     catch (Exception ex)

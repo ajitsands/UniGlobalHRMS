@@ -32,6 +32,7 @@ public class AppUiSettingsDto
     public string ScrollbarColor { get; set; } = "#1B365D";
 
     public bool LockCorporateTheme { get; set; } = true;
+    public int RecentMenusLimit { get; set; } = 10;
     public string UpdatedBy { get; set; } = "SuperAdmin";
     public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
 }

@@ -246,6 +246,8 @@ interface ThemeContextValue {
   setIsMenuLocked: (v: boolean) => void;
   lockCorporateTheme: boolean;
   setLockCorporateTheme: (v: boolean) => void;
+  recentMenusLimit: number;
+  setRecentMenusLimit: (n: number) => void;
   dbMenuOrder: string[];
   isSavingToDb: boolean;
   dbConnected: boolean;
@@ -283,6 +285,7 @@ interface PersistedSettings {
   scrollbarColor: string;
   quickAccessIds: string[];
   isMenuLocked: boolean;
+  recentMenusLimit: number;
 }
 
 const DEFAULT_SETTINGS: PersistedSettings = {
@@ -311,6 +314,7 @@ const DEFAULT_SETTINGS: PersistedSettings = {
   scrollbarColor: '#1B365D',
   quickAccessIds: ['dashboard', 'ui-kit', 'emp-directory', 'pay-run'],
   isMenuLocked: false,
+  recentMenusLimit: 10,
 };
 
 function loadInitialSettings(): PersistedSettings {
@@ -353,7 +357,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isAdmin, setIsAdmin] = useState<boolean>(true);
   const [isMenuLocked, setIsMenuLocked] = useState<boolean>(initial.isMenuLocked);
   const [lockCorporateTheme, setLockCorporateTheme] = useState<boolean>(true);
+  const [recentMenusLimit, setRecentMenusLimitState] = useState<number>(
+    Math.min(50, Math.max(1, Number(initial.recentMenusLimit) || 10))
+  );
   const [dbMenuOrder, setDbMenuOrder] = useState<string[]>([]);
+
+  const setRecentMenusLimit = (n: number) => {
+    setRecentMenusLimitState(Math.min(50, Math.max(1, Math.round(Number(n) || 10))));
+  };
   const [isSavingToDb, setIsSavingToDb] = useState<boolean>(false);
   const [dbConnected, setDbConnected] = useState<boolean>(false);
   const [lastSavedBy, setLastSavedBy] = useState<string>('');
@@ -396,6 +407,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setCardShadowLevel(remote.cardShadowLevel);
       setScrollbarColor(remote.scrollbarColor);
       setLockCorporateTheme(remote.lockCorporateTheme);
+      if (remote.recentMenusLimit && remote.recentMenusLimit > 0) {
+        setRecentMenusLimitState(Math.min(50, Math.max(1, Number(remote.recentMenusLimit))));
+      }
       setLastSavedBy(remote.updatedBy ?? 'SuperAdmin');
       setLastSavedAtUtc(remote.updatedAtUtc ?? '');
     });
@@ -434,6 +448,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         cardShadowLevel,
         scrollbarColor,
         lockCorporateTheme,
+        recentMenusLimit,
       };
       const saved = await saveGlobalUiSettings(payload, 'SuperAdmin', userRole);
       setDbConnected(true);
@@ -507,6 +522,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         scrollbarColor,
         quickAccessIds,
         isMenuLocked,
+        recentMenusLimit,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch {
@@ -538,6 +554,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     scrollbarColor,
     quickAccessIds,
     isMenuLocked,
+    recentMenusLimit,
   ]);
 
   useEffect(() => {
@@ -688,6 +705,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsMenuLocked,
         lockCorporateTheme,
         setLockCorporateTheme,
+        recentMenusLimit,
+        setRecentMenusLimit,
         dbMenuOrder,
         isSavingToDb,
         dbConnected,

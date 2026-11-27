@@ -120,7 +120,7 @@ function findMenuMeta(
 }
 
 const AppContent: React.FC = () => {
-  const { dbMenuOrder } = useTheme();
+  const { dbMenuOrder, recentMenusLimit } = useTheme();
   const toast = useToast();
   const [authSession, setAuthSession] = useState<AuthenticatedSession | null>(loadSession);
   const [menus, setMenus] = useState<NavMenuItem[]>(loadOrderedMenus);
@@ -145,48 +145,61 @@ const AppContent: React.FC = () => {
     if (ordered.length > 0) setMenus([...ordered, ...missing]);
   }, [dbMenuOrder]);
 
-  const scheduleIdleDbFlush = useCallback((userId: string) => {
-    if (idleFlushTimerRef.current !== null) {
-      window.clearTimeout(idleFlushTimerRef.current);
-    }
-    idleFlushTimerRef.current = window.setTimeout(async () => {
-      idleFlushTimerRef.current = null;
-      const synced = await flushRecentMenusToDb(userId, false);
-      setRecentDirty(synced.dirty);
-      setRecentLastSyncedUtc(synced.lastSyncedAtUtc);
-    }, IDLE_DB_FLUSH_MS);
-  }, []);
+  const scheduleIdleDbFlush = useCallback(
+    (userId: string) => {
+      if (idleFlushTimerRef.current !== null) {
+        window.clearTimeout(idleFlushTimerRef.current);
+      }
+      idleFlushTimerRef.current = window.setTimeout(async () => {
+        idleFlushTimerRef.current = null;
+        const synced = await flushRecentMenusToDb(userId, false, recentMenusLimit);
+        setRecentDirty(synced.dirty);
+        setRecentLastSyncedUtc(synced.lastSyncedAtUtc);
+      }, IDLE_DB_FLUSH_MS);
+    },
+    [recentMenusLimit]
+  );
 
   const trackMenuLocally = useCallback(
     (user: { userId: string; displayName: string }, menuId: string) => {
       const meta = findMenuMeta(INITIAL_MENUS, menuId);
       if (!meta) return;
-      const next = recordMenuAccessLocal(user.userId, user.displayName, {
-        menuId,
-        label: meta.label,
-        labelAr: meta.labelAr,
-        parentLabel: meta.parentLabel,
-      });
+      const next = recordMenuAccessLocal(
+        user.userId,
+        user.displayName,
+        {
+          menuId,
+          label: meta.label,
+          labelAr: meta.labelAr,
+          parentLabel: meta.parentLabel,
+        },
+        recentMenusLimit
+      );
       setRecentMenus(next.items);
       setRecentDirty(next.dirty);
       setRecentLastSyncedUtc(next.lastSyncedAtUtc);
       scheduleIdleDbFlush(user.userId);
     },
-    [scheduleIdleDbFlush]
+    [recentMenusLimit, scheduleIdleDbFlush]
   );
 
-  // STAGE 1: Hydrate user's Top-10 recent menus from SQL Server once when logged in
+  // Enforce SuperAdmin's recentMenusLimit dynamically whenever changed
+  useEffect(() => {
+    setRecentMenus((prev) => prev.slice(0, recentMenusLimit));
+  }, [recentMenusLimit]);
+
+  // STAGE 1: Hydrate user's recent menus from SQL Server once when logged in
   useEffect(() => {
     if (!authSession) return;
     let active = true;
 
     // Immediately show any cached local entries for 0ms responsiveness
-    const cached = readLocalRecentCache(authSession.userId, authSession.displayName);
+    const cached = readLocalRecentCache(authSession.userId, authSession.displayName, recentMenusLimit);
     setRecentMenus(cached.items);
     setRecentDirty(cached.dirty);
     setRecentLastSyncedUtc(cached.lastSyncedAtUtc);
 
-    hydrateRecentMenusOnLogin(authSession.userId, authSession.displayName).then((hydrated) => {
+    hydrateRecentMenusOnLogin(authSession.userId, authSession.displayName, recentMenusLimit).then((hydrated) => {
       if (!active) return;
       if (hydrated.items.length === 0) {
         // Seed initial landing screen into local cache on very first login
@@ -205,7 +218,7 @@ const AppContent: React.FC = () => {
     return () => {
       active = false;
     };
-  }, [authSession?.userId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [authSession?.userId, recentMenusLimit]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // STAGE 3: Flush unsaved local Recent Menus to SQL Server on Tab Hide or Window Close (keepalive)
   useEffect(() => {
@@ -214,7 +227,7 @@ const AppContent: React.FC = () => {
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
-        flushRecentMenusToDb(currentUserId, true).then((synced) => {
+        flushRecentMenusToDb(currentUserId, true, recentMenusLimit).then((synced) => {
           setRecentDirty(synced.dirty);
           setRecentLastSyncedUtc(synced.lastSyncedAtUtc);
         });
@@ -222,7 +235,7 @@ const AppContent: React.FC = () => {
     };
 
     const handlePageHide = () => {
-      flushRecentMenusToDb(currentUserId, true);
+      flushRecentMenusToDb(currentUserId, true, recentMenusLimit);
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -288,7 +301,7 @@ const AppContent: React.FC = () => {
       idleFlushTimerRef.current = null;
     }
     if (authSession) {
-      await flushRecentMenusToDb(authSession.userId, true);
+      await flushRecentMenusToDb(authSession.userId, true, recentMenusLimit);
     }
     setAuthSession(null);
     try {
@@ -301,7 +314,7 @@ const AppContent: React.FC = () => {
 
   const handleForceSyncRecent = async () => {
     if (!authSession) return;
-    const synced = await flushRecentMenusToDb(authSession.userId, false);
+    const synced = await flushRecentMenusToDb(authSession.userId, false, recentMenusLimit);
     setRecentDirty(synced.dirty);
     setRecentLastSyncedUtc(synced.lastSyncedAtUtc || new Date().toISOString());
     toast.success('Synced to SQL Server', `Saved ${synced.items.length} recent menus for ${authSession.userId}.`);

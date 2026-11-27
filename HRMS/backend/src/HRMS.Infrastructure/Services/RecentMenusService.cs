@@ -15,7 +15,7 @@ namespace HRMS.Infrastructure.Services;
 /// </summary>
 public class RecentMenusService : IRecentMenusService
 {
-    private const int MaxRecentItems = 10;
+    private const int DefaultRecentItems = 10;
     private static readonly JsonSerializerOptions JsonOpts = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -31,9 +31,27 @@ public class RecentMenusService : IRecentMenusService
         _dapper = dapper;
     }
 
+    private async Task<int> GetConfiguredLimitAsync()
+    {
+        try
+        {
+            using var conn = _dapper.CreateConnection();
+            var limit = await conn.QueryFirstOrDefaultAsync<int?>(
+                "SELECT TOP 1 RecentMenusLimit FROM dbo.AppUiSettings WHERE ScopeKey = @ScopeKey",
+                new { ScopeKey = "GLOBAL_CORPORATE" }
+            );
+            return Math.Clamp(limit is null or <= 0 ? DefaultRecentItems : limit.Value, 1, 50);
+        }
+        catch
+        {
+            return DefaultRecentItems;
+        }
+    }
+
     public async Task<UserRecentMenusPayloadDto> GetUserRecentMenusAsync(string userId, CancellationToken ct = default)
     {
         var normalizedUser = NormalizeUserId(userId);
+        var maxItems = await GetConfiguredLimitAsync();
         using var conn = _dapper.CreateConnection();
         var row = await conn.QueryFirstOrDefaultAsync<UserRecentMenuState>(
             "SELECT TOP 1 * FROM dbo.UserRecentMenuStates WHERE UserId = @UserId",
@@ -55,7 +73,7 @@ public class RecentMenusService : IRecentMenusService
         {
             UserId = row.UserId,
             UserDisplayName = row.UserDisplayName,
-            Items = SafeDeserializeItems(row.RecentMenusJson),
+            Items = SafeDeserializeItems(row.RecentMenusJson, maxItems),
             UpdatedAtUtc = row.UpdatedAtUtc
         };
     }
@@ -66,14 +84,15 @@ public class RecentMenusService : IRecentMenusService
         CancellationToken ct = default)
     {
         var normalizedUser = NormalizeUserId(string.IsNullOrWhiteSpace(userId) ? dto.UserId : userId);
+        var maxItems = await GetConfiguredLimitAsync();
 
-        // Deduplicate by MenuId, sort newest first, and cap strictly to 10 items
+        // Deduplicate by MenuId, sort newest first, and cap strictly to SuperAdmin's configured limit
         var trimmed = (dto.Items ?? new List<RecentMenuEntryDto>())
             .Where(x => !string.IsNullOrWhiteSpace(x.MenuId))
             .GroupBy(x => x.MenuId, StringComparer.OrdinalIgnoreCase)
             .Select(g => g.OrderByDescending(i => i.AccessedAtUtc).First())
             .OrderByDescending(i => i.AccessedAtUtc)
-            .Take(MaxRecentItems)
+            .Take(maxItems)
             .ToList();
 
         var entity = await _db.UserRecentMenuStates
@@ -119,14 +138,14 @@ public class RecentMenusService : IRecentMenusService
     private static string NormalizeUserId(string? raw)
         => string.IsNullOrWhiteSpace(raw) ? "ADMIN-01" : raw.Trim().ToUpperInvariant();
 
-    private static List<RecentMenuEntryDto> SafeDeserializeItems(string? json)
+    private static List<RecentMenuEntryDto> SafeDeserializeItems(string? json, int maxItems)
     {
         if (string.IsNullOrWhiteSpace(json)) return new List<RecentMenuEntryDto>();
         try
         {
             return (JsonSerializer.Deserialize<List<RecentMenuEntryDto>>(json, JsonOpts) ?? new List<RecentMenuEntryDto>())
                 .OrderByDescending(x => x.AccessedAtUtc)
-                .Take(MaxRecentItems)
+                .Take(maxItems)
                 .ToList();
         }
         catch

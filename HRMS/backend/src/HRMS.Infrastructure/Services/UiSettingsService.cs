@@ -87,6 +87,7 @@ public class UiSettingsService : IUiSettingsService
         entity.CardShadowLevel = dto.CardShadowLevel;
         entity.ScrollbarColor = dto.ScrollbarColor;
         entity.LockCorporateTheme = dto.LockCorporateTheme;
+        entity.RecentMenusLimit = Math.Clamp(dto.RecentMenusLimit <= 0 ? 10 : dto.RecentMenusLimit, 1, 50);
         entity.UpdatedBy = updatedBy;
         entity.UpdatedAtUtc = DateTime.UtcNow;
 
@@ -124,6 +125,7 @@ public class UiSettingsService : IUiSettingsService
         CardShadowLevel = e.CardShadowLevel,
         ScrollbarColor = e.ScrollbarColor,
         LockCorporateTheme = e.LockCorporateTheme,
+        RecentMenusLimit = Math.Clamp(e.RecentMenusLimit <= 0 ? 10 : e.RecentMenusLimit, 1, 50),
         UpdatedBy = e.UpdatedBy,
         UpdatedAtUtc = e.UpdatedAtUtc
     };

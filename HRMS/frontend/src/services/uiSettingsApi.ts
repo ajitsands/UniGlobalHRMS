@@ -29,6 +29,7 @@ export interface GlobalUiSettingsPayload {
   scrollbarColor: string;
 
   lockCorporateTheme: boolean;
+  recentMenusLimit: number;
   updatedBy?: string;
   updatedAtUtc?: string;
 }

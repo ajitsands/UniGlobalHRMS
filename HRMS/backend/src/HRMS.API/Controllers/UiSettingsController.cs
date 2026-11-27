@@ -56,7 +56,7 @@ public class UiSettingsController : ControllerBase
             Role = role,
             Module = "WorkspaceCustomizer",
             Action = "SaveGlobalCorporateSettings",
-            Details = $"Theme={saved.ThemeMode}, MenuLayout={saved.MenuLayout}, HeaderFooter={saved.HeaderFooterStyle}, Font={saved.FontFamilyId}/{saved.FontSizePx}px"
+            Details = $"Theme={saved.ThemeMode}, MenuLayout={saved.MenuLayout}, HeaderFooter={saved.HeaderFooterStyle}, Font={saved.FontFamilyId}/{saved.FontSizePx}px, RecentMenusLimit={saved.RecentMenusLimit}"
         }, HttpContext.Connection.RemoteIpAddress?.ToString(), ct);
 
         return Ok(saved);
