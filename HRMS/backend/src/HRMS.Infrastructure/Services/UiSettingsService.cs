@@ -91,6 +91,8 @@ public class UiSettingsService : IUiSettingsService
         entity.DateFormat = string.IsNullOrWhiteSpace(dto.DateFormat) ? "DD-MM-YYYY" : dto.DateFormat.Trim();
         entity.TimeFormat = string.IsNullOrWhiteSpace(dto.TimeFormat) ? "12h" : dto.TimeFormat.Trim();
         entity.CurrencyCode = string.IsNullOrWhiteSpace(dto.CurrencyCode) ? "BHD" : dto.CurrencyCode.Trim().ToUpperInvariant();
+        entity.ShowCurrencyCode = dto.ShowCurrencyCode;
+        entity.ShowCurrencyOnTotals = dto.ShowCurrencyOnTotals;
         entity.TimeZoneId = string.IsNullOrWhiteSpace(dto.TimeZoneId) ? "Asia/Bahrain" : dto.TimeZoneId.Trim();
         entity.UpdatedBy = updatedBy;
         entity.UpdatedAtUtc = DateTime.UtcNow;
@@ -133,6 +135,8 @@ public class UiSettingsService : IUiSettingsService
         DateFormat = string.IsNullOrWhiteSpace(e.DateFormat) ? "DD-MM-YYYY" : e.DateFormat,
         TimeFormat = string.IsNullOrWhiteSpace(e.TimeFormat) ? "12h" : e.TimeFormat,
         CurrencyCode = string.IsNullOrWhiteSpace(e.CurrencyCode) ? "BHD" : e.CurrencyCode,
+        ShowCurrencyCode = e.ShowCurrencyCode,
+        ShowCurrencyOnTotals = e.ShowCurrencyOnTotals,
         TimeZoneId = string.IsNullOrWhiteSpace(e.TimeZoneId) ? "Asia/Bahrain" : e.TimeZoneId,
         UpdatedBy = e.UpdatedBy,
         UpdatedAtUtc = e.UpdatedAtUtc

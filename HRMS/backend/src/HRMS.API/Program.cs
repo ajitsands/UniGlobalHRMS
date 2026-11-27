@@ -77,6 +77,16 @@ using (var scope = app.Services.CreateScope())
                 ALTER TABLE dbo.AppUiSettings
                 ADD CurrencyCode NVARCHAR(16) NOT NULL CONSTRAINT DF_AppUiSettings_CurrencyCode DEFAULT(N'BHD');
             END
+            IF COL_LENGTH(N'dbo.AppUiSettings', N'ShowCurrencyCode') IS NULL
+            BEGIN
+                ALTER TABLE dbo.AppUiSettings
+                ADD ShowCurrencyCode BIT NOT NULL CONSTRAINT DF_AppUiSettings_ShowCurrencyCode DEFAULT(1);
+            END
+            IF COL_LENGTH(N'dbo.AppUiSettings', N'ShowCurrencyOnTotals') IS NULL
+            BEGIN
+                ALTER TABLE dbo.AppUiSettings
+                ADD ShowCurrencyOnTotals BIT NOT NULL CONSTRAINT DF_AppUiSettings_ShowCurrencyOnTotals DEFAULT(1);
+            END
             IF COL_LENGTH(N'dbo.AppUiSettings', N'TimeZoneId') IS NULL
             BEGIN
                 ALTER TABLE dbo.AppUiSettings

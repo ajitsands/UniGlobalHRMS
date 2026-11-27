@@ -10,6 +10,12 @@ export interface DataColumn<T> {
   exportValue?: (row: T) => string | number;
 }
 
+export interface DataSummaryRow {
+  id: string;
+  cells: Record<string, React.ReactNode>;
+  highlight?: boolean;
+}
+
 export interface DataTableProps<T extends { id: string | number }> {
   title?: string;
   data: T[];
@@ -18,6 +24,7 @@ export interface DataTableProps<T extends { id: string | number }> {
   searchable?: boolean;
   exportFileName?: string;
   actions?: (row: T) => React.ReactNode;
+  summaryRows?: DataSummaryRow[];
 }
 
 export function DataTable<T extends { id: string | number }>({
@@ -28,6 +35,7 @@ export function DataTable<T extends { id: string | number }>({
   searchable = true,
   exportFileName,
   actions,
+  summaryRows,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<string>('');
@@ -203,6 +211,34 @@ export function DataTable<T extends { id: string | number }>({
               ))
             )}
           </tbody>
+          {summaryRows && summaryRows.length > 0 && (
+            <tfoot>
+              {summaryRows.map((sRow) => (
+                <tr
+                  key={sRow.id}
+                  style={{
+                    background: sRow.highlight ? 'var(--ug-primary-soft)' : 'var(--ug-surface-alt)',
+                    fontWeight: 700,
+                    borderTop: sRow.highlight ? '2px solid var(--ug-primary)' : '1.5px solid var(--ug-border-strong)',
+                  }}
+                >
+                  {visibleCols.map((col) => (
+                    <td
+                      key={String(col.key)}
+                      style={{
+                        padding: '10px 14px',
+                        color: sRow.highlight ? 'var(--ug-primary)' : 'var(--ug-text)',
+                        fontWeight: sRow.highlight ? 800 : 700,
+                      }}
+                    >
+                      {sRow.cells[String(col.key)] ?? ''}
+                    </td>
+                  ))}
+                  {actions && <td />}
+                </tr>
+              ))}
+            </tfoot>
+          )}
         </table>
       </div>
 

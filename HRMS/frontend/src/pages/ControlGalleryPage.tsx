@@ -7,6 +7,7 @@ import {
   Card,
   Checkbox,
   ConfirmPopup,
+  CurrencyAmount,
   DashboardWidget,
   DataColumn,
   DataTable,
@@ -137,7 +138,7 @@ const DEMO_TIMELINE_EVENTS: TimelineEvent[] = [
 
 export const ControlGalleryPage: React.FC = () => {
   const toast = useToast();
-  const { currencyCode, currencyMeta, formatCurrency, formatDate } = useTheme();
+  const { currencyCode, currencyMeta, showCurrencyCode, formatCurrency, formatDate } = useTheme();
   const [appointments, setAppointments] = useState<ScheduleAppointment[]>(INITIAL_APPOINTMENTS);
   const [empName, setEmpName] = useState('Ahmed Al-Khalifa');
   const [salary, setSalary] = useState('1250.500');
@@ -167,9 +168,9 @@ export const ControlGalleryPage: React.FC = () => {
     { key: 'country', header: 'Jurisdiction', sortable: true },
     {
       key: 'salaryBhd',
-      header: `Gross (${currencyCode})`,
+      header: showCurrencyCode ? `Gross (${currencyCode})` : 'Gross Salary',
       sortable: true,
-      render: (r) => <strong>{formatCurrency(r.salaryBhd, true)}</strong>,
+      render: (r) => <CurrencyAmount amount={r.salaryBhd} convertFromBhd bold />,
     },
     {
       key: 'status',
@@ -233,7 +234,14 @@ export const ControlGalleryPage: React.FC = () => {
       <Timeline
         title="Employee History Timeline Control (Vertical / Horizontal)"
         helpText="Chronological employee lifecycle timeline combining joining, probation, promotions, documents, and leave (Req 3.1.11)."
-        events={DEMO_TIMELINE_EVENTS.map((ev) => ({ ...ev, date: formatDate(ev.date) }))}
+        events={DEMO_TIMELINE_EVENTS.map((ev) => ({
+          ...ev,
+          date: formatDate(ev.date),
+          tags:
+            ev.id === 'tl-3'
+              ? [`${formatCurrency(1050, true)} → ${formatCurrency(1250.5, true)}`, 'Grade G5']
+              : ev.tags,
+        }))}
         defaultOrientation="vertical"
       />
 
@@ -263,7 +271,7 @@ export const ControlGalleryPage: React.FC = () => {
           />
 
           <NumberInput
-            label={`Basic Salary (${currencyCode})`}
+            label={showCurrencyCode ? `Basic Salary (${currencyCode})` : 'Basic Salary'}
             required
             useGlobalCurrency
             helpText={`${currencyMeta.decimals}-decimal precision (${currencyMeta.subUnit}) from Application Settings.`}
@@ -406,12 +414,12 @@ export const ControlGalleryPage: React.FC = () => {
             onChange={setGeofenceRadius}
           />
           <DualRangeSlider
-            label={`Salary Grade Filter (${currencyCode})`}
+            label={showCurrencyCode ? `Salary Grade Filter (${currencyCode})` : 'Salary Grade Filter'}
             helpText="Filter reports or payroll runs by min-max salary range."
             min={300}
             max={5000}
             step={50}
-            unit={` ${currencyCode}`}
+            unit={showCurrencyCode ? ` ${currencyCode}` : ''}
             minValue={salaryMin}
             maxValue={salaryMax}
             onChange={(lo, hi) => {
@@ -430,7 +438,38 @@ export const ControlGalleryPage: React.FC = () => {
         columns={columns}
         pageSize={4}
         exportFileName="uniglobal-employees"
-        actions={(row) => (
+        summaryRows={[
+          {
+            id: 'sub-active',
+            cells: {
+              name: 'Subtotal — Active Confirmed Staff',
+              salaryBhd: (
+                <CurrencyAmount
+                  amount={DEMO_EMPLOYEES.filter((e) => e.status === 'Active').reduce((s, e) => s + e.salaryBhd, 0)}
+                  convertFromBhd
+                  isTotal
+                  bold
+                />
+              ),
+            },
+          },
+          {
+            id: 'grand-payroll',
+            highlight: true,
+            cells: {
+              name: 'Grand Total — Monthly Gross Payroll',
+              salaryBhd: (
+                <CurrencyAmount
+                  amount={DEMO_EMPLOYEES.reduce((s, e) => s + e.salaryBhd, 0)}
+                  convertFromBhd
+                  isTotal
+                  bold
+                />
+              ),
+            },
+          },
+        ]}
+        actions={(_row) => (
           <div style={{ display: 'flex', gap: 6 }}>
             <Tooltip content="Quick View in Drawer">
               <Button variant="secondary" size="sm" onClick={() => setDrawerOpen(true)}>

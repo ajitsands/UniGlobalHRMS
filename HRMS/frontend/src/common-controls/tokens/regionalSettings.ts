@@ -413,11 +413,11 @@ export function getTodayIsoInTimeZone(timeZone: string = 'Asia/Bahrain'): string
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
-export function formatAppCurrencyValue(
+export function formatAppCurrencyParts(
   amount: number,
   currencyCode: GulfCurrencyCode = 'BHD',
   convertFromBhd = false
-): string {
+): { code: GulfCurrencyCode; digits: string } {
   const meta = getCurrencyMeta(currencyCode);
   const numeric = Number.isFinite(amount) ? amount : 0;
   const effective = convertFromBhd ? numeric * meta.rateFromBhd : numeric;
@@ -425,5 +425,15 @@ export function formatAppCurrencyValue(
     minimumFractionDigits: meta.decimals,
     maximumFractionDigits: meta.decimals,
   });
-  return `${meta.code} ${formattedNum}`;
+  return { code: meta.code, digits: formattedNum };
+}
+
+export function formatAppCurrencyValue(
+  amount: number,
+  currencyCode: GulfCurrencyCode = 'BHD',
+  convertFromBhd = false,
+  showCode = true
+): string {
+  const { code, digits } = formatAppCurrencyParts(amount, currencyCode, convertFromBhd);
+  return showCode ? `${code} ${digits}` : digits;
 }

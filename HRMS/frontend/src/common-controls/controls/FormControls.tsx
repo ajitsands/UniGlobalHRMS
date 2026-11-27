@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { formatAppCurrencyParts } from '../tokens/regionalSettings';
 import { FONT_SIZE_PRESETS, useTheme } from '../tokens/ThemeContext';
 import { HelpTag } from './HelpAndFeedback';
 
@@ -84,12 +85,13 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   step,
   ...rest
 }) => {
-  const { currencyMeta } = useTheme();
-  const activeCurrency = useGlobalCurrency || currency === 'AUTO' ? currencyMeta.code : currency;
+  const { currencyMeta, showCurrencyCode } = useTheme();
+  const rawCurrency = useGlobalCurrency || currency === 'AUTO' ? currencyMeta.code : currency;
+  const activeCurrency = rawCurrency && showCurrencyCode ? rawCurrency : undefined;
   const effectiveStep =
     step ??
-    (activeCurrency
-      ? ['BHD', 'KWD', 'OMR'].includes(activeCurrency.toUpperCase())
+    (rawCurrency
+      ? ['BHD', 'KWD', 'OMR'].includes(rawCurrency.toUpperCase())
         ? '0.001'
         : '0.01'
       : '0.001');
@@ -107,7 +109,13 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         {activeCurrency && (
           <span
             className="ug-input-icon-start"
-            style={{ fontSize: '0.852rem', fontWeight: 700, color: 'var(--ug-primary)' }}
+            style={{
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              letterSpacing: '0.35px',
+              color: 'var(--ug-primary)',
+              opacity: 0.85,
+            }}
           >
             {activeCurrency}
           </span>
@@ -116,12 +124,58 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           type="number"
           step={effectiveStep}
           className={`ug-input ${activeCurrency ? 'ug-input-prefix' : ''} ${error ? 'has-error' : ''}`}
-          style={activeCurrency ? { paddingInlineStart: 48 } : undefined}
+          style={activeCurrency ? { paddingInlineStart: 44, fontVariantNumeric: 'tabular-nums' } : { fontVariantNumeric: 'tabular-nums' }}
           {...rest}
         />
       </div>
       {error && <span className="ug-error-text">{error}</span>}
     </div>
+  );
+};
+
+/* ---------------- CurrencyAmount (Smaller Currency Code + Global/Totals Visibility) ---------------- */
+export interface CurrencyAmountProps {
+  amount: number;
+  convertFromBhd?: boolean;
+  isTotal?: boolean;
+  bold?: boolean;
+}
+
+export const CurrencyAmount: React.FC<CurrencyAmountProps> = ({
+  amount,
+  convertFromBhd = false,
+  isTotal = false,
+  bold = true,
+}) => {
+  const { currencyCode, showCurrencyCode, showCurrencyOnTotals } = useTheme();
+  const { code, digits } = formatAppCurrencyParts(amount, currencyCode, convertFromBhd);
+  const displayCode = isTotal ? showCurrencyOnTotals : showCurrencyCode;
+
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'baseline',
+        gap: 4,
+        fontVariantNumeric: 'tabular-nums',
+        fontWeight: bold ? 700 : 500,
+      }}
+    >
+      {displayCode && (
+        <span
+          style={{
+            fontSize: '0.72em',
+            fontWeight: 600,
+            letterSpacing: '0.35px',
+            color: 'var(--ug-text-secondary)',
+            opacity: 0.88,
+          }}
+        >
+          {code}
+        </span>
+      )}
+      <span>{digits}</span>
+    </span>
   );
 };
 

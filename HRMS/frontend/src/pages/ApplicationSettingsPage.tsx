@@ -6,6 +6,7 @@ import {
   Badge,
   Button,
   Card,
+  CurrencyAmount,
   DATE_FORMAT_OPTIONS,
   DataColumn,
   DataTable,
@@ -59,6 +60,10 @@ export const ApplicationSettingsPage: React.FC = () => {
     setTimeFormat,
     currencyCode,
     setCurrencyCode,
+    showCurrencyCode,
+    setShowCurrencyCode,
+    showCurrencyOnTotals,
+    setShowCurrencyOnTotals,
     currencyMeta,
     timeZone,
     setTimeZone,
@@ -66,7 +71,6 @@ export const ApplicationSettingsPage: React.FC = () => {
     formatDate,
     formatTime,
     formatDateTime,
-    formatCurrency,
     todayIso,
     recentMenusLimit,
     setRecentMenusLimit,
@@ -127,11 +131,20 @@ export const ApplicationSettingsPage: React.FC = () => {
     },
     {
       key: 'baseBhd',
-      header: isAr ? `القيمة (${currencyCode})` : `Converted Amount (${currencyCode})`,
+      header: showCurrencyCode
+        ? isAr
+          ? `القيمة (${currencyCode})`
+          : `Converted Amount (${currencyCode})`
+        : isAr
+        ? 'القيمة'
+        : 'Converted Amount',
       sortable: true,
-      render: (r) => <strong>{formatCurrency(r.baseBhd, true)}</strong>,
+      render: (r) => <CurrencyAmount amount={r.baseBhd} convertFromBhd bold />,
     },
   ];
+
+  const earningsSubtotalBhd = SAMPLE_PAYROLL_ROWS.slice(0, 3).reduce((s, r) => s + r.baseBhd, 0);
+  const grandTotalBhd = SAMPLE_PAYROLL_ROWS.reduce((s, r) => s + r.baseBhd, 0);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
@@ -291,11 +304,11 @@ export const ApplicationSettingsPage: React.FC = () => {
               <div style={{ fontSize: '0.76rem', color: 'var(--ug-muted)', fontWeight: 700 }}>
                 {isAr ? 'العملة المعتمدة والدقة العشرية' : 'ACTIVE GULF CURRENCY'}
               </div>
-              <div style={{ fontSize: '1.05rem', fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>
-                {formatCurrency(1250.5, false)}
+              <div style={{ fontSize: '1.08rem', fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>
+                <CurrencyAmount amount={1250.5} bold />
               </div>
               <div style={{ fontSize: '0.76rem', color: 'var(--ug-primary)', fontWeight: 600 }}>
-                {currencyMeta.code} • {currencyMeta.decimals} Decimals ({currencyMeta.subUnit})
+                {currencyMeta.code} • {currencyMeta.decimals} Decimals ({showCurrencyCode ? 'Code Shown' : showCurrencyOnTotals ? 'Totals Only' : 'Code Hidden'})
               </div>
             </div>
           </div>
@@ -459,6 +472,76 @@ export const ApplicationSettingsPage: React.FC = () => {
                     clearable={false}
                   />
 
+                  {/* Currency Code Display Policy (Line Items vs Report Totals / Subtotals) */}
+                  <div
+                    style={{
+                      padding: '14px 16px',
+                      borderRadius: 12,
+                      background: 'var(--ug-surface-alt)',
+                      border: '1px solid var(--ug-border)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 12,
+                    }}
+                  >
+                    <div style={{ fontWeight: 700, fontSize: '0.94rem', color: 'var(--ug-text)' }}>
+                      {isAr ? 'خيارات إظهار رمز العملة في النظام والتقارير' : 'Currency Code Display Options (Application & Reports)'}
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <SwitchToggle
+                        checked={showCurrencyCode}
+                        onChange={setShowCurrencyCode}
+                        label={
+                          isAr
+                            ? `إظهار رمز العملة (${currencyCode}) في جميع شاشات وحقول النظام`
+                            : `Display Currency Code (${currencyCode}) Across Application (Line Items, Inputs & Cards)`
+                        }
+                        helpText="When ON, displays a refined smaller currency code beside every amount and inside currency inputs. When OFF, hides the currency code across regular rows and inputs."
+                      />
+
+                      <SwitchToggle
+                        checked={showCurrencyOnTotals}
+                        onChange={setShowCurrencyOnTotals}
+                        label={
+                          isAr
+                            ? `إظهار رمز العملة (${currencyCode}) في المجاميع الفرعية والإجماليات داخل التقارير والجداول`
+                            : `Display Currency Code (${currencyCode}) on Totals & Subtotals in Reports / Tables`
+                        }
+                        helpText="Recommended ON: Keeps the currency code visible on Subtotal and Grand Total summary rows in reports even when hidden on individual line items."
+                      />
+                    </div>
+
+                    {/* Instant Visual Comparison Strip */}
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: 10,
+                        paddingTop: 8,
+                        borderTop: '1px dashed var(--ug-border-strong)',
+                      }}
+                    >
+                      <div style={{ padding: '8px 12px', borderRadius: 8, background: 'var(--ug-surface)', border: '1px solid var(--ug-border)' }}>
+                        <div style={{ fontSize: '0.74rem', color: 'var(--ug-muted)', fontWeight: 600 }}>
+                          {isAr ? 'معاينة بند عادي (Line Item)' : 'Regular Line Item Preview'}
+                        </div>
+                        <div style={{ fontSize: '1.08rem', marginTop: 2 }}>
+                          <CurrencyAmount amount={1250.5} convertFromBhd bold />
+                        </div>
+                      </div>
+
+                      <div style={{ padding: '8px 12px', borderRadius: 8, background: 'var(--ug-primary-soft)', border: '1px solid var(--ug-primary)' }}>
+                        <div style={{ fontSize: '0.74rem', color: 'var(--ug-primary)', fontWeight: 700 }}>
+                          {isAr ? 'معاينة المجموع الفرعي / الإجمالي (Subtotal / Total)' : 'Report Subtotal / Grand Total Preview'}
+                        </div>
+                        <div style={{ fontSize: '1.08rem', marginTop: 2, color: 'var(--ug-primary)' }}>
+                          <CurrencyAmount amount={6916.5} convertFromBhd isTotal bold />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div
                     style={{
                       display: 'grid',
@@ -567,7 +650,11 @@ export const ApplicationSettingsPage: React.FC = () => {
                       onChange={setSandboxDate}
                     />
                     <NumberInput
-                      label={`Live Salary Input (${currencyCode} • ${currencyMeta.decimals} Decimals)`}
+                      label={
+                        showCurrencyCode
+                          ? `Live Salary Input (${currencyCode} • ${currencyMeta.decimals} Decimals)`
+                          : `Live Salary Input (${currencyMeta.decimals} Decimals • Code Hidden)`
+                      }
                       useGlobalCurrency
                       helpText={`Step automatically adapts to ${currencyMeta.step} (${currencyMeta.subUnit}).`}
                       value={sandboxAmount}
@@ -576,10 +663,29 @@ export const ApplicationSettingsPage: React.FC = () => {
                   </div>
 
                   <DataTable
-                    title={isAr ? 'معاينة جدول الرواتب والمخصصات' : 'Live Payroll & Date Format Preview'}
+                    title={isAr ? 'معاينة جدول الرواتب والمجاميع الفرعية والإجمالية' : 'Live Payroll Report Preview (Line Items + Subtotal & Grand Total)'}
                     columns={previewColumns}
                     data={SAMPLE_PAYROLL_ROWS}
                     pageSize={5}
+                    summaryRows={[
+                      {
+                        id: 'sub-earnings',
+                        cells: {
+                          component: isAr ? 'المجموع الفرعي (الاستحقاقات المباشرة)' : 'Subtotal — Direct Earnings',
+                          effectiveDate: formatDate('2026-11-28'),
+                          baseBhd: <CurrencyAmount amount={earningsSubtotalBhd} convertFromBhd isTotal bold />,
+                        },
+                      },
+                      {
+                        id: 'grand-total',
+                        highlight: true,
+                        cells: {
+                          component: isAr ? 'الإجمالي الكلي (شامل مخصص نهاية الخدمة)' : 'Grand Total — Monthly Payroll & EOSB Cost',
+                          effectiveDate: formatDate('2026-11-28'),
+                          baseBhd: <CurrencyAmount amount={grandTotalBhd} convertFromBhd isTotal bold />,
+                        },
+                      },
+                    ]}
                   />
                 </div>
               ),

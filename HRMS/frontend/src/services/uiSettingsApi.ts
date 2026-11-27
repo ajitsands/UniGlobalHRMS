@@ -33,6 +33,8 @@ export interface GlobalUiSettingsPayload {
   dateFormat: string;
   timeFormat: string;
   currencyCode: string;
+  showCurrencyCode: boolean;
+  showCurrencyOnTotals: boolean;
   timeZoneId: string;
   updatedBy?: string;
   updatedAtUtc?: string;

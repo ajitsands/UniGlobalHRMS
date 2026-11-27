@@ -269,6 +269,10 @@ interface ThemeContextValue {
   setTimeFormat: (fmt: AppTimeFormat) => void;
   currencyCode: GulfCurrencyCode;
   setCurrencyCode: (code: GulfCurrencyCode) => void;
+  showCurrencyCode: boolean;
+  setShowCurrencyCode: (show: boolean) => void;
+  showCurrencyOnTotals: boolean;
+  setShowCurrencyOnTotals: (show: boolean) => void;
   currencyMeta: CurrencyMetadata;
   timeZone: GulfTimeZoneId;
   setTimeZone: (tz: GulfTimeZoneId) => void;
@@ -277,7 +281,7 @@ interface ThemeContextValue {
   formatTime: (input: Date | string, includeSeconds?: boolean) => string;
   formatHour: (hour24: number) => string;
   formatDateTime: (input: Date | string, includeSeconds?: boolean) => string;
-  formatCurrency: (amount: number, convertFromBhd?: boolean) => string;
+  formatCurrency: (amount: number, convertFromBhd?: boolean, isTotal?: boolean) => string;
   todayIso: () => string;
   dbMenuOrder: string[];
   isSavingToDb: boolean;
@@ -320,6 +324,8 @@ interface PersistedSettings {
   dateFormat: AppDateFormat;
   timeFormat: AppTimeFormat;
   currencyCode: GulfCurrencyCode;
+  showCurrencyCode: boolean;
+  showCurrencyOnTotals: boolean;
   timeZone: GulfTimeZoneId;
 }
 
@@ -353,6 +359,8 @@ const DEFAULT_SETTINGS: PersistedSettings = {
   dateFormat: 'DD-MM-YYYY',
   timeFormat: '12h',
   currencyCode: 'BHD',
+  showCurrencyCode: true,
+  showCurrencyOnTotals: true,
   timeZone: 'Asia/Bahrain',
 };
 
@@ -402,6 +410,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [dateFormat, setDateFormat] = useState<AppDateFormat>(initial.dateFormat || 'DD-MM-YYYY');
   const [timeFormat, setTimeFormat] = useState<AppTimeFormat>(initial.timeFormat || '12h');
   const [currencyCode, setCurrencyCode] = useState<GulfCurrencyCode>(initial.currencyCode || 'BHD');
+  const [showCurrencyCode, setShowCurrencyCode] = useState<boolean>(
+    initial.showCurrencyCode !== undefined ? Boolean(initial.showCurrencyCode) : true
+  );
+  const [showCurrencyOnTotals, setShowCurrencyOnTotals] = useState<boolean>(
+    initial.showCurrencyOnTotals !== undefined ? Boolean(initial.showCurrencyOnTotals) : true
+  );
   const [timeZone, setTimeZone] = useState<GulfTimeZoneId>(initial.timeZone || 'Asia/Bahrain');
   const [dbMenuOrder, setDbMenuOrder] = useState<string[]>([]);
 
@@ -464,6 +478,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (remote.dateFormat) setDateFormat(remote.dateFormat as AppDateFormat);
       if (remote.timeFormat) setTimeFormat(remote.timeFormat as AppTimeFormat);
       if (remote.currencyCode) setCurrencyCode(remote.currencyCode as GulfCurrencyCode);
+      if (typeof remote.showCurrencyCode === 'boolean') setShowCurrencyCode(remote.showCurrencyCode);
+      if (typeof remote.showCurrencyOnTotals === 'boolean') setShowCurrencyOnTotals(remote.showCurrencyOnTotals);
       if (remote.timeZoneId) setTimeZone(remote.timeZoneId as GulfTimeZoneId);
       setLastSavedBy(remote.updatedBy ?? 'SuperAdmin');
       setLastSavedAtUtc(remote.updatedAtUtc ?? '');
@@ -507,6 +523,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         dateFormat,
         timeFormat,
         currencyCode,
+        showCurrencyCode,
+        showCurrencyOnTotals,
         timeZoneId: timeZone,
       };
       const saved = await saveGlobalUiSettings(payload, 'SuperAdmin', userRole);
@@ -585,6 +603,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         dateFormat,
         timeFormat,
         currencyCode,
+        showCurrencyCode,
+        showCurrencyOnTotals,
         timeZone,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -621,6 +641,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     dateFormat,
     timeFormat,
     currencyCode,
+    showCurrencyCode,
+    showCurrencyOnTotals,
     timeZone,
   ]);
 
@@ -780,6 +802,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setTimeFormat,
         currencyCode,
         setCurrencyCode,
+        showCurrencyCode,
+        setShowCurrencyCode,
+        showCurrencyOnTotals,
+        setShowCurrencyOnTotals,
         currencyMeta: getCurrencyMeta(currencyCode),
         timeZone,
         setTimeZone,
@@ -788,7 +814,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         formatTime: (val, sec = false) => formatAppTimeValue(val, timeFormat, timeZone, sec),
         formatHour: (h) => formatAppHourSlot(h, timeFormat),
         formatDateTime: (val, sec = true) => formatAppDateTimeValue(val, dateFormat, timeFormat, timeZone, sec),
-        formatCurrency: (amt, conv = false) => formatAppCurrencyValue(amt, currencyCode, conv),
+        formatCurrency: (amt, conv = false, isTotal = false) =>
+          formatAppCurrencyValue(
+            amt,
+            currencyCode,
+            conv,
+            isTotal ? showCurrencyOnTotals : showCurrencyCode
+          ),
         todayIso: () => getTodayIsoInTimeZone(timeZone),
         dbMenuOrder,
         isSavingToDb,

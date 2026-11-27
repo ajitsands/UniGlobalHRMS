@@ -38,6 +38,8 @@ public class AppUiSettingsDto
     public string DateFormat { get; set; } = "DD-MM-YYYY";
     public string TimeFormat { get; set; } = "12h";
     public string CurrencyCode { get; set; } = "BHD";
+    public bool ShowCurrencyCode { get; set; } = true;
+    public bool ShowCurrencyOnTotals { get; set; } = true;
     public string TimeZoneId { get; set; } = "Asia/Bahrain";
 
     public string UpdatedBy { get; set; } = "SuperAdmin";
