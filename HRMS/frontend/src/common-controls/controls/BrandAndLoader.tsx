@@ -92,21 +92,117 @@ export const UniGlobalLogoIcon: React.FC<UniGlobalLogoIconProps> = ({
   );
 };
 
+export interface PromptLogoProps {
+  variant?: 'color' | 'white';
+  height?: number;
+  badgeText?: string;
+  className?: string;
+}
+
+/**
+ * Official PROMPT Solutions Logo (from client reference prompt_logo.png & prompt_logo_white.png).
+ * Used across Login Screens and PROMPT ERP / HRMS headers.
+ */
+export const PromptLogo: React.FC<PromptLogoProps> = ({
+  variant = 'color',
+  height = 44,
+  badgeText,
+  className = '',
+}) => {
+  const src =
+    variant === 'white'
+      ? '/assets/logos/prompt_logo_white.png'
+      : '/assets/logos/prompt_logo.png';
+
+  return (
+    <span
+      className={className}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 12,
+      }}
+    >
+      <img
+        src={src}
+        alt="Prompt Solutions"
+        style={{
+          height,
+          width: 'auto',
+          objectFit: 'contain',
+          display: 'block',
+        }}
+      />
+      {badgeText && (
+        <>
+          <span
+            aria-hidden="true"
+            style={{
+              height: Math.round(height * 0.56),
+              width: 1,
+              background: variant === 'white' ? 'rgba(255,255,255,0.35)' : 'var(--ug-border-strong)',
+            }}
+          />
+          <span
+            style={{
+              fontSize: '0.852rem',
+              fontWeight: 800,
+              letterSpacing: '1.8px',
+              textTransform: 'uppercase',
+              color: variant === 'white' ? '#ffffff' : 'var(--ug-primary)',
+            }}
+          >
+            {badgeText}
+          </span>
+        </>
+      )}
+    </span>
+  );
+};
+
 export interface UniGlobalLoaderProps {
   size?: 'sm' | 'md' | 'lg';
   label?: string;
   overlay?: boolean;
+  brand?: 'uniglobal' | 'prompt';
 }
 
 export const UniGlobalLoader: React.FC<UniGlobalLoaderProps> = ({
   size = 'md',
   label = 'Loading...',
   overlay = false,
+  brand = 'uniglobal',
 }) => {
   const px = size === 'sm' ? 22 : size === 'lg' ? 46 : 32;
   const content = (
-    <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-      <UniGlobalLogoIcon size={px} animated />
+    <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+      {brand === 'prompt' ? (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <PromptLogo height={px + 6} />
+          <div
+            style={{
+              width: 120,
+              height: 4,
+              borderRadius: 999,
+              background: 'var(--ug-border)',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
+            <div
+              style={{
+                width: '45%',
+                height: '100%',
+                borderRadius: 999,
+                background: 'var(--ug-primary)',
+                animation: 'ug-login-bar-slide 1.1s ease-in-out infinite',
+              }}
+            />
+          </div>
+        </div>
+      ) : (
+        <UniGlobalLogoIcon size={px} animated />
+      )}
       {label && (
         <span style={{ fontSize: '0.926rem', fontWeight: 600, color: 'var(--ug-primary)' }}>
           {label}
@@ -118,7 +214,7 @@ export const UniGlobalLoader: React.FC<UniGlobalLoaderProps> = ({
   if (!overlay) return content;
 
   return (
-    <div className="ug-backdrop" style={{ zIndex: 120 }}>
+    <div className="ug-backdrop" style={{ zIndex: 150 }}>
       <div
         style={{
           background: 'var(--ug-surface)',

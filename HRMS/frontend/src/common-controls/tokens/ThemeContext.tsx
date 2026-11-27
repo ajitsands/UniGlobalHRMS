@@ -8,6 +8,7 @@ import {
 export type ThemeMode = 'uniglobal-light' | 'single' | 'gradient';
 export type SurfaceThemeId =
   | 'uniglobal-light'
+  | 'prompt-maroon'
   | 'midnight-dark'
   | 'obsidian-gold'
   | 'royal-ivory'
@@ -36,6 +37,16 @@ export const SURFACE_THEME_PRESETS: SurfaceThemePreset[] = [
     cardPreview: '#ffffff',
     hfText: '#1B365D',
     menuText: '#334155',
+  },
+  {
+    id: 'prompt-maroon',
+    name: 'Prompt Maroon',
+    mode: 'light',
+    primary: '#A1077E',
+    bgPreview: '#f6f7f9',
+    cardPreview: '#ffffff',
+    hfText: '#A1077E',
+    menuText: '#1C252E',
   },
   {
     id: 'midnight-dark',
@@ -141,6 +152,12 @@ export const GRADIENT_PRESETS: GradientPreset[] = [
     primary: '#1B365D',
   },
   {
+    id: 'prompt-maroon-glow',
+    name: 'Prompt Maroon Glow',
+    css: 'linear-gradient(135deg, #A1077E 0%, #5B0547 100%)',
+    primary: '#A1077E',
+  },
+  {
     id: 'uniglobal-navy',
     name: 'UniGlobal Navy Ocean',
     css: 'linear-gradient(135deg, #1B365D 0%, #1d4ed8 100%)',
@@ -161,6 +178,7 @@ export const GRADIENT_PRESETS: GradientPreset[] = [
 ];
 
 export const SINGLE_COLOR_PRESETS = [
+  { name: 'Prompt Maroon', hex: '#A1077E' },
   { name: 'UniGlobal Navy', hex: '#1B365D' },
   { name: 'UniGlobal Crimson', hex: '#B31B34' },
   { name: 'Royal Blue', hex: '#1d4ed8' },

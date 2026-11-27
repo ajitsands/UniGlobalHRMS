@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept A Studio – Login – PROMPT HRMS concept</title>
+<link rel="stylesheet" href="common.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:var(--pc);text-decoration:none;font-weight:600}a:hover{text-decoration:underline}
+.tp-wrap{position:relative;display:inline-flex}
+.tp-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--text);font-weight:600;font-size:14px;font-family:inherit;cursor:pointer}
+.tp-btn:hover{border-color:var(--p);color:var(--pc)}
+.tp{position:absolute;inset-inline-end:0;top:50px;width:324px;z-index:50;background:var(--paper);color:var(--text);border-radius:16px;padding:18px;box-shadow:0 24px 48px -12px rgba(0,0,0,.28),0 0 0 1px var(--line);display:flex;flex-direction:column;gap:12px;text-align:start}
+.tp-h{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--sub)}
+.tp-segs{display:flex;gap:4px;background:var(--surface);border-radius:10px;padding:4px}
+.tp-seg{flex:1;min-height:36px;border:0;background:none;border-radius:8px;color:var(--sub);font-weight:600;font-size:13px;font-family:inherit;cursor:pointer}
+.tp-seg:hover{color:var(--text)}
+.tp-seg.on{background:var(--paper);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.tp-pals{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+.tp-dot{width:30px;height:30px;border-radius:50%;border:0;cursor:pointer;padding:0}
+.tp-dot:hover{transform:scale(1.1)}
+.tp-fonts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tp-opt{min-height:56px;border-radius:10px;border:1px solid var(--line);background:none;color:var(--sub);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px}
+.tp-opt b{font-size:18px;color:var(--text)}
+.tp-opt:hover{border-color:var(--sub)}
+.tp-opt.on{border:2px solid var(--p);color:var(--text)}
+.tp-note{font-size:12px;color:var(--sub);line-height:1.4}
+.fld{display:flex;flex-direction:column;gap:8px}
+.fld label{font-size:14px;font-weight:600}
+.inp{display:flex;align-items:center;gap:10px;height:52px;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:0 14px;color:var(--sub)}
+.inp:hover{border-color:var(--sub)}
+.inp:focus-within{border-color:var(--p);box-shadow:0 0 0 4px var(--pt)}
+.inp input{flex:1;border:0;outline:none;background:none;font-family:inherit;font-size:15px;color:var(--text);min-width:0}
+.eye{border:0;background:none;color:var(--sub);cursor:pointer;width:36px;height:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center}
+.eye:hover{background:var(--surface);color:var(--text)}
+.btn-p{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border:0;border-radius:12px;background:var(--p);color:var(--on);font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,box-shadow .2s}
+.btn-p:hover{background:var(--pd);box-shadow:0 10px 20px -6px var(--pt)}
+.btn-o{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--text);font-family:inherit;font-weight:600;font-size:15px;cursor:pointer}
+.btn-o:hover{border-color:var(--p);color:var(--pc);background:var(--pt2)}
+.lang{display:inline-flex;gap:2px;background:var(--surface);border-radius:999px;padding:3px}
+.lang button{border:0;background:none;min-height:34px;padding:0 12px;border-radius:999px;color:var(--sub);font-family:inherit;font-weight:600;cursor:pointer}
+.lang button.on{background:var(--paper);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.chip-on{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--onl);font-size:13px;font-weight:600}
+</style>
+
+</head>
+<body>
+
+
+<div data-theme-root style="--p:#A1077E;--pd:#810665;--pc:#A1077E;--pt:rgba(161,7,126,0.12);--pt2:rgba(161,7,126,0.06);--on:#FFFFFF;--onl:rgba(255,255,255,.35);--onf:rgba(255,255,255,.10);--bg:#F6F7F9;--paper:#FFFFFF;--text:#1C252E;--sub:#637381;--line:rgba(145,158,171,.32);--surface:#F4F6F8;--a2:#F7A600;--a3:#00B8D9;--okT:#0B7046;--warnT:#8A5200;--errT:#B71D18;--infoT:#006C9C;--sh:none;font-family:&#x27;Public Sans&#x27;, sans-serif; min-height: 100vh; display: flex; flex-wrap: wrap; background: var(--bg); color: var(--text)">
+
+  <section style="flex: 1 1 520px; min-height: 100vh; background: var(--p); color: var(--on); padding: 48px 56px; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; position: relative; overflow: hidden">
+    <div aria-hidden="true" style="position: absolute; width: 560px; height: 560px; border-radius: 50%; border: 1px solid var(--onl); inset-inline-end: -180px; top: -160px"></div>
+    <div aria-hidden="true" style="position: absolute; width: 380px; height: 380px; border-radius: 50%; border: 1px solid var(--onl); inset-inline-end: -90px; top: -70px"></div>
+    <div aria-hidden="true" style="position: absolute; width: 300px; height: 300px; border-radius: 50%; background: var(--onf); inset-inline-start: -120px; bottom: -120px"></div>
+    <img src="prompt_logo_white.png" data-logo="onp" alt="Prompt Solutions" style="height: 52px; width: auto; align-self: flex-start; position: relative">
+    <div style="display: flex; flex-direction: column; gap: 20px; position: relative; max-width: 560px">
+      <span style="font-size: 13px; font-weight: 700; letter-spacing: 2px; opacity: .85">PROMPT HRMS</span>
+      <h1 style="margin: 0; font-size: 46px; line-height: 1.1; font-weight: 800">People, pay and attendance – in one place.</h1>
+      <p style="margin: 0; font-size: 17px; line-height: 1.6; opacity: .9">Employee records, attendance, leave, payroll and self-service, in English and Arabic. Runs on its own or inside PROMPT ERP.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <span class="chip-on">Employees</span><span class="chip-on">Attendance</span><span class="chip-on">Leave</span><span class="chip-on">Payroll</span><span class="chip-on">Self-service</span><span class="chip-on">Recruitment</span>
+      </div>
+    </div>
+    <span style="font-size: 13px; opacity: .8; position: relative">© 2026 Prompt Solutions · Version 2.0</span>
+  </section>
+
+  <section style="flex: 1 1 420px; min-height: 100vh; background: var(--paper); display: flex; flex-direction: column; padding: 28px 40px">
+    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap">
+      <div class="lang" role="group" aria-label="Language"><button class="on" aria-pressed="true">EN</button><button lang="ar">عربي</button></div>
+      <div class="tp-wrap">
+        <button class="tp-btn" data-tp-toggle aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5C21 6.5 17 3 12 3z"></path><circle cx="7.5" cy="11" r="1.2"></circle><circle cx="10.5" cy="7.5" r="1.2"></circle><circle cx="15" cy="7.5" r="1.2"></circle></svg>Theme</button>
+        
+          <div class="tp" role="dialog" data-tp-panel style="display:none" aria-label="Theme settings">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><strong style="font-size: 16px">Settings</strong><span class="tp-note" data-tp-summary>Maroon · Public Sans · Light</span></div>
+            <span class="tp-h">Mode</span>
+            <div class="tp-segs"><button class="tp-seg on" data-mode="Light">Light</button><button class="tp-seg" data-mode="Dark">Dark</button></div>
+            <span class="tp-h">Palette</span>
+            <div class="tp-pals"><button class="tp-dot" title="Maroon" aria-label="Maroon (selected)" data-pal="Maroon" style="background: #A1077E; box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px #A1077E"></button><button class="tp-dot" title="Green" aria-label="Green" data-pal="Green" style="background: #00A76F; box-shadow: none"></button><button class="tp-dot" title="Olive" aria-label="Olive" data-pal="Olive" style="background: #6B8E23; box-shadow: none"></button><button class="tp-dot" title="Purple" aria-label="Purple" data-pal="Purple" style="background: #7C3AED; box-shadow: none"></button><button class="tp-dot" title="Amber" aria-label="Amber" data-pal="Amber" style="background: #F59E0B; box-shadow: none"></button><button class="tp-dot" title="Red" aria-label="Red" data-pal="Red" style="background: #EF4444; box-shadow: none"></button><button class="tp-dot" title="Rose" aria-label="Rose" data-pal="Rose" style="background: #E11D48; box-shadow: none"></button><button class="tp-dot" title="Sky" aria-label="Sky" data-pal="Sky" style="background: #0EA5E9; box-shadow: none"></button><button class="tp-dot" title="Cyan" aria-label="Cyan" data-pal="Cyan" style="background: #0891B2; box-shadow: none"></button><button class="tp-dot" title="Slate" aria-label="Slate" data-pal="Slate" style="background: #475569; box-shadow: none"></button><button class="tp-dot" title="Blue" aria-label="Blue" data-pal="Blue" style="background: #2563EB; box-shadow: none"></button><button class="tp-dot" title="Teal" aria-label="Teal" data-pal="Teal" style="background: #0D9488; box-shadow: none"></button><button class="tp-dot" title="Maroon2" aria-label="Maroon2" data-pal="Maroon2" style="background: #A01800; box-shadow: none"></button><button class="tp-dot" title="Magenta" aria-label="Magenta" data-pal="Magenta" style="background: #D912E6; box-shadow: none"></button><button class="tp-dot" title="Navy Blue" aria-label="Navy Blue" data-pal="Navy Blue" style="background: #13215C; box-shadow: none"></button><button class="tp-dot" title="Deep Blue" aria-label="Deep Blue" data-pal="Deep Blue" style="background: #243070; box-shadow: none"></button></div>
+            <span class="tp-h">Font</span>
+            <div class="tp-fonts"><button class="tp-opt on" data-font="Public Sans" style="font-family: &#x27;Public Sans&#x27;, sans-serif"><b>Aa</b>Public Sans</button><button class="tp-opt" data-font="Inter" style="font-family: &#x27;Inter&#x27;, sans-serif"><b>Aa</b>Inter</button><button class="tp-opt" data-font="DM Sans" style="font-family: &#x27;DM Sans&#x27;, sans-serif"><b>Aa</b>DM Sans</button><button class="tp-opt" data-font="Nunito Sans" style="font-family: &#x27;Nunito Sans&#x27;, sans-serif"><b>Aa</b>Nunito Sans</button></div>
+            <span class="tp-note">Same options as PROMPT Settings, saved per user.</span>
+          </div>
+        
+      </div>
+    </div>
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 0">
+      <form style="width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 22px">
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <h2 style="margin: 0; font-size: 30px; font-weight: 800">Welcome back</h2>
+          <p style="margin: 0; font-size: 15px; color: var(--sub)">Sign in to continue to PROMPT HRMS.</p>
+        </div>
+        <div class="fld"><label for="a-user">User ID or email</label><span class="inp"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg><input id="a-user" placeholder="e.g. USER40" autocomplete="username"></span></div>
+        <div class="fld"><label for="a-pw">Password</label><span class="inp"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg><input id="a-pw" type="password" value="password" autocomplete="current-password"><button class="eye" type="button" aria-label="Show password"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></button></span></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px">
+          <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer"><input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--p)">Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <button class="btn-p" type="button">Sign in</button>
+        <div style="display: flex; align-items: center; gap: 12px; color: var(--sub); font-size: 13px"><span style="flex: 1; height: 1px; background: var(--line)"></span>or<span style="flex: 1; height: 1px; background: var(--line)"></span></div>
+        <button class="btn-o" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"></rect><path d="M11 18h2"></path></svg>Sign in with one-time code</button>
+        <button class="btn-o" type="button">Sign in with your PROMPT ERP account</button>
+        <p style="margin: 0; font-size: 13px; color: var(--sub); text-align: center">After signing in you choose your company and branch.</p>
+      </form>
+    </div>
+    <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--sub)"><span>Need help? Contact your administrator.</span><span><a href="#">Privacy</a> · <a href="#">Terms</a></span></div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var CFG = {"light": {"bg": "#F6F7F9", "paper": "#FFFFFF", "text": "#1C252E", "sub": "#637381", "line": "rgba(145,158,171,.32)", "surface": "#F4F6F8"}, "dark": {"bg": "#141A21", "paper": "#1C252E", "text": "#FFFFFF", "sub": "#A3AEB9", "line": "rgba(145,158,171,.24)", "surface": "#28323D"}, "shL": "none", "shD": "none", "pal": "Maroon", "mode": "Light", "font": "Public Sans"};
+  var PAL = [['Maroon','#A1077E'],['Green','#00A76F'],['Olive','#6B8E23'],['Purple','#7C3AED'],['Amber','#F59E0B'],['Red','#EF4444'],['Rose','#E11D48'],['Sky','#0EA5E9'],['Cyan','#0891B2'],['Slate','#475569'],['Blue','#2563EB'],['Teal','#0D9488'],['Maroon2','#A01800'],['Magenta','#D912E6'],['Navy Blue','#13215C'],['Deep Blue','#243070']];
+  var FONTS = [['Public Sans',"'Public Sans', sans-serif"],['Inter',"'Inter', sans-serif"],['DM Sans',"'DM Sans', sans-serif"],['Nunito Sans',"'Nunito Sans', sans-serif"]];
+  var state = { pal: CFG.pal, mode: CFG.mode, font: CFG.font };
+  function rgbOf(h) { var n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+  function hexOf(c) { return '#' + c.map(function (v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); }).join(''); }
+  function rgba(h, a) { var c = rgbOf(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function mix(h, f, to) { var t = to === 'w' ? 255 : 0; return hexOf(rgbOf(h).map(function (v) { return v + (t - v) * f; })); }
+  function lum(h) { var c = rgbOf(h); return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]; }
+  function find(list, n) { for (var i = 0; i < list.length; i++) if (list[i][0] === n) return list[i][1]; return list[0][1]; }
+  function apply() {
+    var raw = find(PAL, state.pal), fcss = find(FONTS, state.font), L = state.mode === 'Light';
+    var p = L ? raw : (lum(raw) < 80 ? mix(raw, 0.45, 'w') : raw);
+    var T = L ? CFG.light : CFG.dark, onDark = lum(p) < 165;
+    var pc = L ? (lum(p) > 160 ? mix(p, 0.45, 'b') : p) : (lum(p) < 110 ? mix(p, 0.35, 'w') : p);
+    var v = { '--p': p, '--pd': mix(p, 0.2, 'b'), '--pc': pc, '--pt': rgba(p, L ? 0.12 : 0.24), '--pt2': rgba(p, L ? 0.06 : 0.12),
+      '--on': onDark ? '#FFFFFF' : '#1C252E', '--onl': onDark ? 'rgba(255,255,255,.35)' : 'rgba(28,37,46,.3)', '--onf': onDark ? 'rgba(255,255,255,.10)' : 'rgba(28,37,46,.08)',
+      '--bg': T.bg, '--paper': T.paper, '--text': T.text, '--sub': T.sub, '--line': T.line, '--surface': T.surface, '--a2': '#F7A600', '--a3': '#00B8D9',
+      '--okT': L ? '#0B7046' : '#5BE49B', '--warnT': L ? '#8A5200' : '#FFD666', '--errT': L ? '#B71D18' : '#FFAC82', '--infoT': L ? '#006C9C' : '#61F3F3',
+      '--sh': L ? CFG.shL : CFG.shD };
+    var root = document.querySelector('[data-theme-root]');
+    Object.keys(v).forEach(function (k) { root.style.setProperty(k, v[k]); });
+    root.style.fontFamily = fcss;
+    document.querySelectorAll('[data-mode]').forEach(function (b) { b.className = b.getAttribute('data-mode') === state.mode ? 'tp-seg on' : 'tp-seg'; });
+    document.querySelectorAll('[data-font]').forEach(function (b) { b.className = b.getAttribute('data-font') === state.font ? 'tp-opt on' : 'tp-opt'; });
+    document.querySelectorAll('[data-pal]').forEach(function (b) { var n = b.getAttribute('data-pal'), h = find(PAL, n); b.style.boxShadow = n === state.pal ? '0 0 0 2px var(--paper), 0 0 0 4px ' + h : 'none'; b.setAttribute('aria-label', n + (n === state.pal ? ' (selected)' : '')); });
+    document.querySelectorAll('[data-tp-summary]').forEach(function (s) { s.textContent = state.pal + ' · ' + state.font + ' · ' + state.mode; });
+    document.querySelectorAll('img[data-logo="std"]').forEach(function (i) { i.src = L ? 'prompt_logo.png' : 'prompt_logo_white.png'; });
+    document.querySelectorAll('img[data-logo="onp"]').forEach(function (i) { i.src = onDark ? 'prompt_logo_white.png' : 'prompt_logo.png'; });
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-tp-toggle],[data-mode],[data-pal],[data-font]');
+    var panel = document.querySelector('[data-tp-panel]');
+    if (!el) { if (panel && !e.target.closest('[data-tp-panel]')) { panel.style.display = 'none'; } return; }
+    if (el.hasAttribute('data-tp-toggle')) { if (panel) { var open = panel.style.display === 'none'; panel.style.display = open ? '' : 'none'; el.setAttribute('aria-expanded', open ? 'true' : 'false'); } return; }
+    if (el.hasAttribute('data-mode')) state.mode = el.getAttribute('data-mode');
+    if (el.hasAttribute('data-pal')) state.pal = el.getAttribute('data-pal');
+    if (el.hasAttribute('data-font')) state.font = el.getAttribute('data-font');
+    apply();
+  });
+  document.querySelectorAll('form').forEach(function (f) { f.addEventListener('submit', function (e) { e.preventDefault(); }); });
+  apply();
+})();
+
+</script>
+</body>
+</html>

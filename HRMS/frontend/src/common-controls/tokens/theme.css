@@ -1475,3 +1475,322 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+[data-surface-theme='prompt-maroon'] {
+  --ug-bg: #f6f7f9;
+  --ug-surface: #ffffff;
+  --ug-surface-alt: #f4f6f8;
+  --ug-header-bg: #ffffff;
+  --ug-footer-bg: #f4f6f8;
+  --ug-sidebar-bg: #ffffff;
+  --ug-border: #e2e8f0;
+  --ug-border-strong: #cbd5e1;
+  --ug-scrollbar-track: #f4f6f8;
+}
+
+/* ==========================================================================
+   PROMPT HRMS — Interactive Login Experience (3 Client-Inspired Styles)
+   Default Brand Accent: #A1077E (Prompt Maroon) + 16 PROMPT Swatches
+   ========================================================================== */
+@keyframes ug-login-bar-slide {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(120%); }
+  100% { transform: translateX(250%); }
+}
+
+@keyframes ug-login-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes ug-login-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ug-login-scope {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--ug-bg);
+  color: var(--ug-text);
+  position: relative;
+  overflow-x: clip;
+}
+
+.ug-login-scope .ug-input {
+  min-height: 44px;
+  border-radius: 10px;
+  font-size: 0.98rem;
+}
+
+.ug-login-scope .ug-select-trigger {
+  min-height: 44px;
+  border-radius: 10px;
+}
+
+.ug-login-scope .ug-btn-lg {
+  min-height: 48px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.ug-login-switcher-bar {
+  position: sticky;
+  top: 0;
+  z-index: 65;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--ug-border);
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ug-login-scope.is-dark .ug-login-switcher-bar {
+  background: rgba(18, 24, 32, 0.92);
+}
+
+.ug-login-concept-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ug-surface-alt);
+  border: 1px solid var(--ug-border);
+  padding: 4px;
+  border-radius: 999px;
+  flex-wrap: wrap;
+}
+
+.ug-login-concept-pill {
+  border: none;
+  background: transparent;
+  color: var(--ug-text-secondary);
+  font-family: var(--ug-font);
+  font-size: 0.889rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--ug-transition);
+}
+
+.ug-login-concept-pill:hover {
+  color: var(--ug-primary);
+}
+
+.ug-login-concept-pill.active {
+  background: var(--ug-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--ug-primary-soft);
+}
+
+/* Concept 1: Studio Split Layout */
+.ug-login-studio-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(440px, 1.12fr) minmax(380px, 0.88fr);
+  min-height: calc(100vh - 55px);
+}
+
+.ug-login-studio-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 44px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  color: #ffffff;
+}
+
+.ug-login-studio-form-pane {
+  background: var(--ug-surface);
+  padding: 32px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.ug-login-hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 0.889rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.ug-login-hero-chip:hover,
+.ug-login-hero-chip.active {
+  background: #ffffff;
+  color: var(--ug-primary);
+  border-color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+/* Concept 2: Horizon Radial-Dot Workspace Portal */
+.ug-login-horizon-dots {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-image: radial-gradient(var(--ug-border-strong) 1.25px, transparent 1.25px);
+  background-size: 22px 22px;
+}
+
+.ug-login-module-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 122px;
+  padding: 14px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--ug-border);
+  background: var(--ug-surface);
+  color: var(--ug-text);
+  font-size: 0.852rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: center;
+}
+
+.ug-login-module-tile:hover,
+.ug-login-module-tile.active {
+  border-color: var(--ug-primary);
+  box-shadow: 0 10px 24px -8px var(--ug-primary-soft);
+  transform: translateY(-3px);
+}
+
+.ug-login-module-tile-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--ug-primary-soft);
+  color: var(--ug-primary);
+  display: grid;
+  place-items: center;
+  transition: all 0.18s ease;
+}
+
+.ug-login-module-tile.active .ug-login-module-tile-icon {
+  background: var(--ug-primary);
+  color: #ffffff;
+}
+
+/* Concept 3: Nocturne & Pulse Executive Grid Cockpit */
+.ug-login-nocturne-wrap {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(440px, 1.15fr) minmax(380px, 0.85fr);
+  min-height: calc(100vh - 55px);
+  background-image:
+    linear-gradient(var(--ug-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ug-border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  position: relative;
+}
+
+/* 6-Digit Interactive OTP Inputs */
+.ug-login-otp-row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  direction: ltr;
+}
+
+.ug-login-otp-input {
+  width: 100%;
+  height: 52px;
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 800;
+  border-radius: 12px;
+  border: 1.5px solid var(--ug-border-strong);
+  background: var(--ug-surface);
+  color: var(--ug-text);
+  outline: none;
+  transition: all 0.16s ease;
+}
+
+.ug-login-otp-input:focus {
+  border-color: var(--ug-primary);
+  box-shadow: 0 0 0 4px var(--ug-primary-soft);
+  transform: translateY(-1px);
+}
+
+.ug-login-role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--ug-border);
+  background: var(--ug-surface-alt);
+  color: var(--ug-text-secondary);
+  font-size: 0.815rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ug-login-role-chip:hover,
+.ug-login-role-chip.active {
+  border-color: var(--ug-primary);
+  background: var(--ug-primary-soft);
+  color: var(--ug-primary);
+}
+
+.ug-login-fade-panel {
+  animation: ug-login-fade-up 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (max-width: 960px) {
+  .ug-login-studio-grid,
+  .ug-login-nocturne-wrap {
+    grid-template-columns: 1fr;
+  }
+  .ug-login-studio-hero {
+    padding: 32px 24px;
+    min-height: auto;
+  }
+  .ug-login-studio-form-pane {
+    padding: 28px 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ug-login-switcher-bar {
+    padding: 8px 12px;
+  }
+  .ug-login-concept-pill {
+    padding: 5px 10px;
+    font-size: 0.815rem;
+  }
+  .ug-login-otp-input {
+    height: 44px;
+    font-size: 1.15rem;
+  }
+}

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept B Horizon – Home – PROMPT HRMS concept</title>
+<link rel="stylesheet" href="common.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.nav-t{display:inline-flex;align-items:center;gap:6px;min-height:64px;padding:0 4px;color:var(--sub);font-size:14px;font-weight:600;text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap}
+.nav-t:hover{color:var(--text);text-decoration:none}
+.nav-t.on{color:var(--pc);border-bottom-color:var(--p)}
+.tile{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:12px;border:1px solid var(--line);background:var(--paper);color:var(--text);text-decoration:none;min-height:132px}
+.tile:hover{border-color:var(--p);box-shadow:0 8px 20px -10px var(--pt);text-decoration:none;color:var(--text)}
+.tile i{width:42px;height:42px;border-radius:12px;background:var(--pt);color:var(--pc);display:flex;align-items:center;justify-content:center;font-style:normal}
+.tile:hover i{background:var(--p);color:var(--on)}
+.stat{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--paper);display:flex;flex-direction:column;gap:6px}
+.ftab{min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--sub);font-family:inherit;font-weight:600;font-size:13px;cursor:pointer}
+.ftab.on{background:var(--text);color:var(--paper);border-color:var(--text)}
+.task{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.task:last-child{border-bottom:0}
+</style>
+
+</head>
+<body>
+
+
+<div data-theme-root style="--p:#A1077E;--pd:#810665;--pc:#A1077E;--pt:rgba(161,7,126,0.12);--pt2:rgba(161,7,126,0.06);--on:#FFFFFF;--onl:rgba(255,255,255,.35);--onf:rgba(255,255,255,.10);--bg:#FAFAFB;--paper:#FFFFFF;--text:#1C252E;--sub:#637381;--line:rgba(145,158,171,.30);--surface:#F4F6F8;--a2:#F7A600;--a3:#00B8D9;--okT:#0B7046;--warnT:#8A5200;--errT:#B71D18;--infoT:#006C9C;--sh:none;font-family:&#x27;Public Sans&#x27;, sans-serif; --rb: 10px; --rc: 12px; min-height: 100vh; background: var(--bg); color: var(--text)">
+  <header style="display: flex; align-items: center; gap: 28px; padding: 0 32px; background: var(--paper); border-bottom: 1px solid var(--line); flex-wrap: wrap">
+    <span style="display: flex; align-items: center; gap: 10px; margin: 12px 0"><img src="prompt_logo.png" data-logo="std" alt="Prompt Solutions" style="height: 38px; width: auto"><span class="chip pri" style="font-size: 12px">HRMS</span></span>
+    <nav aria-label="Main menu" style="display: flex; gap: 22px; flex-wrap: wrap; flex: 1">
+      <a class="nav-t on" href="#" aria-current="page">Home</a>
+      <a class="nav-t" href="#">Employees ⌄</a>
+      <a class="nav-t" href="#">Attendance ⌄</a>
+      <a class="nav-t" href="#">Leave ⌄</a>
+      <a class="nav-t" href="#">Payroll ⌄</a>
+      <a class="nav-t" href="#">People ⌄</a>
+      <a class="nav-t" href="#">Reports ⌄</a>
+    </nav>
+    <div style="display: flex; align-items: center; gap: 6px; margin: 12px 0">
+      <button class="ic" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg></button>
+      <div class="tp-wrap">
+        <button class="tp-btn" data-tp-toggle aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5C21 6.5 17 3 12 3z"></path><circle cx="7.5" cy="11" r="1.2"></circle><circle cx="10.5" cy="7.5" r="1.2"></circle><circle cx="15" cy="7.5" r="1.2"></circle></svg>Theme</button>
+        
+          <div class="tp" role="dialog" data-tp-panel style="display:none" aria-label="Theme settings">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><strong style="font-size: 16px">Settings</strong><span class="tp-note" data-tp-summary>Maroon · Public Sans · Light</span></div>
+            <span class="tp-h">Mode</span>
+            <div class="tp-segs"><button class="tp-seg on" data-mode="Light">Light</button><button class="tp-seg" data-mode="Dark">Dark</button></div>
+            <span class="tp-h">Palette</span>
+            <div class="tp-pals"><button class="tp-dot" title="Maroon" aria-label="Maroon (selected)" data-pal="Maroon" style="background: #A1077E; box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px #A1077E"></button><button class="tp-dot" title="Green" aria-label="Green" data-pal="Green" style="background: #00A76F; box-shadow: none"></button><button class="tp-dot" title="Olive" aria-label="Olive" data-pal="Olive" style="background: #6B8E23; box-shadow: none"></button><button class="tp-dot" title="Purple" aria-label="Purple" data-pal="Purple" style="background: #7C3AED; box-shadow: none"></button><button class="tp-dot" title="Amber" aria-label="Amber" data-pal="Amber" style="background: #F59E0B; box-shadow: none"></button><button class="tp-dot" title="Red" aria-label="Red" data-pal="Red" style="background: #EF4444; box-shadow: none"></button><button class="tp-dot" title="Rose" aria-label="Rose" data-pal="Rose" style="background: #E11D48; box-shadow: none"></button><button class="tp-dot" title="Sky" aria-label="Sky" data-pal="Sky" style="background: #0EA5E9; box-shadow: none"></button><button class="tp-dot" title="Cyan" aria-label="Cyan" data-pal="Cyan" style="background: #0891B2; box-shadow: none"></button><button class="tp-dot" title="Slate" aria-label="Slate" data-pal="Slate" style="background: #475569; box-shadow: none"></button><button class="tp-dot" title="Blue" aria-label="Blue" data-pal="Blue" style="background: #2563EB; box-shadow: none"></button><button class="tp-dot" title="Teal" aria-label="Teal" data-pal="Teal" style="background: #0D9488; box-shadow: none"></button><button class="tp-dot" title="Maroon2" aria-label="Maroon2" data-pal="Maroon2" style="background: #A01800; box-shadow: none"></button><button class="tp-dot" title="Magenta" aria-label="Magenta" data-pal="Magenta" style="background: #D912E6; box-shadow: none"></button><button class="tp-dot" title="Navy Blue" aria-label="Navy Blue" data-pal="Navy Blue" style="background: #13215C; box-shadow: none"></button><button class="tp-dot" title="Deep Blue" aria-label="Deep Blue" data-pal="Deep Blue" style="background: #243070; box-shadow: none"></button></div>
+            <span class="tp-h">Font</span>
+            <div class="tp-fonts"><button class="tp-opt on" data-font="Public Sans" style="font-family: &#x27;Public Sans&#x27;, sans-serif"><b>Aa</b>Public Sans</button><button class="tp-opt" data-font="Inter" style="font-family: &#x27;Inter&#x27;, sans-serif"><b>Aa</b>Inter</button><button class="tp-opt" data-font="DM Sans" style="font-family: &#x27;DM Sans&#x27;, sans-serif"><b>Aa</b>DM Sans</button><button class="tp-opt" data-font="Nunito Sans" style="font-family: &#x27;Nunito Sans&#x27;, sans-serif"><b>Aa</b>Nunito Sans</button></div>
+            <span class="tp-note">Same options as PROMPT Settings, saved per user.</span>
+          </div>
+        
+      </div>
+      <button class="ic" aria-label="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"></path></svg><span class="dot-badge"></span></button>
+      <span class="av" style="width: 38px; height: 38px">FH</span>
+    </div>
+  </header>
+
+  <section style="background: var(--paper); border-bottom: 1px solid var(--line)">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 28px 32px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span class="muted" style="font-size: 14px">Tuesday, 24 November 2026 · <button class="btn-t" style="min-height: 28px; padding: 0 6px">1001 · Head Office ⌄</button></span>
+        <h1 style="margin: 0; font-size: 28px; font-weight: 800">Good morning, Fatima</h1>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap">
+        <button class="btn-o">Apply leave</button>
+        <button class="btn-o">Add employee</button>
+        <button class="btn-p">Run payroll</button>
+      </div>
+    </div>
+  </section>
+
+  <main style="max-width: 1360px; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+    <div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+      <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px" aria-label="Key figures">
+        <div class="stat"><span class="muted" style="font-size: 13px; font-weight: 600">Headcount</span><strong style="font-size: 26px">248</strong><span class="chip ok" style="align-self: flex-start">+3 this month</span></div>
+        <div class="stat"><span class="muted" style="font-size: 13px; font-weight: 600">Net payroll · Nov (BHD)</span><strong style="font-size: 26px">196,517.500</strong><span class="chip warn" style="align-self: flex-start">In validation</span></div>
+        <div class="stat"><span class="muted" style="font-size: 13px; font-weight: 600">Leave liability (BHD)</span><strong style="font-size: 26px">86,420.500</strong><span class="muted" style="font-size: 12px">All entities</span></div>
+        <div class="stat"><span class="muted" style="font-size: 13px; font-weight: 600">Present today</span><strong style="font-size: 26px">231 <span class="muted" style="font-size: 14px">/ 248</span></strong><span class="chip info" style="align-self: flex-start">9 on leave</span></div>
+      </section>
+
+      <section style="display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 18px; font-weight: 700">Your workspace</h2><a href="#" style="font-size: 14px">Edit shortcuts</a></div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px">
+          <a class="tile" href="#"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"></path></svg></i><strong style="font-size: 15px">Employees</strong><span class="muted" style="font-size: 13px">248 active · 2 onboarding</span></a>
+          <a class="tile" href="#"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7v5l3 2"></path></svg></i><strong style="font-size: 15px">Attendance</strong><span class="muted" style="font-size: 13px">5 missed punches</span></a>
+          <a class="tile" href="#"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg></i><strong style="font-size: 15px">Leave</strong><span class="muted" style="font-size: 13px">7 requests waiting</span></a>
+          <a class="tile" href="#"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 15h3"></path></svg></i><strong style="font-size: 15px">Payroll</strong><span class="muted" style="font-size: 13px">Nov run · 3 checks</span></a>
+          <a class="tile" href="#"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16v12H4z"></path><path d="M8 7V5h8v2M9 13h6"></path></svg></i><strong style="font-size: 15px">Expense claims</strong><span class="muted" style="font-size: 13px">6 to approve</span></a>
+          <a class="tile" href="#"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"></path><path d="M9 13h6M9 17h4"></path></svg></i><strong style="font-size: 15px">Letters &amp; documents</strong><span class="muted" style="font-size: 13px">14 expiring soon</span></a>
+          <a class="tile" href="#"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h6v6M10 14L21 3M21 14v7H3V3h7"></path></svg></i><strong style="font-size: 15px">Onboarding &amp; exit</strong><span class="muted" style="font-size: 13px">2 joiners · 1 leaver</span></a>
+          <a class="tile" href="#"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"></path></svg></i><strong style="font-size: 15px">Appraisals &amp; training</strong><span class="muted" style="font-size: 13px">Q4 cycle open</span></a>
+        </div>
+      </section>
+
+      <section class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--line)">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px"><h2 style="margin: 0; font-size: 18px; font-weight: 700">Recent activity</h2><a href="#" style="font-size: 14px">View all</a></div>
+        <div style="overflow-x: auto">
+          <table class="tbl">
+            <thead><tr><th scope="col">Document</th><th scope="col">Area</th><th scope="col">By</th><th scope="col">When</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+              <tr><td>Payroll run · Nov 2026</td><td>Payroll</td><td>Mariam A.</td><td>Today 10:42</td><td><span class="chip warn">Validation</span></td></tr>
+              <tr><td>Offer letter · Noor Khalil</td><td>Recruitment</td><td>Mariam A.</td><td>Today 09:15</td><td><span class="chip ok">Accepted</span></td></tr>
+              <tr><td>Leave · Hussain Jaffar</td><td>Leave</td><td>Hussain J.</td><td>Yesterday</td><td><span class="chip info">Pending</span></td></tr>
+              <tr><td>Missed punch · Imran Qureshi</td><td>Attendance</td><td>Imran Q.</td><td>Yesterday</td><td><span class="chip info">Pending</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <aside style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+      <section class="card" style="border: 1px solid var(--line)">
+        <div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 18px; font-weight: 700">My tasks</h2><span class="chip info">25</span></div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap" role="group" aria-label="Filter tasks"><button class="ftab on" aria-pressed="true">All</button><button class="ftab">Leave 7</button><button class="ftab">Expenses 6</button><button class="ftab">Other 12</button></div>
+        <div>
+          <div class="task"><span class="av">HJ</span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 14px">Annual leave · 07–09 Dec</strong><span class="muted" style="font-size: 13px">Hussain Jaffar · Finance · clash with 1 colleague</span></span><button class="btn-o" style="min-height: 34px; padding: 0 12px; font-size: 13px">Review</button></div>
+          <div class="task"><span class="av">MD</span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 14px">Expense claim · 18.500 BHD</strong><span class="muted" style="font-size: 13px">Mark Dela Cruz · Fuel · receipt attached</span></span><button class="btn-o" style="min-height: 34px; padding: 0 12px; font-size: 13px">Review</button></div>
+          <div class="task"><span class="av">NK</span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 14px">Bank details change</strong><span class="muted" style="font-size: 13px">Noor Khalil · self-service request</span></span><button class="btn-o" style="min-height: 34px; padding: 0 12px; font-size: 13px">Review</button></div>
+          <div class="task"><span class="av">PN</span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 14px">Salary certificate</strong><span class="muted" style="font-size: 13px">Priya Nair · letter request</span></span><button class="btn-o" style="min-height: 34px; padding: 0 12px; font-size: 13px">Review</button></div>
+        </div>
+      </section>
+      <section class="card" style="border: 1px solid var(--line)">
+        <h2 style="margin: 0; font-size: 18px; font-weight: 700">Coming up</h2>
+        <div>
+          <div class="row"><span style="display: flex; gap: 12px; align-items: center"><span style="width: 44px; text-align: center; border-radius: 10px; background: var(--pt); color: var(--pc); padding: 4px 0; font-size: 11px; font-weight: 700">NOV<br><span style="font-size: 16px">25</span></span>Payroll attendance cut-off</span></div>
+          <div class="row"><span style="display: flex; gap: 12px; align-items: center"><span style="width: 44px; text-align: center; border-radius: 10px; background: var(--surface); padding: 4px 0; font-size: 11px; font-weight: 700">NOV<br><span style="font-size: 16px">30</span></span>LMRA permit expires · Priya N.</span></div>
+          <div class="row"><span style="display: flex; gap: 12px; align-items: center"><span style="width: 44px; text-align: center; border-radius: 10px; background: var(--surface); padding: 4px 0; font-size: 11px; font-weight: 700">DEC<br><span style="font-size: 16px">16</span></span>National Day holidays (2 days)</span></div>
+        </div>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<script>
+(function () {
+  var CFG = {"light": {"bg": "#FAFAFB", "paper": "#FFFFFF", "text": "#1C252E", "sub": "#637381", "line": "rgba(145,158,171,.30)", "surface": "#F4F6F8"}, "dark": {"bg": "#11161C", "paper": "#1A2129", "text": "#FFFFFF", "sub": "#A3AEB9", "line": "rgba(145,158,171,.24)", "surface": "#252E38"}, "shL": "none", "shD": "none", "pal": "Maroon", "mode": "Light", "font": "Public Sans"};
+  var PAL = [['Maroon','#A1077E'],['Green','#00A76F'],['Olive','#6B8E23'],['Purple','#7C3AED'],['Amber','#F59E0B'],['Red','#EF4444'],['Rose','#E11D48'],['Sky','#0EA5E9'],['Cyan','#0891B2'],['Slate','#475569'],['Blue','#2563EB'],['Teal','#0D9488'],['Maroon2','#A01800'],['Magenta','#D912E6'],['Navy Blue','#13215C'],['Deep Blue','#243070']];
+  var FONTS = [['Public Sans',"'Public Sans', sans-serif"],['Inter',"'Inter', sans-serif"],['DM Sans',"'DM Sans', sans-serif"],['Nunito Sans',"'Nunito Sans', sans-serif"]];
+  var state = { pal: CFG.pal, mode: CFG.mode, font: CFG.font };
+  function rgbOf(h) { var n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+  function hexOf(c) { return '#' + c.map(function (v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); }).join(''); }
+  function rgba(h, a) { var c = rgbOf(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function mix(h, f, to) { var t = to === 'w' ? 255 : 0; return hexOf(rgbOf(h).map(function (v) { return v + (t - v) * f; })); }
+  function lum(h) { var c = rgbOf(h); return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]; }
+  function find(list, n) { for (var i = 0; i < list.length; i++) if (list[i][0] === n) return list[i][1]; return list[0][1]; }
+  function apply() {
+    var raw = find(PAL, state.pal), fcss = find(FONTS, state.font), L = state.mode === 'Light';
+    var p = L ? raw : (lum(raw) < 80 ? mix(raw, 0.45, 'w') : raw);
+    var T = L ? CFG.light : CFG.dark, onDark = lum(p) < 165;
+    var pc = L ? (lum(p) > 160 ? mix(p, 0.45, 'b') : p) : (lum(p) < 110 ? mix(p, 0.35, 'w') : p);
+    var v = { '--p': p, '--pd': mix(p, 0.2, 'b'), '--pc': pc, '--pt': rgba(p, L ? 0.12 : 0.24), '--pt2': rgba(p, L ? 0.06 : 0.12),
+      '--on': onDark ? '#FFFFFF' : '#1C252E', '--onl': onDark ? 'rgba(255,255,255,.35)' : 'rgba(28,37,46,.3)', '--onf': onDark ? 'rgba(255,255,255,.10)' : 'rgba(28,37,46,.08)',
+      '--bg': T.bg, '--paper': T.paper, '--text': T.text, '--sub': T.sub, '--line': T.line, '--surface': T.surface, '--a2': '#F7A600', '--a3': '#00B8D9',
+      '--okT': L ? '#0B7046' : '#5BE49B', '--warnT': L ? '#8A5200' : '#FFD666', '--errT': L ? '#B71D18' : '#FFAC82', '--infoT': L ? '#006C9C' : '#61F3F3',
+      '--sh': L ? CFG.shL : CFG.shD };
+    var root = document.querySelector('[data-theme-root]');
+    Object.keys(v).forEach(function (k) { root.style.setProperty(k, v[k]); });
+    root.style.fontFamily = fcss;
+    document.querySelectorAll('[data-mode]').forEach(function (b) { b.className = b.getAttribute('data-mode') === state.mode ? 'tp-seg on' : 'tp-seg'; });
+    document.querySelectorAll('[data-font]').forEach(function (b) { b.className = b.getAttribute('data-font') === state.font ? 'tp-opt on' : 'tp-opt'; });
+    document.querySelectorAll('[data-pal]').forEach(function (b) { var n = b.getAttribute('data-pal'), h = find(PAL, n); b.style.boxShadow = n === state.pal ? '0 0 0 2px var(--paper), 0 0 0 4px ' + h : 'none'; b.setAttribute('aria-label', n + (n === state.pal ? ' (selected)' : '')); });
+    document.querySelectorAll('[data-tp-summary]').forEach(function (s) { s.textContent = state.pal + ' · ' + state.font + ' · ' + state.mode; });
+    document.querySelectorAll('img[data-logo="std"]').forEach(function (i) { i.src = L ? 'prompt_logo.png' : 'prompt_logo_white.png'; });
+    document.querySelectorAll('img[data-logo="onp"]').forEach(function (i) { i.src = onDark ? 'prompt_logo_white.png' : 'prompt_logo.png'; });
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-tp-toggle],[data-mode],[data-pal],[data-font]');
+    var panel = document.querySelector('[data-tp-panel]');
+    if (!el) { if (panel && !e.target.closest('[data-tp-panel]')) { panel.style.display = 'none'; } return; }
+    if (el.hasAttribute('data-tp-toggle')) { if (panel) { var open = panel.style.display === 'none'; panel.style.display = open ? '' : 'none'; el.setAttribute('aria-expanded', open ? 'true' : 'false'); } return; }
+    if (el.hasAttribute('data-mode')) state.mode = el.getAttribute('data-mode');
+    if (el.hasAttribute('data-pal')) state.pal = el.getAttribute('data-pal');
+    if (el.hasAttribute('data-font')) state.font = el.getAttribute('data-font');
+    apply();
+  });
+  document.querySelectorAll('form').forEach(function (f) { f.addEventListener('submit', function (e) { e.preventDefault(); }); });
+  apply();
+})();
+
+</script>
+</body>
+</html>

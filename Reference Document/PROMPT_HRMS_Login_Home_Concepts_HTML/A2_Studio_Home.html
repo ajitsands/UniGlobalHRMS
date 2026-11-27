@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept A Studio – Home – PROMPT HRMS concept</title>
+<link rel="stylesheet" href="common.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.rail-i{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--sub);text-decoration:none;position:relative}
+.rail-i:hover{background:var(--surface);color:var(--text);text-decoration:none}
+.rail-i.on{background:var(--p);color:var(--on)}
+.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:20px}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}
+@media (max-width:1100px){.s3,.s4,.s5{grid-column:span 6}.s6,.s7,.s8{grid-column:span 12}}
+@media (max-width:700px){.s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 12}}
+.search{display:flex;align-items:center;gap:10px;min-height:44px;flex:1 1 280px;max-width:520px;border-radius:12px;background:var(--surface);padding:0 14px;color:var(--sub);font-size:14px}
+.search input{flex:1;border:0;background:none;outline:none;font-family:inherit;font-size:14px;color:var(--text);min-width:0}
+.kbd{font-size:12px;font-weight:700;border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+.qa{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 12px;border-radius:12px;color:var(--text);text-decoration:none;font-size:14px;font-weight:600}
+.qa:hover{background:var(--pt2);color:var(--pc);text-decoration:none}
+.qa i{width:32px;height:32px;border-radius:10px;background:var(--pt);color:var(--pc);display:inline-flex;align-items:center;justify-content:center;font-style:normal}
+</style>
+
+</head>
+<body>
+
+
+<div data-theme-root style="--p:#A1077E;--pd:#810665;--pc:#A1077E;--pt:rgba(161,7,126,0.12);--pt2:rgba(161,7,126,0.06);--on:#FFFFFF;--onl:rgba(255,255,255,.35);--onf:rgba(255,255,255,.10);--bg:#F6F7F9;--paper:#FFFFFF;--text:#1C252E;--sub:#637381;--line:rgba(145,158,171,.28);--surface:#F4F6F8;--a2:#F7A600;--a3:#00B8D9;--okT:#0B7046;--warnT:#8A5200;--errT:#B71D18;--infoT:#006C9C;--sh:0 0 2px rgba(145,158,171,.2), 0 12px 24px -4px rgba(145,158,171,.12);font-family:&#x27;Public Sans&#x27;, sans-serif; --rc: 20px; min-height: 100vh; display: flex; flex-wrap: wrap; background: var(--bg); color: var(--text)">
+
+  <nav aria-label="Modules" style="flex: 0 0 84px; background: var(--paper); border-inline-end: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 0">
+    <span aria-hidden="true" style="width: 44px; height: 44px; border-radius: 14px; border: 3px solid var(--p); color: var(--pc); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; margin-bottom: 14px">P</span>
+    <a class="rail-i on" href="#" aria-label="Home" title="Home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg></a>
+    <a class="rail-i" href="#" aria-label="Employees" title="Employees"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5"></path><circle cx="17.5" cy="9" r="2.5"></circle><path d="M17 14.5c2.6.2 4.5 1.8 4.5 4.5"></path></svg></a>
+    <a class="rail-i" href="#" aria-label="Attendance" title="Attendance"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7v5l3 2"></path></svg></a>
+    <a class="rail-i" href="#" aria-label="Leave" title="Leave"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg></a>
+    <a class="rail-i" href="#" aria-label="Payroll" title="Payroll"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 15h3"></path></svg></a>
+    <a class="rail-i" href="#" aria-label="People processes" title="People processes"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"></path></svg></a>
+    <a class="rail-i" href="#" aria-label="Reports" title="Reports"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg></a>
+    <span style="flex: 1"></span>
+    <a class="rail-i" href="#" aria-label="Help" title="Help"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6M12 17h.01"></path></svg></a>
+  </nav>
+
+  <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 16px 32px; background: var(--paper); border-bottom: 1px solid var(--line)">
+      <span style="display: flex; align-items: center; gap: 10px"><img src="prompt_logo.png" data-logo="std" alt="Prompt Solutions" style="height: 40px; width: auto"><span class="chip pri">HRMS</span></span>
+      <label class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg><input type="search" placeholder="Search employees, requests, payslips…" aria-label="Global search"><span class="kbd">Ctrl K</span></label>
+      <span style="flex: 1"></span>
+      <button class="btn-o" style="min-height: 40px; font-size: 14px; border-radius: 999px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 21h18M5 21V9l7-5 7 5v12"></path></svg>1001 · Head Office ⌄</button>
+      <div class="tp-wrap">
+        <button class="tp-btn" data-tp-toggle aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5C21 6.5 17 3 12 3z"></path><circle cx="7.5" cy="11" r="1.2"></circle><circle cx="10.5" cy="7.5" r="1.2"></circle><circle cx="15" cy="7.5" r="1.2"></circle></svg>Theme</button>
+        
+          <div class="tp" role="dialog" data-tp-panel style="display:none" aria-label="Theme settings">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><strong style="font-size: 16px">Settings</strong><span class="tp-note" data-tp-summary>Maroon · Public Sans · Light</span></div>
+            <span class="tp-h">Mode</span>
+            <div class="tp-segs"><button class="tp-seg on" data-mode="Light">Light</button><button class="tp-seg" data-mode="Dark">Dark</button></div>
+            <span class="tp-h">Palette</span>
+            <div class="tp-pals"><button class="tp-dot" title="Maroon" aria-label="Maroon (selected)" data-pal="Maroon" style="background: #A1077E; box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px #A1077E"></button><button class="tp-dot" title="Green" aria-label="Green" data-pal="Green" style="background: #00A76F; box-shadow: none"></button><button class="tp-dot" title="Olive" aria-label="Olive" data-pal="Olive" style="background: #6B8E23; box-shadow: none"></button><button class="tp-dot" title="Purple" aria-label="Purple" data-pal="Purple" style="background: #7C3AED; box-shadow: none"></button><button class="tp-dot" title="Amber" aria-label="Amber" data-pal="Amber" style="background: #F59E0B; box-shadow: none"></button><button class="tp-dot" title="Red" aria-label="Red" data-pal="Red" style="background: #EF4444; box-shadow: none"></button><button class="tp-dot" title="Rose" aria-label="Rose" data-pal="Rose" style="background: #E11D48; box-shadow: none"></button><button class="tp-dot" title="Sky" aria-label="Sky" data-pal="Sky" style="background: #0EA5E9; box-shadow: none"></button><button class="tp-dot" title="Cyan" aria-label="Cyan" data-pal="Cyan" style="background: #0891B2; box-shadow: none"></button><button class="tp-dot" title="Slate" aria-label="Slate" data-pal="Slate" style="background: #475569; box-shadow: none"></button><button class="tp-dot" title="Blue" aria-label="Blue" data-pal="Blue" style="background: #2563EB; box-shadow: none"></button><button class="tp-dot" title="Teal" aria-label="Teal" data-pal="Teal" style="background: #0D9488; box-shadow: none"></button><button class="tp-dot" title="Maroon2" aria-label="Maroon2" data-pal="Maroon2" style="background: #A01800; box-shadow: none"></button><button class="tp-dot" title="Magenta" aria-label="Magenta" data-pal="Magenta" style="background: #D912E6; box-shadow: none"></button><button class="tp-dot" title="Navy Blue" aria-label="Navy Blue" data-pal="Navy Blue" style="background: #13215C; box-shadow: none"></button><button class="tp-dot" title="Deep Blue" aria-label="Deep Blue" data-pal="Deep Blue" style="background: #243070; box-shadow: none"></button></div>
+            <span class="tp-h">Font</span>
+            <div class="tp-fonts"><button class="tp-opt on" data-font="Public Sans" style="font-family: &#x27;Public Sans&#x27;, sans-serif"><b>Aa</b>Public Sans</button><button class="tp-opt" data-font="Inter" style="font-family: &#x27;Inter&#x27;, sans-serif"><b>Aa</b>Inter</button><button class="tp-opt" data-font="DM Sans" style="font-family: &#x27;DM Sans&#x27;, sans-serif"><b>Aa</b>DM Sans</button><button class="tp-opt" data-font="Nunito Sans" style="font-family: &#x27;Nunito Sans&#x27;, sans-serif"><b>Aa</b>Nunito Sans</button></div>
+            <span class="tp-note">Same options as PROMPT Settings, saved per user.</span>
+          </div>
+        
+      </div>
+      <button class="ic" aria-label="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"></path></svg><span class="dot-badge"></span></button>
+      <span class="av" aria-label="Fatima Hasan" style="width: 40px; height: 40px">FH</span>
+    </header>
+
+    <main style="padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 24px; max-width: 1360px; width: 100%">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span class="muted" style="font-size: 14px">Tuesday, 24 November 2026</span>
+          <h1 style="margin: 0; font-size: 30px; font-weight: 800">Good morning, Fatima</h1>
+          <span class="muted" style="font-size: 15px">You have <strong style="color: var(--pc)">25 approvals</strong> waiting and payroll for November is in validation.</span>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap"><button class="btn-o">Customise</button><button class="btn-p">+ Create</button></div>
+      </div>
+
+      <section class="bento">
+        <article class="card s5" style="background: var(--p); color: var(--on)">
+          <div style="display: flex; justify-content: space-between; align-items: center"><h3>Total headcount</h3><span style="font-size: 13px; opacity: .85">As of today</span></div>
+          <span style="font-size: 52px; font-weight: 800; line-height: 1">248</span>
+          <span style="font-size: 14px; opacity: .9">+6 joiners, −3 leavers in November</span>
+          <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; align-items: end; height: 96px">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><span style="width: 100%; height: 72px; border-radius: 8px; background: var(--on); opacity: .9"></span><span style="font-size: 11px">BU A</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><span style="width: 100%; height: 58px; border-radius: 8px; background: var(--on); opacity: .75"></span><span style="font-size: 11px">BU B</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><span style="width: 100%; height: 53px; border-radius: 8px; background: var(--on); opacity: .65"></span><span style="font-size: 11px">BU C</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><span style="width: 100%; height: 44px; border-radius: 8px; background: var(--on); opacity: .55"></span><span style="font-size: 11px">BU D</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><span style="width: 100%; height: 24px; border-radius: 8px; background: var(--on); opacity: .45"></span><span style="font-size: 11px">BU E</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><span style="width: 100%; height: 28px; border-radius: 8px; background: var(--on); opacity: .35"></span><span style="font-size: 11px">Shared</span></div>
+          </div>
+        </article>
+
+        <article class="card s4">
+          <div style="display: flex; justify-content: space-between; align-items: center"><h3>Payroll · Nov 2026</h3><span class="chip warn">Validation</span></div>
+          <span style="font-size: 30px; font-weight: 800">196,517.500 <span class="muted" style="font-size: 14px; font-weight: 600">BHD net</span></span>
+          <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px">
+            <span style="height: 6px; border-radius: 3px; background: var(--p)"></span><span style="height: 6px; border-radius: 3px; background: var(--p)"></span><span style="height: 6px; border-radius: 3px; background: var(--a2)"></span><span style="height: 6px; border-radius: 3px; background: var(--surface)"></span><span style="height: 6px; border-radius: 3px; background: var(--surface)"></span>
+          </div>
+          <span class="muted" style="font-size: 13px">Locked · Calculated · <strong style="color: var(--text)">3 checks to clear</strong> · Approval · Post to GL</span>
+          <a class="btn-p" href="#" style="align-self: flex-start; min-height: 40px; font-size: 14px">Review checks</a>
+        </article>
+
+        <article class="card s3">
+          <h3>Quick actions</h3>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <a class="qa" href="#"><i aria-hidden="true">+</i>Apply leave</a>
+            <a class="qa" href="#"><i aria-hidden="true">≡</i>Run payroll</a>
+            <a class="qa" href="#"><i aria-hidden="true">◎</i>Add employee</a>
+            <a class="qa" href="#"><i aria-hidden="true">↗</i>Headcount report</a>
+          </div>
+        </article>
+
+        <article class="card s4">
+          <div style="display: flex; justify-content: space-between; align-items: center"><h3>Pending approvals</h3><span class="chip info">25</span></div>
+          <div>
+            <a class="row" href="#"><span>Leave requests</span><span class="chip info">7</span></a>
+            <a class="row" href="#"><span>Expense claims</span><span class="chip info">6</span></a>
+            <a class="row" href="#"><span>Missed-punch corrections</span><span class="chip info">5</span></a>
+            <a class="row" href="#"><span>Personal data changes</span><span class="chip info">4</span></a>
+            <a class="row" href="#"><span>Letter requests</span><span class="chip info">3</span></a>
+          </div>
+        </article>
+
+        <article class="card s4">
+          <div style="display: flex; justify-content: space-between; align-items: center"><h3>Documents expiring</h3><span class="chip err">2 expired</span></div>
+          <div>
+            <div class="row"><span>Passport · Fatima H. (dep.)</span><span class="chip err">Expired</span></div>
+            <div class="row"><span>LMRA permit · Priya N.</span><span class="chip warn">8 days</span></div>
+            <div class="row"><span>Residence · Mark D.</span><span class="chip warn">13 days</span></div>
+            <div class="row"><span>Driving licence · Fatima H.</span><span class="chip warn">21 days</span></div>
+          </div>
+        </article>
+
+        <article class="card s4">
+          <div style="display: flex; justify-content: space-between; align-items: center"><h3>On leave this week</h3><span class="chip pri">9</span></div>
+          <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; text-align: center; font-size: 12px">
+            <span class="muted">Sun</span><span class="muted">Mon</span><span class="muted">Tue</span><span class="muted">Wed</span><span class="muted">Thu</span>
+            <span style="padding: 8px 0; border-radius: 10px; background: var(--surface); font-weight: 700">22</span><span style="padding: 8px 0; border-radius: 10px; background: var(--surface); font-weight: 700">23</span><span style="padding: 8px 0; border-radius: 10px; background: var(--p); color: var(--on); font-weight: 700">24</span><span style="padding: 8px 0; border-radius: 10px; background: var(--surface); font-weight: 700">25</span><span style="padding: 8px 0; border-radius: 10px; background: var(--surface); font-weight: 700">26</span>
+            <span style="font-weight: 700">7</span><span style="font-weight: 700">8</span><span style="font-weight: 700; color: var(--pc)">9</span><span style="font-weight: 700">6</span><span style="font-weight: 700">4</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px"><span class="av">HJ</span><span class="av" style="margin-inline-start: -16px; box-shadow: 0 0 0 2px var(--paper)">AM</span><span class="av" style="margin-inline-start: -16px; box-shadow: 0 0 0 2px var(--paper)">RS</span><span class="muted" style="font-size: 13px">Hussain, Anjali, Rashid +6</span></div>
+        </article>
+
+        <article class="card s7">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px"><h3>Attendance today by business unit</h3><div style="display: flex; gap: 14px; font-size: 12px" class="muted"><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: var(--p)"></span>Present</span><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: var(--a2)"></span>Late</span><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line)"></span>On leave / absent</span></div></div>
+          <div role="img" aria-label="Attendance today by business unit, sample data" style="display: flex; flex-direction: column; gap: 12px">
+            <div style="display: grid; grid-template-columns: 120px 1fr 64px; gap: 12px; align-items: center; font-size: 13px"><span>Business Unit A</span><span style="display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface)"><span style="width: 88%; background: var(--p)"></span><span style="width: 6%; background: var(--a2)"></span></span><strong style="text-align: end">60 / 64</strong></div>
+            <div style="display: grid; grid-template-columns: 120px 1fr 64px; gap: 12px; align-items: center; font-size: 13px"><span>Business Unit B</span><span style="display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface)"><span style="width: 85%; background: var(--p)"></span><span style="width: 6%; background: var(--a2)"></span></span><strong style="text-align: end">47 / 52</strong></div>
+            <div style="display: grid; grid-template-columns: 120px 1fr 64px; gap: 12px; align-items: center; font-size: 13px"><span>Business Unit C</span><span style="display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface)"><span style="width: 89%; background: var(--p)"></span><span style="width: 4%; background: var(--a2)"></span></span><strong style="text-align: end">44 / 47</strong></div>
+            <div style="display: grid; grid-template-columns: 120px 1fr 64px; gap: 12px; align-items: center; font-size: 13px"><span>Business Unit D</span><span style="display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface)"><span style="width: 87%; background: var(--p)"></span><span style="width: 8%; background: var(--a2)"></span></span><strong style="text-align: end">37 / 39</strong></div>
+            <div style="display: grid; grid-template-columns: 120px 1fr 64px; gap: 12px; align-items: center; font-size: 13px"><span>Business Unit E</span><span style="display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface)"><span style="width: 90%; background: var(--p)"></span><span style="width: 5%; background: var(--a2)"></span></span><strong style="text-align: end">20 / 21</strong></div>
+            <div style="display: grid; grid-template-columns: 120px 1fr 64px; gap: 12px; align-items: center; font-size: 13px"><span>Shared back office</span><span style="display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface)"><span style="width: 84%; background: var(--p)"></span><span style="width: 8%; background: var(--a2)"></span></span><strong style="text-align: end">23 / 25</strong></div>
+          </div>
+          <span class="muted" style="font-size: 13px">231 of 248 checked in by 09:00 · biometric and mobile punches</span>
+        </article>
+
+        <article class="card s5">
+          <h3>Announcements</h3>
+          <div>
+            <div class="row" style="align-items: flex-start"><span style="display: flex; flex-direction: column; gap: 2px"><strong>National Day holidays</strong><span class="muted" style="font-size: 13px">Offices closed 16–17 December</span></span><span class="chip pri">Policy</span></div>
+            <div class="row" style="align-items: flex-start"><span style="display: flex; flex-direction: column; gap: 2px"><strong>Updated travel policy</strong><span class="muted" style="font-size: 13px">Please read and acknowledge</span></span><button class="btn-t">Acknowledge</button></div>
+            <div class="row" style="align-items: flex-start"><span style="display: flex; flex-direction: column; gap: 2px"><strong>Year-end soft close</strong><span class="muted" style="font-size: 13px">Finance cut-off 28 December</span></span><span class="chip info">Finance</span></div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  var CFG = {"light": {"bg": "#F6F7F9", "paper": "#FFFFFF", "text": "#1C252E", "sub": "#637381", "line": "rgba(145,158,171,.28)", "surface": "#F4F6F8"}, "dark": {"bg": "#141A21", "paper": "#1C252E", "text": "#FFFFFF", "sub": "#A3AEB9", "line": "rgba(145,158,171,.22)", "surface": "#28323D"}, "shL": "0 0 2px rgba(145,158,171,.2), 0 12px 24px -4px rgba(145,158,171,.12)", "shD": "0 0 0 1px rgba(145,158,171,.16)", "pal": "Maroon", "mode": "Light", "font": "Public Sans"};
+  var PAL = [['Maroon','#A1077E'],['Green','#00A76F'],['Olive','#6B8E23'],['Purple','#7C3AED'],['Amber','#F59E0B'],['Red','#EF4444'],['Rose','#E11D48'],['Sky','#0EA5E9'],['Cyan','#0891B2'],['Slate','#475569'],['Blue','#2563EB'],['Teal','#0D9488'],['Maroon2','#A01800'],['Magenta','#D912E6'],['Navy Blue','#13215C'],['Deep Blue','#243070']];
+  var FONTS = [['Public Sans',"'Public Sans', sans-serif"],['Inter',"'Inter', sans-serif"],['DM Sans',"'DM Sans', sans-serif"],['Nunito Sans',"'Nunito Sans', sans-serif"]];
+  var state = { pal: CFG.pal, mode: CFG.mode, font: CFG.font };
+  function rgbOf(h) { var n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+  function hexOf(c) { return '#' + c.map(function (v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); }).join(''); }
+  function rgba(h, a) { var c = rgbOf(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function mix(h, f, to) { var t = to === 'w' ? 255 : 0; return hexOf(rgbOf(h).map(function (v) { return v + (t - v) * f; })); }
+  function lum(h) { var c = rgbOf(h); return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]; }
+  function find(list, n) { for (var i = 0; i < list.length; i++) if (list[i][0] === n) return list[i][1]; return list[0][1]; }
+  function apply() {
+    var raw = find(PAL, state.pal), fcss = find(FONTS, state.font), L = state.mode === 'Light';
+    var p = L ? raw : (lum(raw) < 80 ? mix(raw, 0.45, 'w') : raw);
+    var T = L ? CFG.light : CFG.dark, onDark = lum(p) < 165;
+    var pc = L ? (lum(p) > 160 ? mix(p, 0.45, 'b') : p) : (lum(p) < 110 ? mix(p, 0.35, 'w') : p);
+    var v = { '--p': p, '--pd': mix(p, 0.2, 'b'), '--pc': pc, '--pt': rgba(p, L ? 0.12 : 0.24), '--pt2': rgba(p, L ? 0.06 : 0.12),
+      '--on': onDark ? '#FFFFFF' : '#1C252E', '--onl': onDark ? 'rgba(255,255,255,.35)' : 'rgba(28,37,46,.3)', '--onf': onDark ? 'rgba(255,255,255,.10)' : 'rgba(28,37,46,.08)',
+      '--bg': T.bg, '--paper': T.paper, '--text': T.text, '--sub': T.sub, '--line': T.line, '--surface': T.surface, '--a2': '#F7A600', '--a3': '#00B8D9',
+      '--okT': L ? '#0B7046' : '#5BE49B', '--warnT': L ? '#8A5200' : '#FFD666', '--errT': L ? '#B71D18' : '#FFAC82', '--infoT': L ? '#006C9C' : '#61F3F3',
+      '--sh': L ? CFG.shL : CFG.shD };
+    var root = document.querySelector('[data-theme-root]');
+    Object.keys(v).forEach(function (k) { root.style.setProperty(k, v[k]); });
+    root.style.fontFamily = fcss;
+    document.querySelectorAll('[data-mode]').forEach(function (b) { b.className = b.getAttribute('data-mode') === state.mode ? 'tp-seg on' : 'tp-seg'; });
+    document.querySelectorAll('[data-font]').forEach(function (b) { b.className = b.getAttribute('data-font') === state.font ? 'tp-opt on' : 'tp-opt'; });
+    document.querySelectorAll('[data-pal]').forEach(function (b) { var n = b.getAttribute('data-pal'), h = find(PAL, n); b.style.boxShadow = n === state.pal ? '0 0 0 2px var(--paper), 0 0 0 4px ' + h : 'none'; b.setAttribute('aria-label', n + (n === state.pal ? ' (selected)' : '')); });
+    document.querySelectorAll('[data-tp-summary]').forEach(function (s) { s.textContent = state.pal + ' · ' + state.font + ' · ' + state.mode; });
+    document.querySelectorAll('img[data-logo="std"]').forEach(function (i) { i.src = L ? 'prompt_logo.png' : 'prompt_logo_white.png'; });
+    document.querySelectorAll('img[data-logo="onp"]').forEach(function (i) { i.src = onDark ? 'prompt_logo_white.png' : 'prompt_logo.png'; });
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-tp-toggle],[data-mode],[data-pal],[data-font]');
+    var panel = document.querySelector('[data-tp-panel]');
+    if (!el) { if (panel && !e.target.closest('[data-tp-panel]')) { panel.style.display = 'none'; } return; }
+    if (el.hasAttribute('data-tp-toggle')) { if (panel) { var open = panel.style.display === 'none'; panel.style.display = open ? '' : 'none'; el.setAttribute('aria-expanded', open ? 'true' : 'false'); } return; }
+    if (el.hasAttribute('data-mode')) state.mode = el.getAttribute('data-mode');
+    if (el.hasAttribute('data-pal')) state.pal = el.getAttribute('data-pal');
+    if (el.hasAttribute('data-font')) state.font = el.getAttribute('data-font');
+    apply();
+  });
+  document.querySelectorAll('form').forEach(function (f) { f.addEventListener('submit', function (e) { e.preventDefault(); }); });
+  apply();
+})();
+
+</script>
+</body>
+</html>

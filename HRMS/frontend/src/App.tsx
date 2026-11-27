@@ -6,6 +6,7 @@ import {
   ThemeProvider,
   ToastProvider,
   useTheme,
+  useToast,
 } from '@controls';
 import {
   BookOpen,
@@ -13,6 +14,7 @@ import {
   Clock,
   FileText,
   GitCommitHorizontal,
+  KeyRound,
   LayoutDashboard,
   Layers,
   ShieldCheck,
@@ -21,8 +23,10 @@ import {
 } from 'lucide-react';
 import { ControlGalleryPage } from './pages/ControlGalleryPage';
 import { ReleaseTimelinePage } from './pages/ReleaseTimelinePage';
+import { AuthenticatedSession, LoginScreensPage } from './pages/LoginScreensPage';
 
 const INITIAL_MENUS: NavMenuItem[] = [
+  { id: 'login-showcase', label: 'Login Screens (3 Styles)', labelAr: 'شاشات الدخول (3 تصاميم)', icon: <KeyRound size={16} /> },
   { id: 'ui-kit', label: 'Common Controls', labelAr: 'مكتبة العناصر', icon: <Layers size={16} /> },
   { id: 'releases', label: 'Release Timeline', labelAr: 'سجل الإصدارات', icon: <GitCommitHorizontal size={16} /> },
   { id: 'dashboard', label: 'Dashboard', labelAr: 'لوحة التحكم', icon: <LayoutDashboard size={16} /> },
@@ -63,6 +67,7 @@ const INITIAL_MENUS: NavMenuItem[] = [
 
 const MENU_ORDER_KEY = 'uniglobal_hrms_menu_order_v1';
 const ACTIVE_MENU_KEY = 'uniglobal_hrms_active_menu_v1';
+const AUTH_SESSION_KEY = 'prompt_hrms_auth_session_v1';
 
 function loadOrderedMenus(): NavMenuItem[] {
   try {
@@ -78,12 +83,25 @@ function loadOrderedMenus(): NavMenuItem[] {
   }
 }
 
+function loadSession(): AuthenticatedSession | null {
+  try {
+    const raw = sessionStorage.getItem(AUTH_SESSION_KEY);
+    return raw ? (JSON.parse(raw) as AuthenticatedSession) : null;
+  } catch {
+    return null;
+  }
+}
+
 const AppContent: React.FC = () => {
   const { dbMenuOrder } = useTheme();
+  const toast = useToast();
+  const [authSession, setAuthSession] = useState<AuthenticatedSession | null>(loadSession);
   const [menus, setMenus] = useState<NavMenuItem[]>(loadOrderedMenus);
-  const [activeMenuId, setActiveMenuId] = useState<string>(
-    () => localStorage.getItem(ACTIVE_MENU_KEY) || 'ui-kit'
-  );
+  const [activeMenuId, setActiveMenuId] = useState<string>(() => {
+    const saved = localStorage.getItem(ACTIVE_MENU_KEY);
+    return saved && saved !== 'login-showcase' ? saved : 'ui-kit';
+  });
+  const [previousMenuId, setPreviousMenuId] = useState<string>('ui-kit');
 
   // Apply SuperAdmin's menu order from SQL Server when loaded
   useEffect(() => {
@@ -104,13 +122,58 @@ const AppContent: React.FC = () => {
   };
 
   const handleSelectMenu = (id: string) => {
+    if (id === 'login-showcase' && activeMenuId !== 'login-showcase') {
+      setPreviousMenuId(activeMenuId);
+    }
     setActiveMenuId(id);
+    if (id !== 'login-showcase') {
+      try {
+        localStorage.setItem(ACTIVE_MENU_KEY, id);
+      } catch {
+        // ignore
+      }
+    }
+  };
+
+  const handleAuthenticated = (session: AuthenticatedSession) => {
+    setAuthSession(session);
     try {
-      localStorage.setItem(ACTIVE_MENU_KEY, id);
+      sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+    } catch {
+      // ignore
+    }
+    const nextMenu =
+      session.targetMenuId && session.targetMenuId !== 'login-showcase'
+        ? session.targetMenuId
+        : 'ui-kit';
+    setActiveMenuId(nextMenu);
+    try {
+      localStorage.setItem(ACTIVE_MENU_KEY, nextMenu);
     } catch {
       // ignore
     }
   };
+
+  const handleSignOut = () => {
+    setAuthSession(null);
+    try {
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
+    } catch {
+      // ignore
+    }
+    toast.info('Signed Out', 'Returned to PROMPT HRMS Login Showcase.');
+  };
+
+  // Show full-screen Login Experience when signed out OR when previewing 'login-showcase'
+  if (!authSession || activeMenuId === 'login-showcase') {
+    return (
+      <LoginScreensPage
+        onAuthenticated={handleAuthenticated}
+        isPreviewInsideApp={Boolean(authSession && activeMenuId === 'login-showcase')}
+        onReturnToApp={() => setActiveMenuId(previousMenuId || 'ui-kit')}
+      />
+    );
+  }
 
   return (
     <AppShell
@@ -118,14 +181,17 @@ const AppContent: React.FC = () => {
       onReorderMenus={handleReorderMenus}
       activeMenuId={activeMenuId}
       onSelectMenu={handleSelectMenu}
+      currentUserLabel={`${authSession.displayName} (${authSession.companyCr})`}
+      onSignOut={handleSignOut}
     >
       {activeMenuId === 'ui-kit' ? (
         <ControlGalleryPage />
       ) : activeMenuId === 'releases' ? (
         <ReleaseTimelinePage />
       ) : activeMenuId === 'manual' ? (
-        <Card title="UniGlobal HRMS — User Manual" subtitle="Step-by-step application guide">
+        <Card title="PROMPT HRMS — User Manual" subtitle="Step-by-step application guide">
           <ol style={{ paddingInlineStart: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <li><strong>Interactive Login Screens:</strong> Click <em>Login Screens (3 Styles)</em> in the menu or <em>Sign Out</em> in the header to explore the Studio Split, Horizon Portal, and Nocturne &amp; Pulse login experiences with 16 PROMPT brand palettes, OTP, and ERP SSO.</li>
             <li><strong>Corporate Identity &amp; Theme:</strong> SuperAdmin can customize colors, gradients, fonts, menu layouts, and card shadows, then click <em>Save Corporate Settings to DB (All Users)</em> so every logged-in user inherits the exact Corporate Identity.</li>
             <li><strong>Quick Access:</strong> Click the Pin icon next to any sidebar menu item to pin it to the top Quick Access bar.</li>
             <li><strong>Admin Menu Flow:</strong> SuperAdmin can drag and drop menu items in Vertical mode and click the Lock icon to fix the menu order.</li>
@@ -135,10 +201,10 @@ const AppContent: React.FC = () => {
       ) : (
         <Card
           title={`Module: ${menus.find((m) => m.id === activeMenuId)?.label ?? activeMenuId}`}
-          subtitle="Ready for feature branch development (Ajit / Ancy) using @controls"
+          subtitle={`Signed in as ${authSession.displayName} (${authSession.roleTitle}) • ${authSession.companyLabel}`}
         >
           <p style={{ margin: 0, color: 'var(--ug-text-secondary)' }}>
-            This module placeholder will be built in the upcoming feature phase using the locked{' '}
+            This module placeholder will be built in the upcoming feature phase using the approved{' '}
             <code>@controls</code> library.
           </p>
         </Card>

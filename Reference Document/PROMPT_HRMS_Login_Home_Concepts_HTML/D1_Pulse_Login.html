@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept D Pulse – Login – PROMPT HRMS concept</title>
+<link rel="stylesheet" href="common.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.tabs2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--surface);border-radius:999px;padding:4px}
+.tabs2 button{min-height:44px;border:0;border-radius:999px;background:none;color:var(--sub);font-family:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.tabs2 button.on{background:var(--paper);color:var(--text);box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;border-radius:999px;background:var(--onf);border:1px solid var(--onl);font-size:14px;font-weight:700}
+</style>
+
+</head>
+<body>
+
+
+<div data-theme-root style="--p:#A1077E;--pd:#810665;--pc:#A1077E;--pt:rgba(161,7,126,0.12);--pt2:rgba(161,7,126,0.06);--on:#FFFFFF;--onl:rgba(255,255,255,.35);--onf:rgba(255,255,255,.10);--bg:#F4F5F8;--paper:#FFFFFF;--text:#1C252E;--sub:#5E6B78;--line:rgba(145,158,171,.30);--surface:#EEF0F4;--a2:#F7A600;--a3:#00B8D9;--okT:#0B7046;--warnT:#8A5200;--errT:#B71D18;--infoT:#006C9C;--sh:0 4px 20px -6px rgba(28,37,46,.12);font-family:&#x27;Nunito Sans&#x27;, sans-serif; --rb: 999px; --ri: 16px; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--text); position: relative">
+  <section style="background: var(--p); color: var(--on); padding: 28px 48px 160px; display: flex; flex-direction: column; gap: 48px">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+      <span style="display: flex; align-items: center; gap: 12px"><img src="prompt_logo_white.png" data-logo="onp" alt="Prompt Solutions" style="height: 44px; width: auto"><span class="pill" style="min-height: 30px; font-size: 12px; letter-spacing: 1px">HRMS</span></span>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+        <div class="lang" role="group" aria-label="Language"><button class="on" aria-pressed="true">EN</button><button lang="ar">عربي</button></div>
+        <div class="tp-wrap">
+          <button class="tp-btn" data-tp-toggle aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5C21 6.5 17 3 12 3z"></path><circle cx="7.5" cy="11" r="1.2"></circle><circle cx="10.5" cy="7.5" r="1.2"></circle><circle cx="15" cy="7.5" r="1.2"></circle></svg>Theme</button>
+          
+            <div class="tp" role="dialog" data-tp-panel style="display:none" aria-label="Theme settings">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><strong style="font-size: 16px">Settings</strong><span class="tp-note" data-tp-summary>Maroon · Nunito Sans · Light</span></div>
+              <span class="tp-h">Mode</span>
+              <div class="tp-segs"><button class="tp-seg on" data-mode="Light">Light</button><button class="tp-seg" data-mode="Dark">Dark</button></div>
+              <span class="tp-h">Palette</span>
+              <div class="tp-pals"><button class="tp-dot" title="Maroon" aria-label="Maroon (selected)" data-pal="Maroon" style="background: #A1077E; box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px #A1077E"></button><button class="tp-dot" title="Green" aria-label="Green" data-pal="Green" style="background: #00A76F; box-shadow: none"></button><button class="tp-dot" title="Olive" aria-label="Olive" data-pal="Olive" style="background: #6B8E23; box-shadow: none"></button><button class="tp-dot" title="Purple" aria-label="Purple" data-pal="Purple" style="background: #7C3AED; box-shadow: none"></button><button class="tp-dot" title="Amber" aria-label="Amber" data-pal="Amber" style="background: #F59E0B; box-shadow: none"></button><button class="tp-dot" title="Red" aria-label="Red" data-pal="Red" style="background: #EF4444; box-shadow: none"></button><button class="tp-dot" title="Rose" aria-label="Rose" data-pal="Rose" style="background: #E11D48; box-shadow: none"></button><button class="tp-dot" title="Sky" aria-label="Sky" data-pal="Sky" style="background: #0EA5E9; box-shadow: none"></button><button class="tp-dot" title="Cyan" aria-label="Cyan" data-pal="Cyan" style="background: #0891B2; box-shadow: none"></button><button class="tp-dot" title="Slate" aria-label="Slate" data-pal="Slate" style="background: #475569; box-shadow: none"></button><button class="tp-dot" title="Blue" aria-label="Blue" data-pal="Blue" style="background: #2563EB; box-shadow: none"></button><button class="tp-dot" title="Teal" aria-label="Teal" data-pal="Teal" style="background: #0D9488; box-shadow: none"></button><button class="tp-dot" title="Maroon2" aria-label="Maroon2" data-pal="Maroon2" style="background: #A01800; box-shadow: none"></button><button class="tp-dot" title="Magenta" aria-label="Magenta" data-pal="Magenta" style="background: #D912E6; box-shadow: none"></button><button class="tp-dot" title="Navy Blue" aria-label="Navy Blue" data-pal="Navy Blue" style="background: #13215C; box-shadow: none"></button><button class="tp-dot" title="Deep Blue" aria-label="Deep Blue" data-pal="Deep Blue" style="background: #243070; box-shadow: none"></button></div>
+              <span class="tp-h">Font</span>
+              <div class="tp-fonts"><button class="tp-opt" data-font="Public Sans" style="font-family: &#x27;Public Sans&#x27;, sans-serif"><b>Aa</b>Public Sans</button><button class="tp-opt" data-font="Inter" style="font-family: &#x27;Inter&#x27;, sans-serif"><b>Aa</b>Inter</button><button class="tp-opt" data-font="DM Sans" style="font-family: &#x27;DM Sans&#x27;, sans-serif"><b>Aa</b>DM Sans</button><button class="tp-opt on" data-font="Nunito Sans" style="font-family: &#x27;Nunito Sans&#x27;, sans-serif"><b>Aa</b>Nunito Sans</button></div>
+              <span class="tp-note">Same options as PROMPT Settings, saved per user.</span>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+    <div style="text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center">
+      <h1 style="margin: 0; font-size: 44px; font-weight: 800; line-height: 1.1">Hello! Ready for today?</h1>
+      <p style="margin: 0; font-size: 17px; opacity: .92">Check in, apply for leave, see your payslip and more.</p>
+    </div>
+  </section>
+
+  <main style="flex: 1; display: flex; justify-content: center; padding: 0 20px 40px; margin-top: -120px">
+    <form style="width: 100%; max-width: 460px; background: var(--paper); border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 30px 60px -24px rgba(0,0,0,.3); align-self: flex-start">
+      <div class="tabs2" role="tablist" aria-label="Sign-in method"><button type="button" role="tab" aria-selected="false">Password</button><button type="button" role="tab" aria-selected="true" class="on">One-time code</button></div>
+      <div class="fld"><label for="d-user">Employee number or email</label><span class="inp"><input id="d-user" value="EMP-1012" autocomplete="username"></span></div>
+      <div class="fld"><label for="d-ph">Mobile number</label><span class="inp"><span style="font-weight: 700; color: var(--text)">+973</span><input id="d-ph" value="3••• ••12" inputmode="tel"></span></div>
+      <button class="btn-p" type="button" style="min-height: 54px">Send me a code</button>
+      <div style="display: flex; align-items: center; gap: 12px; color: var(--sub); font-size: 13px"><span style="flex: 1; height: 1px; background: var(--line)"></span>or<span style="flex: 1; height: 1px; background: var(--line)"></span></div>
+      <button class="btn-o" type="button" style="min-height: 54px">Continue with PROMPT ERP account</button>
+      <p class="muted" style="margin: 0; font-size: 13px; text-align: center">Trouble signing in? <a href="#">Contact HR</a></p>
+    </form>
+  </main>
+  <footer style="display: flex; justify-content: center; gap: 18px; padding: 0 20px 24px; font-size: 13px; color: var(--sub); flex-wrap: wrap"><span>© 2026 Prompt Solutions</span><span>Get the mobile app from your company's app portal</span><a href="#">Privacy</a></footer>
+</div>
+
+<script>
+(function () {
+  var CFG = {"light": {"bg": "#F4F5F8", "paper": "#FFFFFF", "text": "#1C252E", "sub": "#5E6B78", "line": "rgba(145,158,171,.30)", "surface": "#EEF0F4"}, "dark": {"bg": "#121418", "paper": "#1C1F26", "text": "#FFFFFF", "sub": "#A3AEB9", "line": "rgba(145,158,171,.22)", "surface": "#262A33"}, "shL": "0 4px 20px -6px rgba(28,37,46,.12)", "shD": "0 0 0 1px rgba(145,158,171,.14)", "pal": "Maroon", "mode": "Light", "font": "Nunito Sans"};
+  var PAL = [['Maroon','#A1077E'],['Green','#00A76F'],['Olive','#6B8E23'],['Purple','#7C3AED'],['Amber','#F59E0B'],['Red','#EF4444'],['Rose','#E11D48'],['Sky','#0EA5E9'],['Cyan','#0891B2'],['Slate','#475569'],['Blue','#2563EB'],['Teal','#0D9488'],['Maroon2','#A01800'],['Magenta','#D912E6'],['Navy Blue','#13215C'],['Deep Blue','#243070']];
+  var FONTS = [['Public Sans',"'Public Sans', sans-serif"],['Inter',"'Inter', sans-serif"],['DM Sans',"'DM Sans', sans-serif"],['Nunito Sans',"'Nunito Sans', sans-serif"]];
+  var state = { pal: CFG.pal, mode: CFG.mode, font: CFG.font };
+  function rgbOf(h) { var n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+  function hexOf(c) { return '#' + c.map(function (v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); }).join(''); }
+  function rgba(h, a) { var c = rgbOf(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function mix(h, f, to) { var t = to === 'w' ? 255 : 0; return hexOf(rgbOf(h).map(function (v) { return v + (t - v) * f; })); }
+  function lum(h) { var c = rgbOf(h); return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]; }
+  function find(list, n) { for (var i = 0; i < list.length; i++) if (list[i][0] === n) return list[i][1]; return list[0][1]; }
+  function apply() {
+    var raw = find(PAL, state.pal), fcss = find(FONTS, state.font), L = state.mode === 'Light';
+    var p = L ? raw : (lum(raw) < 80 ? mix(raw, 0.45, 'w') : raw);
+    var T = L ? CFG.light : CFG.dark, onDark = lum(p) < 165;
+    var pc = L ? (lum(p) > 160 ? mix(p, 0.45, 'b') : p) : (lum(p) < 110 ? mix(p, 0.35, 'w') : p);
+    var v = { '--p': p, '--pd': mix(p, 0.2, 'b'), '--pc': pc, '--pt': rgba(p, L ? 0.12 : 0.24), '--pt2': rgba(p, L ? 0.06 : 0.12),
+      '--on': onDark ? '#FFFFFF' : '#1C252E', '--onl': onDark ? 'rgba(255,255,255,.35)' : 'rgba(28,37,46,.3)', '--onf': onDark ? 'rgba(255,255,255,.10)' : 'rgba(28,37,46,.08)',
+      '--bg': T.bg, '--paper': T.paper, '--text': T.text, '--sub': T.sub, '--line': T.line, '--surface': T.surface, '--a2': '#F7A600', '--a3': '#00B8D9',
+      '--okT': L ? '#0B7046' : '#5BE49B', '--warnT': L ? '#8A5200' : '#FFD666', '--errT': L ? '#B71D18' : '#FFAC82', '--infoT': L ? '#006C9C' : '#61F3F3',
+      '--sh': L ? CFG.shL : CFG.shD };
+    var root = document.querySelector('[data-theme-root]');
+    Object.keys(v).forEach(function (k) { root.style.setProperty(k, v[k]); });
+    root.style.fontFamily = fcss;
+    document.querySelectorAll('[data-mode]').forEach(function (b) { b.className = b.getAttribute('data-mode') === state.mode ? 'tp-seg on' : 'tp-seg'; });
+    document.querySelectorAll('[data-font]').forEach(function (b) { b.className = b.getAttribute('data-font') === state.font ? 'tp-opt on' : 'tp-opt'; });
+    document.querySelectorAll('[data-pal]').forEach(function (b) { var n = b.getAttribute('data-pal'), h = find(PAL, n); b.style.boxShadow = n === state.pal ? '0 0 0 2px var(--paper), 0 0 0 4px ' + h : 'none'; b.setAttribute('aria-label', n + (n === state.pal ? ' (selected)' : '')); });
+    document.querySelectorAll('[data-tp-summary]').forEach(function (s) { s.textContent = state.pal + ' · ' + state.font + ' · ' + state.mode; });
+    document.querySelectorAll('img[data-logo="std"]').forEach(function (i) { i.src = L ? 'prompt_logo.png' : 'prompt_logo_white.png'; });
+    document.querySelectorAll('img[data-logo="onp"]').forEach(function (i) { i.src = onDark ? 'prompt_logo_white.png' : 'prompt_logo.png'; });
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-tp-toggle],[data-mode],[data-pal],[data-font]');
+    var panel = document.querySelector('[data-tp-panel]');
+    if (!el) { if (panel && !e.target.closest('[data-tp-panel]')) { panel.style.display = 'none'; } return; }
+    if (el.hasAttribute('data-tp-toggle')) { if (panel) { var open = panel.style.display === 'none'; panel.style.display = open ? '' : 'none'; el.setAttribute('aria-expanded', open ? 'true' : 'false'); } return; }
+    if (el.hasAttribute('data-mode')) state.mode = el.getAttribute('data-mode');
+    if (el.hasAttribute('data-pal')) state.pal = el.getAttribute('data-pal');
+    if (el.hasAttribute('data-font')) state.font = el.getAttribute('data-font');
+    apply();
+  });
+  document.querySelectorAll('form').forEach(function (f) { f.addEventListener('submit', function (e) { e.preventDefault(); }); });
+  apply();
+})();
+
+</script>
+</body>
+</html>

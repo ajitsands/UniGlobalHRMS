@@ -6,6 +6,7 @@ import {
   Globe,
   GripVertical,
   Lock,
+  LogOut,
   Menu,
   Moon,
   Palette,
@@ -47,6 +48,8 @@ interface AppShellProps {
   onReorderMenus: (items: NavMenuItem[]) => void;
   activeMenuId: string;
   onSelectMenu: (id: string) => void;
+  currentUserLabel?: string;
+  onSignOut?: () => void;
   children: React.ReactNode;
 }
 
@@ -55,6 +58,8 @@ export const AppShell: React.FC<AppShellProps> = ({
   onReorderMenus,
   activeMenuId,
   onSelectMenu,
+  currentUserLabel,
+  onSignOut,
   children,
 }) => {
   const {
@@ -661,6 +666,26 @@ export const AppShell: React.FC<AppShellProps> = ({
           >
             <span className="ug-hide-mobile">{isAr ? 'التخصيص' : 'Customize'}</span>
           </Button>
+
+          {onSignOut && (
+            <Tooltip
+              content={
+                currentUserLabel
+                  ? `${currentUserLabel} — Click to Sign Out / Switch Login Screen`
+                  : 'Sign Out to Login Screen'
+              }
+              placement="bottom"
+            >
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={<LogOut size={14} style={{ color: 'var(--ug-danger)' }} />}
+                onClick={onSignOut}
+              >
+                <span className="ug-hide-mobile">{isAr ? 'خروج' : 'Sign Out'}</span>
+              </Button>
+            </Tooltip>
+          )}
         </div>
       </header>
 

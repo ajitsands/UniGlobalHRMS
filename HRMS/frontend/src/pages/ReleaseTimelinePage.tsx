@@ -50,6 +50,27 @@ const STORAGE_KEY = 'uniglobal_hrms_release_timeline_v1';
 
 const INITIAL_RELEASES: ReleaseRecord[] = [
   {
+    id: 'rel-150',
+    version: '1.5.0',
+    type: 'Minor',
+    revision: 1,
+    title: 'Client-Approved @controls & 3 Interactive PROMPT Login Screens',
+    completionDate: '2026-11-27',
+    branch: 'main',
+    author: 'Ajit',
+    description:
+      'Delivered 3 interactive client-branded Login Screen concepts (Studio Split, Horizon Portal, Nocturne & Pulse) using approved @controls, official Prompt Solutions logos, #A1077E Maroon + 16 PROMPT brand swatches, 6-digit OTP verification, Multi-CR branch selector, and PROMPT ERP SSO.',
+    tags: ['3 Login Screens', 'Prompt Branding #A1077E', 'OTP & ERP SSO', '@controls Approved'],
+    revisions: [
+      {
+        revNumber: 1,
+        date: '2026-11-27',
+        note: 'Initial release of Studio Split, Horizon Portal & Nocturne Pulse login screens + hover dropdown fix',
+        author: 'Ajit',
+      },
+    ],
+  },
+  {
     id: 'rel-140',
     version: '1.4.0',
     type: 'Minor',
@@ -146,7 +167,10 @@ function loadReleases(): ReleaseRecord[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return INITIAL_RELEASES;
     const parsed = JSON.parse(raw) as ReleaseRecord[];
-    return parsed.length > 0 ? parsed : INITIAL_RELEASES;
+    if (parsed.length === 0) return INITIAL_RELEASES;
+    const existingIds = new Set(parsed.map((r) => r.id));
+    const newlyShipped = INITIAL_RELEASES.filter((r) => !existingIds.has(r.id));
+    return [...newlyShipped, ...parsed];
   } catch {
     return INITIAL_RELEASES;
   }
