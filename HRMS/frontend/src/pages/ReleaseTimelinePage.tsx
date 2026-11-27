@@ -53,13 +53,13 @@ const INITIAL_RELEASES: ReleaseRecord[] = [
     id: 'rel-160',
     version: '1.6.0',
     type: 'Minor',
-    revision: 2,
+    revision: 3,
     title: 'Per-User Recent Menus Header Canvas, SuperAdmin Cache Limit & Hybrid DB Sync',
     completionDate: '2026-11-28',
     branch: 'main',
     author: 'Ajit',
     description:
-      'Added Header "Recent" trigger & sliding Right-Side Canvas tracking each user\'s recently accessed menus with exact Date & Time stamps, governed by a SuperAdmin-only RecentMenusLimit setting in dbo.AppUiSettings (default 10, configurable 1–50 for all users). Powered by a 3-stage Hybrid Write-Behind architecture: (1) Login Hydration via Dapper into Local Storage; (2) 0ms Local Storage tracking on menu click; (3) Batch DB Flush on 20s Page Idle, Tab Hide, Window Close (keepalive), or Sign-Out.',
+      'Added Header "Recent" trigger & sliding Right-Side Canvas tracking each user\'s recently accessed menus with exact Date & Time stamps, governed by a SuperAdmin-only RecentMenusLimit Accordion setting in dbo.AppUiSettings (default 10, configurable 1–50 for all users, with all Customizer Accordions collapsed by default). Powered by a 3-stage Hybrid Write-Behind architecture.',
     tags: ['Recent Menus Canvas', 'SuperAdmin Cache Limit', 'Hybrid Write-Behind Sync', 'Dapper + EF Core'],
     revisions: [
       {
@@ -71,7 +71,13 @@ const INITIAL_RELEASES: ReleaseRecord[] = [
       {
         revNumber: 2,
         date: '2026-11-28',
-        note: 'Added SuperAdmin-only RecentMenusLimit in Application Settings (dbo.AppUiSettings) enforced across all users in both Local Storage and SQL Server',
+        note: 'Added SuperAdmin-only RecentMenusLimit in Application Settings (dbo.AppUiSettings) enforced across all users',
+        author: 'Ajit',
+      },
+      {
+        revNumber: 3,
+        date: '2026-11-28',
+        note: 'Moved Recent Menus Cache Count inside Customizer Accordion and set all Accordions to collapsed by default',
         author: 'Ajit',
       },
     ],

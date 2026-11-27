@@ -1248,7 +1248,7 @@ export const AppShell: React.FC<AppShellProps> = ({
 
           <div style={isLockedForCurrentUser ? { opacity: 0.55, pointerEvents: 'none' } : undefined}>
           <Accordion
-            defaultOpenIds={['elegant-themes', 'menu-layout']}
+            defaultOpenIds={[]}
             items={[
               {
                 id: 'elegant-themes',
@@ -1780,84 +1780,80 @@ export const AppShell: React.FC<AppShellProps> = ({
                   </div>
                 ),
               },
+              {
+                id: 'recent-menus-cache',
+                title: isAr
+                  ? `عدد القوائم الأخيرة المحفوظة (${recentMenusLimit})`
+                  : `Recent Menus Cache Count (${recentMenusLimit} Menus)`,
+                content: (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <History size={14} style={{ color: 'var(--ug-primary)' }} />
+                        {isAr ? 'الحد الأقصى للنظام لكل مستخدم' : 'System-Wide Per-User Limit'}
+                      </span>
+                      <Badge variant="primary">{recentMenusLimit} {isAr ? 'قوائم' : 'Menus'}</Badge>
+                    </div>
+
+                    {userRole === 'SuperAdmin' ? (
+                      <>
+                        <input
+                          type="range"
+                          className="ug-slider"
+                          min={1}
+                          max={30}
+                          step={1}
+                          value={Math.min(30, recentMenusLimit)}
+                          onChange={(e) => setRecentMenusLimit(Number(e.target.value))}
+                        />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {[5, 10, 15, 20, 25].map((preset) => (
+                              <Button
+                                key={preset}
+                                type="button"
+                                size="sm"
+                                variant={recentMenusLimit === preset ? 'primary' : 'secondary'}
+                                onClick={() => setRecentMenusLimit(preset)}
+                              >
+                                {preset}
+                              </Button>
+                            ))}
+                          </div>
+                          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '0.8rem', color: 'var(--ug-muted)' }}>
+                            Exact:
+                            <input
+                              type="number"
+                              min={1}
+                              max={50}
+                              value={recentMenusLimit}
+                              onChange={(e) => setRecentMenusLimit(Number(e.target.value))}
+                              className="ug-input"
+                              style={{ width: 64, padding: '3px 8px', minHeight: 28 }}
+                            />
+                          </label>
+                        </div>
+                        <div style={{ fontSize: '0.76rem', color: 'var(--ug-muted)' }}>
+                          Fixed by <strong>SuperAdmin</strong>. Click <em>Save Corporate Settings to DB</em> below to enforce {recentMenusLimit} cached menus for every user.
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ fontSize: '0.8rem', color: 'var(--ug-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Lock size={13} style={{ color: 'var(--ug-warning)', flexShrink: 0 }} />
+                        <span>
+                          Fixed at <strong>{recentMenusLimit} menus</strong> per user by <strong>SuperAdmin</strong>. Standard users cannot modify this system cache limit.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ),
+              },
             ]}
           />
           </div>
 
-          {/* SuperAdmin Global DB Save & Application Settings Governance Outside All Accordions */}
-          <div style={{ paddingTop: 12, borderTop: '1px solid var(--ug-border)', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {/* SuperAdmin-Only System Recent Menu Cache Limit */}
-            <div
-              style={{
-                padding: '11px 12px',
-                borderRadius: 8,
-                background: 'var(--ug-surface-alt)',
-                border: '1px solid var(--ug-border)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  <History size={14} style={{ color: 'var(--ug-primary)' }} />
-                  {isAr ? 'عدد القوائم الأخيرة المحفوظة (للنظام)' : 'Recent Menus Cache Count (System-Wide)'}
-                </span>
-                <Badge variant="primary">{recentMenusLimit} {isAr ? 'قوائم' : 'Menus'}</Badge>
-              </div>
-
-              {userRole === 'SuperAdmin' ? (
-                <>
-                  <input
-                    type="range"
-                    className="ug-slider"
-                    min={1}
-                    max={30}
-                    step={1}
-                    value={Math.min(30, recentMenusLimit)}
-                    onChange={(e) => setRecentMenusLimit(Number(e.target.value))}
-                  />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      {[5, 10, 15, 20, 25].map((preset) => (
-                        <Button
-                          key={preset}
-                          type="button"
-                          size="sm"
-                          variant={recentMenusLimit === preset ? 'primary' : 'secondary'}
-                          onClick={() => setRecentMenusLimit(preset)}
-                        >
-                          {preset}
-                        </Button>
-                      ))}
-                    </div>
-                    <label style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '0.8rem', color: 'var(--ug-muted)' }}>
-                      Exact:
-                      <input
-                        type="number"
-                        min={1}
-                        max={50}
-                        value={recentMenusLimit}
-                        onChange={(e) => setRecentMenusLimit(Number(e.target.value))}
-                        className="ug-input"
-                        style={{ width: 64, padding: '3px 8px', minHeight: 28 }}
-                      />
-                    </label>
-                  </div>
-                  <div style={{ fontSize: '0.76rem', color: 'var(--ug-muted)' }}>
-                    Fixed by <strong>SuperAdmin</strong>. Click <em>Save Corporate Settings to DB</em> below to enforce {recentMenusLimit} cached menus for every user.
-                  </div>
-                </>
-              ) : (
-                <div style={{ fontSize: '0.8rem', color: 'var(--ug-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Lock size={13} style={{ color: 'var(--ug-warning)', flexShrink: 0 }} />
-                  <span>
-                    Fixed at <strong>{recentMenusLimit} menus</strong> per user by <strong>SuperAdmin</strong>. Standard users cannot modify this system cache limit.
-                  </span>
-                </div>
-              )}
-            </div>
-
+          {/* SuperAdmin Global DB Save & Reset Outside All Accordions */}
+          <div style={{ paddingTop: 12, borderTop: '1px solid var(--ug-border)', display: 'flex', flexDirection: 'column', gap: 10 }}>
             {userRole === 'SuperAdmin' && (
               <>
                 <SwitchToggle
