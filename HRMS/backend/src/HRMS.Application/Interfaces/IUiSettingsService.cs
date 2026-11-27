@@ -15,3 +15,10 @@ public interface IAuditReportService
     Task<IEnumerable<DataAuditLog>> GetRecentDataAuditsAsync(int top = 50, CancellationToken ct = default);
     Task<IEnumerable<UserInteractionLog>> GetRecentInteractionsAsync(int top = 50, CancellationToken ct = default);
 }
+
+public interface IRecentMenusService
+{
+    Task<UserRecentMenusPayloadDto> GetUserRecentMenusAsync(string userId, CancellationToken ct = default);
+    Task<UserRecentMenusPayloadDto> SaveUserRecentMenusAsync(string userId, UserRecentMenusPayloadDto dto, CancellationToken ct = default);
+    Task ClearUserRecentMenusAsync(string userId, CancellationToken ct = default);
+}

@@ -39,7 +39,28 @@
 
 ---
 
-## 3. System Health
+## 3. Per-User Top-10 Recently Accessed Menus (Hybrid Write-Behind Sync)
+
+### How It Works
+1. **Login Hydration (`GET` once on Sign-In):** Frontend fetches the user's latest 10 accessed menus from `dbo.UserRecentMenuStates` via Dapper and stores them in `localStorage` (`prompt_hrms_recent_menus_v1_{USER_ID}`).
+2. **Instant Local Tracking (`0 ms`, `0` DB Hits):** Navigating between menus updates `localStorage` locally with exact ISO UTC Date & Time stamps and visit counts, capping strictly at 10 unique menus.
+3. **Smart Batch Flush (`POST` / `PUT`):** Unsaved local changes flush automatically in a single batch call after **20s of page idle**, on **Tab Hide (`visibilitychange`)**, on **Window Close (`pagehide` with `fetch keepalive: true`)**, or on **Sign Out**.
+
+### `GET /api/v1/recent-menus/{userId}`
+- **Engine:** Dapper (`SELECT TOP 1 * FROM dbo.UserRecentMenuStates WHERE UserId = @UserId`)
+- **Description:** Returns the user's stored Top-10 recent menu snapshot (`items`, `updatedAtUtc`).
+
+### `POST /api/v1/recent-menus/{userId}` (also accepts `PUT`)
+- **Engine:** EF Core single-row upsert (`dbo.UserRecentMenuStates`)
+- **Description:** Deduplicates by `menuId`, sorts newest-first, trims to max 10 items, and saves the user's snapshot.
+
+### `DELETE /api/v1/recent-menus/{userId}`
+- **Engine:** EF Core
+- **Description:** Clears the user's stored recent menu snapshot.
+
+---
+
+## 4. System Health
 
 ### `GET /api/v1/health`
 - **Description:** Verifies API responsiveness and live SQL Server 2022 (`UniGlobalHRMS`) connectivity.

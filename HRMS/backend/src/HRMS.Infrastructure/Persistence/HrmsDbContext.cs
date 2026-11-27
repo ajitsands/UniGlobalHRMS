@@ -11,6 +11,7 @@ public class HrmsDbContext : DbContext
     public DbSet<AppUiSettings> AppUiSettings => Set<AppUiSettings>();
     public DbSet<DataAuditLog> DataAuditLogs => Set<DataAuditLog>();
     public DbSet<UserInteractionLog> UserInteractionLogs => Set<UserInteractionLog>();
+    public DbSet<UserRecentMenuState> UserRecentMenuStates => Set<UserRecentMenuState>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +47,15 @@ public class HrmsDbContext : DbContext
             e.Property(x => x.IpAddress).HasMaxLength(64);
             e.HasIndex(x => x.CreatedAtUtc);
         });
+
+        modelBuilder.Entity<UserRecentMenuState>(e =>
+        {
+            e.ToTable("UserRecentMenuStates");
+            e.HasKey(x => x.Id);
+            e.Property(x => x.UserId).HasMaxLength(100).IsRequired();
+            e.HasIndex(x => x.UserId).IsUnique();
+            e.Property(x => x.UserDisplayName).HasMaxLength(150);
+        });
     }
 
     /// <summary>
@@ -56,7 +66,7 @@ public class HrmsDbContext : DbContext
         var pendingAudits = new List<DataAuditLog>();
         foreach (var entry in ChangeTracker.Entries())
         {
-            if (entry.Entity is DataAuditLog || entry.Entity is UserInteractionLog) continue;
+            if (entry.Entity is DataAuditLog || entry.Entity is UserInteractionLog || entry.Entity is UserRecentMenuState) continue;
             if (entry.State is not (EntityState.Added or EntityState.Modified or EntityState.Deleted)) continue;
 
             var oldValues = new Dictionary<string, object?>();

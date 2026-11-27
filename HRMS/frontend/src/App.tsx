@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AppShell,
   Card,
   NavMenuItem,
+  RecentMenuRecord,
   ThemeProvider,
   ToastProvider,
   useTheme,
@@ -24,6 +25,13 @@ import {
 import { ControlGalleryPage } from './pages/ControlGalleryPage';
 import { ReleaseTimelinePage } from './pages/ReleaseTimelinePage';
 import { AuthenticatedSession, LoginScreensPage } from './pages/LoginScreensPage';
+import {
+  clearRecentMenusForUser,
+  flushRecentMenusToDb,
+  hydrateRecentMenusOnLogin,
+  readLocalRecentCache,
+  recordMenuAccessLocal,
+} from './services/recentMenusApi';
 
 const INITIAL_MENUS: NavMenuItem[] = [
   { id: 'login-showcase', label: 'Login Screens (3 Styles)', labelAr: 'شاشات الدخول (3 تصاميم)', icon: <KeyRound size={16} /> },
@@ -68,6 +76,7 @@ const INITIAL_MENUS: NavMenuItem[] = [
 const MENU_ORDER_KEY = 'uniglobal_hrms_menu_order_v1';
 const ACTIVE_MENU_KEY = 'uniglobal_hrms_active_menu_v1';
 const AUTH_SESSION_KEY = 'prompt_hrms_auth_session_v1';
+const IDLE_DB_FLUSH_MS = 20000; // 20s idle write-behind flush to SQL Server
 
 function loadOrderedMenus(): NavMenuItem[] {
   try {
@@ -92,6 +101,24 @@ function loadSession(): AuthenticatedSession | null {
   }
 }
 
+function findMenuMeta(
+  items: NavMenuItem[],
+  menuId: string
+): { label: string; labelAr: string; parentLabel?: string } | null {
+  for (const parent of items) {
+    if (parent.id === menuId) {
+      return { label: parent.label, labelAr: parent.labelAr };
+    }
+    if (parent.children) {
+      const child = parent.children.find((c) => c.id === menuId);
+      if (child) {
+        return { label: child.label, labelAr: child.labelAr, parentLabel: parent.label };
+      }
+    }
+  }
+  return null;
+}
+
 const AppContent: React.FC = () => {
   const { dbMenuOrder } = useTheme();
   const toast = useToast();
@@ -103,6 +130,12 @@ const AppContent: React.FC = () => {
   });
   const [previousMenuId, setPreviousMenuId] = useState<string>('ui-kit');
 
+  // Per-User Top-10 Recent Menus State (Hydrated from DB on Login -> Updated Locally -> Flushed on Idle/Close)
+  const [recentMenus, setRecentMenus] = useState<RecentMenuRecord[]>([]);
+  const [recentDirty, setRecentDirty] = useState<boolean>(false);
+  const [recentLastSyncedUtc, setRecentLastSyncedUtc] = useState<string | undefined>(undefined);
+  const idleFlushTimerRef = useRef<number | null>(null);
+
   // Apply SuperAdmin's menu order from SQL Server when loaded
   useEffect(() => {
     if (!dbMenuOrder || dbMenuOrder.length === 0) return;
@@ -111,6 +144,97 @@ const AppContent: React.FC = () => {
     const missing = INITIAL_MENUS.filter((m) => !dbMenuOrder.includes(m.id));
     if (ordered.length > 0) setMenus([...ordered, ...missing]);
   }, [dbMenuOrder]);
+
+  const scheduleIdleDbFlush = useCallback((userId: string) => {
+    if (idleFlushTimerRef.current !== null) {
+      window.clearTimeout(idleFlushTimerRef.current);
+    }
+    idleFlushTimerRef.current = window.setTimeout(async () => {
+      idleFlushTimerRef.current = null;
+      const synced = await flushRecentMenusToDb(userId, false);
+      setRecentDirty(synced.dirty);
+      setRecentLastSyncedUtc(synced.lastSyncedAtUtc);
+    }, IDLE_DB_FLUSH_MS);
+  }, []);
+
+  const trackMenuLocally = useCallback(
+    (user: { userId: string; displayName: string }, menuId: string) => {
+      const meta = findMenuMeta(INITIAL_MENUS, menuId);
+      if (!meta) return;
+      const next = recordMenuAccessLocal(user.userId, user.displayName, {
+        menuId,
+        label: meta.label,
+        labelAr: meta.labelAr,
+        parentLabel: meta.parentLabel,
+      });
+      setRecentMenus(next.items);
+      setRecentDirty(next.dirty);
+      setRecentLastSyncedUtc(next.lastSyncedAtUtc);
+      scheduleIdleDbFlush(user.userId);
+    },
+    [scheduleIdleDbFlush]
+  );
+
+  // STAGE 1: Hydrate user's Top-10 recent menus from SQL Server once when logged in
+  useEffect(() => {
+    if (!authSession) return;
+    let active = true;
+
+    // Immediately show any cached local entries for 0ms responsiveness
+    const cached = readLocalRecentCache(authSession.userId, authSession.displayName);
+    setRecentMenus(cached.items);
+    setRecentDirty(cached.dirty);
+    setRecentLastSyncedUtc(cached.lastSyncedAtUtc);
+
+    hydrateRecentMenusOnLogin(authSession.userId, authSession.displayName).then((hydrated) => {
+      if (!active) return;
+      if (hydrated.items.length === 0) {
+        // Seed initial landing screen into local cache on very first login
+        const initialId =
+          authSession.targetMenuId && authSession.targetMenuId !== 'login-showcase'
+            ? authSession.targetMenuId
+            : activeMenuId;
+        trackMenuLocally(authSession, initialId);
+      } else {
+        setRecentMenus(hydrated.items);
+        setRecentDirty(hydrated.dirty);
+        setRecentLastSyncedUtc(hydrated.lastSyncedAtUtc);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [authSession?.userId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // STAGE 3: Flush unsaved local Recent Menus to SQL Server on Tab Hide or Window Close (keepalive)
+  useEffect(() => {
+    if (!authSession) return;
+    const currentUserId = authSession.userId;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        flushRecentMenusToDb(currentUserId, true).then((synced) => {
+          setRecentDirty(synced.dirty);
+          setRecentLastSyncedUtc(synced.lastSyncedAtUtc);
+        });
+      }
+    };
+
+    const handlePageHide = () => {
+      flushRecentMenusToDb(currentUserId, true);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('beforeunload', handlePageHide);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('beforeunload', handlePageHide);
+    };
+  }, [authSession]);
 
   const handleReorderMenus = (next: NavMenuItem[]) => {
     setMenus(next);
@@ -133,6 +257,9 @@ const AppContent: React.FC = () => {
         // ignore
       }
     }
+    if (authSession) {
+      trackMenuLocally(authSession, id);
+    }
   };
 
   const handleAuthenticated = (session: AuthenticatedSession) => {
@@ -152,16 +279,41 @@ const AppContent: React.FC = () => {
     } catch {
       // ignore
     }
+    trackMenuLocally(session, nextMenu);
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    if (idleFlushTimerRef.current !== null) {
+      window.clearTimeout(idleFlushTimerRef.current);
+      idleFlushTimerRef.current = null;
+    }
+    if (authSession) {
+      await flushRecentMenusToDb(authSession.userId, true);
+    }
     setAuthSession(null);
     try {
       sessionStorage.removeItem(AUTH_SESSION_KEY);
     } catch {
       // ignore
     }
-    toast.info('Signed Out', 'Returned to PROMPT HRMS Login Showcase.');
+    toast.info('Signed Out', 'Recent menu history synced to SQL Server.');
+  };
+
+  const handleForceSyncRecent = async () => {
+    if (!authSession) return;
+    const synced = await flushRecentMenusToDb(authSession.userId, false);
+    setRecentDirty(synced.dirty);
+    setRecentLastSyncedUtc(synced.lastSyncedAtUtc || new Date().toISOString());
+    toast.success('Synced to SQL Server', `Saved ${synced.items.length} recent menus for ${authSession.userId}.`);
+  };
+
+  const handleClearRecent = async () => {
+    if (!authSession) return;
+    const cleared = await clearRecentMenusForUser(authSession.userId, authSession.displayName);
+    setRecentMenus(cleared.items);
+    setRecentDirty(false);
+    setRecentLastSyncedUtc(cleared.lastSyncedAtUtc);
+    toast.info('Recent History Cleared', `Cleared recent menus for ${authSession.displayName}.`);
   };
 
   // Show full-screen Login Experience when signed out OR when previewing 'login-showcase'
@@ -181,8 +333,13 @@ const AppContent: React.FC = () => {
       onReorderMenus={handleReorderMenus}
       activeMenuId={activeMenuId}
       onSelectMenu={handleSelectMenu}
-      currentUserLabel={`${authSession.displayName} (${authSession.companyCr})`}
+      currentUserLabel={`${authSession.displayName} (${authSession.userId} • ${authSession.companyCr})`}
       onSignOut={handleSignOut}
+      recentMenus={recentMenus}
+      recentSyncDirty={recentDirty}
+      recentLastSyncedAtUtc={recentLastSyncedUtc}
+      onClearRecentMenus={handleClearRecent}
+      onForceSyncRecentMenus={handleForceSyncRecent}
     >
       {activeMenuId === 'ui-kit' ? (
         <ControlGalleryPage />
@@ -190,8 +347,9 @@ const AppContent: React.FC = () => {
         <ReleaseTimelinePage />
       ) : activeMenuId === 'manual' ? (
         <Card title="PROMPT HRMS — User Manual" subtitle="Step-by-step application guide">
-          <ol style={{ paddingInlineStart: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <ol style={{ paddingInlineStart: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
             <li><strong>Interactive Login Screens:</strong> Click <em>Login Screens (3 Styles)</em> in the menu or <em>Sign Out</em> in the header to explore the Studio Split, Horizon Portal, and Nocturne &amp; Pulse login experiences with 16 PROMPT brand palettes, OTP, and ERP SSO.</li>
+            <li><strong>Per-User Top-10 Recent Menus &amp; Hybrid Sync:</strong> Click the <em>Recent</em> button in the top header to slide open the Right-Side Canvas showing your last 10 accessed menus with exact Date &amp; Time stamps. On Login, your personal list loads once from SQL Server (<code>dbo.UserRecentMenuStates</code>) into Local Storage; menu clicks update Local Storage in <code>0ms</code> with zero DB calls; and changes automatically batch-save to SQL Server after 20 seconds of page idle, on tab hide/window close (<code>keepalive</code>), or on Sign Out.</li>
             <li><strong>Corporate Identity &amp; Theme:</strong> SuperAdmin can customize colors, gradients, fonts, menu layouts, and card shadows, then click <em>Save Corporate Settings to DB (All Users)</em> so every logged-in user inherits the exact Corporate Identity.</li>
             <li><strong>Quick Access:</strong> Click the Pin icon next to any sidebar menu item to pin it to the top Quick Access bar.</li>
             <li><strong>Admin Menu Flow:</strong> SuperAdmin can drag and drop menu items in Vertical mode and click the Lock icon to fix the menu order.</li>

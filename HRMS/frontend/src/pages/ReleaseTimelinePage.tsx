@@ -50,6 +50,27 @@ const STORAGE_KEY = 'uniglobal_hrms_release_timeline_v1';
 
 const INITIAL_RELEASES: ReleaseRecord[] = [
   {
+    id: 'rel-160',
+    version: '1.6.0',
+    type: 'Minor',
+    revision: 1,
+    title: 'Per-User Recent Menus (Top 10) Header Canvas & Hybrid Write-Behind DB Sync',
+    completionDate: '2026-11-28',
+    branch: 'main',
+    author: 'Ajit',
+    description:
+      'Added Header "Recent" trigger & sliding Right-Side Canvas tracking each user\'s last 10 accessed menus with exact Date & Time stamps and visit counts. Powered by a 3-stage Hybrid Write-Behind architecture: (1) Login Hydration fetches the user\'s snapshot once from SQL Server dbo.UserRecentMenuStates via Dapper into Local Storage; (2) Menu clicks update Local Storage in 0ms with zero DB calls; (3) Smart Batch Flush saves to SQL Server on 20s Page Idle, Tab Hide, Browser Close (fetch keepalive), or Sign-Out.',
+    tags: ['Top-10 Recent Menus', 'Right-Side Canvas', 'Hybrid Write-Behind Sync', 'Dapper + EF Core'],
+    revisions: [
+      {
+        revNumber: 1,
+        date: '2026-11-28',
+        note: 'Implemented dbo.UserRecentMenuStates API, Local Storage write-behind cache, Header trigger & Right-Side Drawer canvas',
+        author: 'Ajit',
+      },
+    ],
+  },
+  {
     id: 'rel-150',
     version: '1.5.0',
     type: 'Minor',

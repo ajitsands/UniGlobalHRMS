@@ -16,6 +16,7 @@ builder.Services.AddSingleton<IDapperConnectionFactory, DapperConnectionFactory>
 // Application Services
 builder.Services.AddScoped<IUiSettingsService, UiSettingsService>();
 builder.Services.AddScoped<IAuditReportService, AuditReportService>();
+builder.Services.AddScoped<IRecentMenusService, RecentMenusService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -44,6 +45,18 @@ using (var scope = app.Services.CreateScope())
     try
     {
         await db.Database.EnsureCreatedAsync();
+        await db.Database.ExecuteSqlRawAsync(@"
+            IF OBJECT_ID(N'dbo.UserRecentMenuStates', N'U') IS NULL
+            BEGIN
+                CREATE TABLE dbo.UserRecentMenuStates (
+                    Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                    UserId NVARCHAR(100) NOT NULL,
+                    UserDisplayName NVARCHAR(150) NOT NULL CONSTRAINT DF_UserRecentMenuStates_Display DEFAULT(N''),
+                    RecentMenusJson NVARCHAR(MAX) NOT NULL CONSTRAINT DF_UserRecentMenuStates_Json DEFAULT(N'[]'),
+                    UpdatedAtUtc DATETIME2 NOT NULL CONSTRAINT DF_UserRecentMenuStates_Updated DEFAULT(SYSUTCDATETIME())
+                );
+                CREATE UNIQUE INDEX IX_UserRecentMenuStates_UserId ON dbo.UserRecentMenuStates(UserId);
+            END");
     }
     catch (Exception ex)
     {

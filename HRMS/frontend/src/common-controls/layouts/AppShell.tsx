@@ -1,18 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   BookOpen,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
+  Clock,
   Globe,
   GripVertical,
+  History,
   Lock,
   LogOut,
   Menu,
   Moon,
   Palette,
   Pin,
+  RefreshCw,
   SlidersHorizontal,
   Sun,
+  Trash2,
   Unlock,
   X,
 } from 'lucide-react';
@@ -30,7 +35,7 @@ import {
   useTheme,
 } from '../tokens/ThemeContext';
 import { Accordion, Drawer } from '../controls/ContainersAndPopups';
-import { Button, HelpPopup, Tooltip } from '../controls/HelpAndFeedback';
+import { Badge, Button, HelpPopup, Tooltip } from '../controls/HelpAndFeedback';
 import { SwitchToggle } from '../controls/FormControls';
 import { UniGlobalLogoIcon } from '../controls/BrandAndLoader';
 import { useToast } from '../controls/ToastSystem';
@@ -43,6 +48,15 @@ export interface NavMenuItem {
   children?: NavMenuItem[];
 }
 
+export interface RecentMenuRecord {
+  menuId: string;
+  label: string;
+  labelAr: string;
+  parentLabel?: string;
+  accessedAtUtc: string;
+  visitCount: number;
+}
+
 interface AppShellProps {
   menuItems: NavMenuItem[];
   onReorderMenus: (items: NavMenuItem[]) => void;
@@ -50,6 +64,11 @@ interface AppShellProps {
   onSelectMenu: (id: string) => void;
   currentUserLabel?: string;
   onSignOut?: () => void;
+  recentMenus?: RecentMenuRecord[];
+  recentSyncDirty?: boolean;
+  recentLastSyncedAtUtc?: string;
+  onClearRecentMenus?: () => void;
+  onForceSyncRecentMenus?: () => void;
   children: React.ReactNode;
 }
 
@@ -60,6 +79,11 @@ export const AppShell: React.FC<AppShellProps> = ({
   onSelectMenu,
   currentUserLabel,
   onSignOut,
+  recentMenus = [],
+  recentSyncDirty = false,
+  recentLastSyncedAtUtc,
+  onClearRecentMenus,
+  onForceSyncRecentMenus,
   children,
 }) => {
   const {
@@ -131,6 +155,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   const isLockedForCurrentUser = userRole !== 'SuperAdmin' && lockCorporateTheme;
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [recentDrawerOpen, setRecentDrawerOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [expandedIds, setExpandedIds] = useState<string[]>(['employees']);
@@ -658,6 +683,42 @@ export const AppShell: React.FC<AppShellProps> = ({
             <span className="ug-hide-mobile">{isAr ? 'دليل المستخدم' : 'Manual'}</span>
           </Button>
 
+          {/* Per-User Top-10 Recently Accessed Menus -> Opens Right-Side Sliding Canvas */}
+          <Tooltip
+            content={
+              isAr
+                ? 'آخر 10 قوائم تم فتحها مع التاريخ والوقت'
+                : 'Recently Accessed Menus (Top 10 with Date & Time Stamp)'
+            }
+            placement="bottom"
+          >
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<History size={14} style={{ color: 'var(--ug-primary)' }} />}
+              onClick={() => setRecentDrawerOpen(true)}
+            >
+              <span className="ug-hide-mobile">{isAr ? 'الأخيرة' : 'Recent'}</span>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: 18,
+                  height: 18,
+                  padding: '0 5px',
+                  borderRadius: 999,
+                  background: 'var(--ug-primary-soft)',
+                  color: 'var(--ug-primary)',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                }}
+              >
+                {recentMenus.length}
+              </span>
+            </Button>
+          </Tooltip>
+
           <Button
             variant="primary"
             size="sm"
@@ -869,6 +930,258 @@ export const AppShell: React.FC<AppShellProps> = ({
           </div>
         </div>
       )}
+
+      {/* Right-Side Sliding Canvas: Per-User Recently Accessed Menus (Top 10 with Date & Time) */}
+      <Drawer
+        open={recentDrawerOpen}
+        onClose={() => setRecentDrawerOpen(false)}
+        title={isAr ? 'آخر القوائم المفتوحة (حتى 10)' : 'Recently Accessed Menus (Last 10)'}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* User Identity & Hybrid Sync Status Card */}
+          <div
+            style={{
+              padding: '12px 14px',
+              borderRadius: 10,
+              background: 'var(--ug-surface-alt)',
+              border: '1px solid var(--ug-border)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <div style={{ fontSize: '0.889rem', fontWeight: 700, color: 'var(--ug-text)' }}>
+                {currentUserLabel || (isAr ? 'المستخدم الحالي' : 'Active User Session')}
+              </div>
+              <Badge variant="primary">
+                {recentMenus.length} / 10 {isAr ? 'قوائم' : 'Menus'}
+              </Badge>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              {recentSyncDirty ? (
+                <Badge variant="warning">
+                  <Clock size={11} />
+                  {isAr ? 'محفوظ محلياً · بانتظار المزامنة التلقائية' : 'Cached Locally • Syncs on Idle / Close'}
+                </Badge>
+              ) : (
+                <Badge variant="success">
+                  <CheckCircle2 size={11} />
+                  {isAr ? 'تمت المزامنة مع SQL Server' : 'Synced with SQL Server'}
+                </Badge>
+              )}
+
+              {onForceSyncRecentMenus && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  icon={<RefreshCw size={12} />}
+                  onClick={onForceSyncRecentMenus}
+                >
+                  {isAr ? 'مزامنة الآن' : 'Sync DB Now'}
+                </Button>
+              )}
+            </div>
+
+            {recentLastSyncedAtUtc && (
+              <div style={{ fontSize: '0.778rem', color: 'var(--ug-muted)' }}>
+                {isAr ? 'آخر مزامنة مع قاعدة البيانات: ' : 'Last DB Sync: '}
+                {new Date(recentLastSyncedAtUtc).toLocaleString(isAr ? 'ar-BH' : 'en-GB', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Collapsible Architecture Guide */}
+          <Accordion
+            items={[
+              {
+                id: 'how-hybrid-works',
+                title: isAr ? 'كيف تعمل المزامنة الهجينة؟' : 'How Hybrid Sync Works (Local + DB)',
+                content: (
+                  <ol style={{ margin: 0, paddingInlineStart: 18, display: 'flex', flexDirection: 'column', gap: 6, fontSize: '0.852rem', color: 'var(--ug-text-secondary)' }}>
+                    <li>
+                      <strong>{isAr ? 'عند تسجيل الدخول:' : '1. On Login:'}</strong>{' '}
+                      {isAr
+                        ? 'يتم جلب آخر 10 قوائم خاصة بالمستخدم من SQL Server مرة واحدة وتخزينها محلياً.'
+                        : 'Fetches your personal Top-10 history once from SQL Server into Local Storage.'}
+                    </li>
+                    <li>
+                      <strong>{isAr ? 'أثناء التنقل (0ms):' : '2. On Menu Click (0ms):'}</strong>{' '}
+                      {isAr
+                        ? 'تحديث فوري في الذاكرة المحلية مع ختم التاريخ والوقت دون أي ضغط على الخادم.'
+                        : 'Updates Local Storage immediately with exact Date & Time stamp — zero API hits per click.'}
+                    </li>
+                    <li>
+                      <strong>{isAr ? 'الحفظ التلقائي:' : '3. Idle / Close Flush:'}</strong>{' '}
+                      {isAr
+                        ? 'يتم الحفظ تلقائياً في قاعدة البيانات عند خمول الصفحة (20 ثانية) أو إغلاق النافذة أو تسجيل الخروج.'
+                        : 'Batch-saves to SQL Server on 20s Page Idle, Tab Minimize, Window Close (keepalive), or Sign Out.'}
+                    </li>
+                  </ol>
+                ),
+              },
+            ]}
+          />
+
+          {/* Top-10 Accessed Menu Cards */}
+          {recentMenus.length === 0 ? (
+            <div
+              style={{
+                padding: '28px 16px',
+                textAlign: 'center',
+                borderRadius: 10,
+                border: '1px dashed var(--ug-border-strong)',
+                color: 'var(--ug-muted)',
+                fontSize: '0.926rem',
+              }}
+            >
+              {isAr
+                ? 'لا توجد قوائم مسجلة بعد. افتح أي شاشة ليظهر سجلها هنا مع التاريخ والوقت.'
+                : 'No recent menus recorded yet. Navigate to any screen to track its Date & Time stamp here.'}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {recentMenus.slice(0, 10).map((rec, index) => {
+                const matchedMenu = allFlatItems.find((m) => m.id === rec.menuId);
+                const dt = new Date(rec.accessedAtUtc);
+                const formattedStamp = Number.isNaN(dt.getTime())
+                  ? rec.accessedAtUtc
+                  : dt.toLocaleString(isAr ? 'ar-BH' : 'en-GB', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                      hour12: true,
+                    });
+                const diffSec = Math.max(0, Math.floor((Date.now() - dt.getTime()) / 1000));
+                const relativeStr =
+                  diffSec < 45
+                    ? isAr
+                      ? 'الآن'
+                      : 'Just now'
+                    : diffSec < 3600
+                    ? `${Math.floor(diffSec / 60)}m ago`
+                    : diffSec < 86400
+                    ? `${Math.floor(diffSec / 3600)}h ago`
+                    : `${Math.floor(diffSec / 86400)}d ago`;
+
+                const isCurrent = rec.menuId === activeMenuId;
+
+                return (
+                  <button
+                    key={rec.menuId}
+                    type="button"
+                    onClick={() => {
+                      onSelectMenu(rec.menuId);
+                      setRecentDrawerOpen(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      textAlign: 'start',
+                      padding: '11px 13px',
+                      borderRadius: 10,
+                      border: `1px solid ${isCurrent ? 'var(--ug-primary)' : 'var(--ug-border)'}`,
+                      background: isCurrent ? 'var(--ug-primary-soft)' : 'var(--ug-surface)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 11,
+                      transition: 'all 0.16s ease',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 8,
+                        background: isCurrent ? 'var(--ug-primary)' : 'var(--ug-surface-alt)',
+                        color: isCurrent ? '#ffffff' : 'var(--ug-primary)',
+                        display: 'grid',
+                        placeItems: 'center',
+                        fontWeight: 800,
+                        fontSize: '0.78rem',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {matchedMenu?.icon ?? `#${index + 1}`}
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--ug-text)' }}>
+                          #{index + 1} · {isAr ? rec.labelAr || rec.label : rec.label}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '0.74rem',
+                            fontWeight: 700,
+                            color: 'var(--ug-primary)',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {relativeStr}
+                        </span>
+                      </div>
+
+                      {rec.parentLabel && (
+                        <div style={{ fontSize: '0.778rem', color: 'var(--ug-muted)', marginTop: 1 }}>
+                          {rec.parentLabel}
+                        </div>
+                      )}
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: 8,
+                          marginTop: 5,
+                          fontSize: '0.778rem',
+                          color: 'var(--ug-text-secondary)',
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
+                      >
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                          <Clock size={12} style={{ color: 'var(--ug-muted)' }} />
+                          {formattedStamp}
+                        </span>
+                        <span style={{ color: 'var(--ug-muted)', fontWeight: 600 }}>
+                          {isAr ? `الزيارات: ${rec.visitCount}` : `${rec.visitCount}x`}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {recentMenus.length > 0 && onClearRecentMenus && (
+            <div style={{ borderTop: '1px solid var(--ug-border)', paddingTop: 10, display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                type="button"
+                variant="danger-ghost"
+                size="sm"
+                icon={<Trash2 size={14} />}
+                onClick={onClearRecentMenus}
+              >
+                {isAr ? 'مسح سجل القوائم الأخيرة' : 'Clear My Recent History'}
+              </Button>
+            </div>
+          )}
+        </div>
+      </Drawer>
 
       {/* Appearance & Layout Studio Drawer */}
       <Drawer open={settingsOpen} onClose={() => setSettingsOpen(false)} title="Workspace & Theme Customizer">
