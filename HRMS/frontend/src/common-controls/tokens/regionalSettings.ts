@@ -1,5 +1,6 @@
 export type AppDateFormat =
   | 'DD-MM-YYYY'
+  | 'DD-MMM-YYYY'
   | 'DD/MM/YYYY'
   | 'DD MMM YYYY'
   | 'YYYY-MM-DD'
@@ -180,6 +181,7 @@ export const GULF_TIMEZONES: TimeZoneMetadata[] = [
 
 export const DATE_FORMAT_OPTIONS: { value: AppDateFormat; label: string; example: string }[] = [
   { value: 'DD-MM-YYYY', label: 'DD-MM-YYYY (Bahrain / GCC Default)', example: '28-11-2026' },
+  { value: 'DD-MMM-YYYY', label: 'DD-MMM-YYYY (Hyphenated Month, e.g. 12-May-2026)', example: '12-May-2026' },
   { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY (Slash Standard)', example: '28/11/2026' },
   { value: 'DD MMM YYYY', label: 'DD MMM YYYY (Executive Readable)', example: '28 Nov 2026' },
   { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD (ISO 8601 Technical)', example: '2026-11-28' },
@@ -278,6 +280,8 @@ function buildDateTokens(year: string, month2: string, day2: string, dateFormat:
   const monthIdx = Math.max(0, Math.min(11, Number(month2) - 1));
   const mmm = SHORT_MONTHS[monthIdx];
   switch (dateFormat) {
+    case 'DD-MMM-YYYY':
+      return `${day2}-${mmm}-${year}`;
     case 'DD/MM/YYYY':
       return `${day2}/${month2}/${year}`;
     case 'DD MMM YYYY':
@@ -309,9 +313,9 @@ export function formatAppDateValue(
     return buildDateTokens(y, m, d, dateFormat);
   }
 
-  // Human 'DD MMM YYYY' e.g. '15 Nov 2026'
-  if (typeof input === 'string' && /^\d{1,2}\s+[A-Za-z]{3}\s+\d{4}$/.test(input.trim())) {
-    const parts = input.trim().split(/\s+/);
+  // Human 'DD MMM YYYY' or 'DD-MMM-YYYY' e.g. '15 Nov 2026' or '12-May-2026'
+  if (typeof input === 'string' && /^\d{1,2}[\s-]+[A-Za-z]{3}[\s-]+\d{4}$/.test(input.trim())) {
+    const parts = input.trim().split(/[\s-]+/);
     const d = parts[0].padStart(2, '0');
     const mIdx = SHORT_MONTHS.findIndex((x) => x.toLowerCase() === parts[1].toLowerCase());
     if (mIdx >= 0) {

@@ -55,19 +55,25 @@ const INITIAL_RELEASES: ReleaseRecord[] = [
     id: 'rel-170',
     version: '1.7.0',
     type: 'Minor',
-    revision: 1,
+    revision: 2,
     title: 'Global Application Settings Hub — Gulf Regional Defaults (Bahrain)',
     completionDate: '2026-11-28',
     branch: 'main',
     author: 'Ajit',
     description:
-      'Added top Header Settings gear icon and extensible Application Settings page with 1-click GCC Country Presets (Default: Kingdom of Bahrain — BHD 3-decimal fils, Asia/Bahrain UTC+03:00, DD-MM-YYYY, 12h AM/PM). Wired all @controls (DateCalendar, ScheduleCalendar, NumberInput, AppShell Recent Timestamps, Tables & Clocks) to obey Application Settings dynamically and persist via dbo.AppUiSettings.',
-    tags: ['Application Settings', 'Gulf / Bahrain Defaults', 'Date/Time/Currency/TZ', 'Global Formatting'],
+      'Added top Header Settings gear icon and extensible Application Settings page with 1-click GCC Country Presets (Default: Kingdom of Bahrain — BHD 3-decimal fils, Asia/Bahrain UTC+03:00, DD-MM-YYYY / DD-MMM-YYYY e.g. 12-May-2026, 12h AM/PM). Wired all @controls (DateCalendar, ScheduleCalendar, NumberInput, AppShell Recent Timestamps, Tables & Clocks) to obey Application Settings dynamically and persist via dbo.AppUiSettings.',
+    tags: ['Application Settings', 'Gulf / Bahrain Defaults', 'DD-MMM-YYYY', 'Global Formatting'],
     revisions: [
       {
         revNumber: 1,
         date: '2026-11-28',
         note: 'Delivered ApplicationSettingsPage, regionalSettings engine, Header Settings icon, and SQL Server dbo.AppUiSettings schema columns',
+        author: 'Ajit',
+      },
+      {
+        revNumber: 2,
+        date: '2026-11-28',
+        note: 'Added DD-MMM-YYYY (e.g. 12-May-2026) hyphenated short-month date format option across the entire application',
         author: 'Ajit',
       },
     ],
