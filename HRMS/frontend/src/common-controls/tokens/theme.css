@@ -318,16 +318,20 @@ body {
   color: var(--ug-menu-text);
   opacity: 0.85;
 }
-/* Keep ALL dropdown popovers (Quick Access, Actions Menu, Horizontal Submenus) readable on light surface */
+/* Keep ALL dropdown popovers (Quick Access, Profile Menu, Actions Menu, Horizontal Submenus) readable on surface */
+.ug-profile-dropdown .ug-nav-item,
 .ug-nav-dropdown-panel .ug-nav-item,
 .ug-menu-colored .ug-nav-dropdown-panel .ug-nav-item {
-  color: var(--ug-sidebar-text);
+  color: var(--ug-text);
+  font-weight: 600;
 }
+.ug-profile-dropdown .ug-nav-item:hover,
 .ug-nav-dropdown-panel .ug-nav-item:hover,
 .ug-menu-colored .ug-nav-dropdown-panel .ug-nav-item:hover {
   background: var(--ug-primary-soft);
   color: var(--ug-primary);
 }
+.ug-profile-dropdown .ug-nav-item.active,
 .ug-nav-dropdown-panel .ug-nav-item.active,
 .ug-menu-colored .ug-nav-dropdown-panel .ug-nav-item.active {
   background: var(--ug-active-bg);

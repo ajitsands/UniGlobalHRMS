@@ -880,6 +880,7 @@ export const HeaderProfileMenu: React.FC<HeaderProfileMenuProps> = ({
       {menuOpen && (
         <div
           role="menu"
+          className="ug-profile-dropdown"
           style={{
             position: 'absolute',
             top: 'calc(100% + 8px)',
@@ -887,6 +888,10 @@ export const HeaderProfileMenu: React.FC<HeaderProfileMenuProps> = ({
             width: 308,
             background: 'var(--ug-surface)',
             color: 'var(--ug-text)',
+            fontFamily: 'var(--ug-font)',
+            fontSize: '0.926rem',
+            fontWeight: 500,
+            letterSpacing: 'normal',
             border: '1px solid var(--ug-border-strong)',
             borderRadius: 14,
             boxShadow: '0 20px 44px rgba(0, 0, 0, 0.22)',
