@@ -52,6 +52,27 @@ const STORAGE_KEY = 'uniglobal_hrms_release_timeline_v1';
 
 const INITIAL_RELEASES: ReleaseRecord[] = [
   {
+    id: 'rel-173',
+    version: '1.7.3',
+    type: 'Patch',
+    revision: 1,
+    title: 'Dark Mode Brand Color & Surface Sync with Login Screen',
+    completionDate: '2026-11-28',
+    branch: 'main',
+    author: 'Ajit',
+    description:
+      'Fixed Dark Mode toggle so switching between Light and Dark Mode preserves the exact brand accent color chosen on the Login Screen (default #A1077E Prompt Maroon or any of the 16 PROMPT brand swatches) instead of resetting to #3b82f6 Blue, and aligned Application Dark Mode surfaces (#0B0F14 / #121820) with the Login Screen.',
+    tags: ['Dark Mode Fix', 'Login Color Sync', 'Prompt Dark Surface'],
+    revisions: [
+      {
+        revNumber: 1,
+        date: '2026-11-28',
+        note: 'Added prompt-dark neutral charcoal surface, preserved Login Screen swatch across Light/Dark toggles, and auto-healed stale #3b82f6 blue state',
+        author: 'Ajit',
+      },
+    ],
+  },
+  {
     id: 'rel-172',
     version: '1.7.2',
     type: 'Patch',

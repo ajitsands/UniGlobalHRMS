@@ -1313,6 +1313,28 @@ body {
 /* ==========================================================================
    Elegant Surface Themes (Light, Dark & Executive Presets)
    ========================================================================== */
+[data-surface-theme='prompt-dark'] {
+  --ug-bg: #0b0f14;
+  --ug-surface: #121820;
+  --ug-surface-alt: #1b232c;
+  --ug-header-bg: #121820;
+  --ug-header-text: #f5f7fa;
+  --ug-footer-bg: #121820;
+  --ug-footer-text: #9aa6b2;
+  --ug-sidebar-bg: #121820;
+  --ug-sidebar-text: #e5e9f0;
+  --ug-text: #f5f7fa;
+  --ug-text-secondary: #c4cdd5;
+  --ug-muted: #9aa6b2;
+  --ug-border: rgba(154, 166, 178, 0.18);
+  --ug-border-strong: rgba(154, 166, 178, 0.3);
+  --ug-scrollbar-track: #121820;
+  --ug-success-bg: rgba(5, 150, 105, 0.18);
+  --ug-warning-bg: rgba(217, 119, 6, 0.2);
+  --ug-danger-bg: rgba(220, 38, 38, 0.2);
+  --ug-info-bg: rgba(2, 132, 199, 0.2);
+}
+
 [data-surface-theme='midnight-dark'] {
   --ug-bg: #0b1120;
   --ug-surface: #111827;
@@ -1393,9 +1415,10 @@ body {
   --ug-scrollbar-track: #e4eaf3;
 }
 
+[data-surface-theme='prompt-dark'] .ug-dock-nav,
 [data-surface-theme='midnight-dark'] .ug-dock-nav,
 [data-surface-theme='obsidian-gold'] .ug-dock-nav {
-  background: rgba(17, 24, 39, 0.94);
+  background: rgba(18, 24, 32, 0.94);
 }
 
 /* ==========================================================================

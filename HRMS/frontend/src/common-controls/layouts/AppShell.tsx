@@ -1335,6 +1335,10 @@ export const AppShell: React.FC<AppShellProps> = ({
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                     {SURFACE_THEME_PRESETS.map((preset) => {
                       const active = surfaceTheme === preset.id;
+                      const previewAccent =
+                        preset.id === 'prompt-dark' || preset.id === 'prompt-maroon'
+                          ? primaryColor
+                          : preset.primary;
                       return (
                         <button
                           key={preset.id}
@@ -1343,7 +1347,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                           style={{
                             padding: '8px 10px',
                             borderRadius: 8,
-                            border: active ? `2px solid ${preset.primary}` : '1px solid var(--ug-border-strong)',
+                            border: active ? `2px solid ${previewAccent}` : '1px solid var(--ug-border-strong)',
                             background: preset.cardPreview,
                             color: preset.mode === 'dark' ? '#f8fafc' : '#0f172a',
                             cursor: 'pointer',
@@ -1360,14 +1364,14 @@ export const AppShell: React.FC<AppShellProps> = ({
                                 width: 12,
                                 height: 12,
                                 borderRadius: '50%',
-                                background: preset.primary,
+                                background: previewAccent,
                                 flexShrink: 0,
                               }}
                             />
                           </div>
                           <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                             <span style={{ width: 18, height: 6, borderRadius: 3, background: preset.bgPreview, border: '1px solid rgba(128,128,128,0.25)' }} />
-                            <span style={{ width: 18, height: 6, borderRadius: 3, background: preset.primary }} />
+                            <span style={{ width: 18, height: 6, borderRadius: 3, background: previewAccent }} />
                             <span style={{ fontSize: '0.7rem', opacity: 0.7, textTransform: 'uppercase' }}>
                               {preset.mode}
                             </span>

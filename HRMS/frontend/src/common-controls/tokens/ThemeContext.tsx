@@ -22,14 +22,45 @@ import {
 
 export type ThemeMode = 'uniglobal-light' | 'single' | 'gradient';
 export type SurfaceThemeId =
-  | 'uniglobal-light'
   | 'prompt-maroon'
+  | 'prompt-dark'
+  | 'uniglobal-light'
   | 'midnight-dark'
   | 'obsidian-gold'
   | 'royal-ivory'
   | 'emerald-glass'
   | 'nordic-slate';
 export type HeaderFooterStyle = 'light' | 'single' | 'gradient';
+
+function parseHexRgb(hex: string): [number, number, number] {
+  const clean = hex.replace('#', '').trim();
+  const full =
+    clean.length === 3
+      ? clean
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : clean.padEnd(6, '0').slice(0, 6);
+  const num = parseInt(full, 16);
+  if (Number.isNaN(num)) return [161, 7, 126];
+  return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+}
+
+function hexLuminance(hex: string): number {
+  const [r, g, b] = parseHexRgb(hex);
+  return 0.299 * r + 0.587 * g + 0.114 * b;
+}
+
+function lightenHexColor(hex: string, factor = 0.22): string {
+  const [r, g, b] = parseHexRgb(hex);
+  const mix = (v: number) => Math.min(255, Math.round(v + (255 - v) * factor));
+  return `#${[mix(r), mix(g), mix(b)].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+}
+
+function hexToRgbaString(hex: string, alpha: number): string {
+  const [r, g, b] = parseHexRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 export interface SurfaceThemePreset {
   id: SurfaceThemeId;
@@ -55,13 +86,23 @@ export const SURFACE_THEME_PRESETS: SurfaceThemePreset[] = [
   },
   {
     id: 'prompt-maroon',
-    name: 'Prompt Maroon',
+    name: 'Prompt Light',
     mode: 'light',
     primary: '#A1077E',
     bgPreview: '#f6f7f9',
     cardPreview: '#ffffff',
-    hfText: '#A1077E',
+    hfText: '#1C252E',
     menuText: '#1C252E',
+  },
+  {
+    id: 'prompt-dark',
+    name: 'Prompt Dark',
+    mode: 'dark',
+    primary: '#A1077E',
+    bgPreview: '#0b0f14',
+    cardPreview: '#121820',
+    hfText: '#f5f7fa',
+    menuText: '#e5e9f0',
   },
   {
     id: 'midnight-dark',
@@ -205,6 +246,7 @@ interface ThemeContextValue {
   surfaceTheme: SurfaceThemeId;
   applySurfaceTheme: (id: SurfaceThemeId) => void;
   isDarkTheme: boolean;
+  setDarkMode: (dark: boolean) => void;
   toggleDarkMode: () => void;
   themeMode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
@@ -330,29 +372,29 @@ interface PersistedSettings {
 }
 
 const DEFAULT_SETTINGS: PersistedSettings = {
-  surfaceTheme: 'uniglobal-light',
-  themeMode: 'uniglobal-light',
-  primaryColor: '#1B365D',
-  gradientId: 'uniglobal-brand',
+  surfaceTheme: 'prompt-maroon',
+  themeMode: 'single',
+  primaryColor: '#A1077E',
+  gradientId: 'prompt-maroon-glow',
   menuLayout: 'vertical',
   menuSticky: true,
   headerFooterStyle: 'light',
-  headerFooterColor: '#1B365D',
-  hfTextColor: '#1B365D',
-  hfGradStart: '#1B365D',
-  hfGradEnd: '#B31B34',
+  headerFooterColor: '#A1077E',
+  hfTextColor: '#1C252E',
+  hfGradStart: '#A1077E',
+  hfGradEnd: '#5B0447',
   hfGradAngle: 135,
   menuBgStyle: 'light',
-  menuBgColor: '#1B365D',
-  menuTextColor: '#334155',
-  menuGradStart: '#1B365D',
-  menuGradEnd: '#0f172a',
+  menuBgColor: '#A1077E',
+  menuTextColor: '#1C252E',
+  menuGradStart: '#A1077E',
+  menuGradEnd: '#121820',
   menuGradAngle: 180,
   language: 'en',
   fontSizePx: 13.5,
   fontFamilyId: 'inter',
   cardShadowLevel: 1,
-  scrollbarColor: '#1B365D',
+  scrollbarColor: '#A1077E',
   quickAccessIds: ['dashboard', 'ui-kit', 'emp-directory', 'pay-run'],
   isMenuLocked: false,
   recentMenusLimit: 10,
@@ -364,11 +406,43 @@ const DEFAULT_SETTINGS: PersistedSettings = {
   timeZone: 'Asia/Bahrain',
 };
 
+function getLoginAccentSwatch(): string {
+  try {
+    const rawSession = sessionStorage.getItem('prompt_hrms_auth_session_v1');
+    if (rawSession) {
+      const parsedSession = JSON.parse(rawSession) as { accentHex?: string };
+      if (parsedSession?.accentHex) return parsedSession.accentHex;
+    }
+    const savedSwatch = localStorage.getItem('prompt_hrms_login_swatch');
+    if (savedSwatch) return savedSwatch;
+  } catch {
+    // ignore storage errors
+  }
+  return '#A1077E';
+}
+
 function loadInitialSettings(): PersistedSettings {
   try {
+    const loginSwatch = getLoginAccentSwatch();
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    if (!raw) {
+      return {
+        ...DEFAULT_SETTINGS,
+        primaryColor: loginSwatch,
+        scrollbarColor: loginSwatch,
+      };
+    }
+    const merged: PersistedSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    // Heal previous Dark Mode toggle that forced Midnight Dark (#3b82f6 Blue) instead of Login Screen color
+    if (merged.surfaceTheme === 'midnight-dark' && merged.primaryColor.toLowerCase() === '#3b82f6') {
+      merged.surfaceTheme = 'prompt-dark';
+      merged.themeMode = 'single';
+      merged.primaryColor = loginSwatch;
+      merged.scrollbarColor = loginSwatch;
+      if (merged.headerFooterStyle === 'light') merged.hfTextColor = '#f5f7fa';
+      if (merged.menuBgStyle === 'light') merged.menuTextColor = '#e5e9f0';
+    }
+    return merged;
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -446,8 +520,21 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     fetchGlobalUiSettings().then((remote) => {
       if (!active || !remote) return;
       setDbConnected(true);
-      setThemeMode(remote.themeMode);
-      setPrimaryColor(remote.primaryColor);
+      const loginSwatch = getLoginAccentSwatch();
+      const hasSessionAccent = Boolean(sessionStorage.getItem('prompt_hrms_auth_session_v1'));
+      const isDefaultUnmodifiedSeed =
+        remote.themeMode === 'uniglobal-light' ||
+        (remote.primaryColor && remote.primaryColor.toUpperCase() === '#1B365D');
+
+      if (hasSessionAccent || isDefaultUnmodifiedSeed) {
+        setThemeMode('single');
+        setPrimaryColor(loginSwatch);
+        setScrollbarColor(loginSwatch);
+      } else {
+        setThemeMode(remote.themeMode);
+        setPrimaryColor(remote.primaryColor);
+        setScrollbarColor(remote.scrollbarColor);
+      }
       setGradientId(remote.gradientId);
       setMenuLayout(remote.menuLayout);
       setMenuSticky(remote.menuSticky);
@@ -456,21 +543,36 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (remote.quickAccessIds && remote.quickAccessIds.length > 0) setQuickAccessIds(remote.quickAccessIds);
       setHeaderFooterStyleState(remote.headerFooterStyle);
       setHeaderFooterColor(remote.headerFooterColor);
-      setHfTextColor(remote.hfTextColor);
       setHfGradStart(remote.hfGradStart);
       setHfGradEnd(remote.hfGradEnd);
       setHfGradAngle(remote.hfGradAngle);
       setMenuBgStyleState(remote.menuBgStyle);
       setMenuBgColor(remote.menuBgColor);
-      setMenuTextColor(remote.menuTextColor);
       setMenuGradStart(remote.menuGradStart);
       setMenuGradEnd(remote.menuGradEnd);
       setMenuGradAngle(remote.menuGradAngle);
+      // Keep header/sidebar text legible if user is currently in Dark Mode with light-mode DB defaults
+      setSurfaceTheme((currentSurface) => {
+        const currentlyDark =
+          currentSurface === 'prompt-dark' ||
+          currentSurface === 'midnight-dark' ||
+          currentSurface === 'obsidian-gold';
+        if (currentlyDark && remote.headerFooterStyle === 'light') {
+          setHfTextColor('#f5f7fa');
+        } else {
+          setHfTextColor(remote.hfTextColor);
+        }
+        if (currentlyDark && remote.menuBgStyle === 'light') {
+          setMenuTextColor('#e5e9f0');
+        } else {
+          setMenuTextColor(remote.menuTextColor);
+        }
+        return currentSurface;
+      });
       setLanguage(remote.language);
       setFontSizePx(Number(remote.fontSizePx) || 13.5);
       setFontFamilyId(remote.fontFamilyId);
       setCardShadowLevel(remote.cardShadowLevel);
-      setScrollbarColor(remote.scrollbarColor);
       setLockCorporateTheme(remote.lockCorporateTheme);
       if (remote.recentMenusLimit && remote.recentMenusLimit > 0) {
         setRecentMenusLimitState(Math.min(50, Math.max(1, Number(remote.recentMenusLimit))));
@@ -539,22 +641,66 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const isDarkTheme = surfaceTheme === 'midnight-dark' || surfaceTheme === 'obsidian-gold';
+  const isDarkTheme =
+    surfaceTheme === 'prompt-dark' ||
+    surfaceTheme === 'midnight-dark' ||
+    surfaceTheme === 'obsidian-gold';
 
   const applySurfaceTheme = (id: SurfaceThemeId) => {
     const preset = SURFACE_THEME_PRESETS.find((p) => p.id === id) ?? SURFACE_THEME_PRESETS[0];
     setSurfaceTheme(preset.id);
-    setThemeMode(preset.id === 'uniglobal-light' ? 'uniglobal-light' : 'single');
-    setPrimaryColor(preset.primary);
     setHeaderFooterStyleState('light');
     setMenuBgStyleState('light');
     setHfTextColor(preset.hfText);
     setMenuTextColor(preset.menuText);
-    setScrollbarColor(preset.primary);
+
+    // Keep Login Screen / active brand color when switching between Prompt Light and Prompt Dark
+    if (preset.id === 'prompt-dark' || preset.id === 'prompt-maroon') {
+      const keptColor =
+        themeMode === 'single' && primaryColor.toLowerCase() !== '#3b82f6'
+          ? primaryColor
+          : getLoginAccentSwatch();
+      setThemeMode('single');
+      setPrimaryColor(keptColor);
+      setScrollbarColor(keptColor);
+    } else {
+      setThemeMode(preset.id === 'uniglobal-light' ? 'uniglobal-light' : 'single');
+      setPrimaryColor(preset.primary);
+      setScrollbarColor(preset.primary);
+    }
+  };
+
+  const setDarkMode = (nextDark: boolean) => {
+    const keptColor =
+      themeMode === 'single' && primaryColor.toLowerCase() !== '#3b82f6'
+        ? primaryColor
+        : getLoginAccentSwatch();
+
+    if (themeMode === 'uniglobal-light' || (surfaceTheme === 'midnight-dark' && primaryColor.toLowerCase() === '#3b82f6')) {
+      setThemeMode('single');
+      setPrimaryColor(keptColor);
+      setScrollbarColor(keptColor);
+    }
+
+    if (nextDark) {
+      setSurfaceTheme('prompt-dark');
+      if (headerFooterStyle === 'light') setHfTextColor('#f5f7fa');
+      if (menuBgStyle === 'light') setMenuTextColor('#e5e9f0');
+    } else {
+      setSurfaceTheme('prompt-maroon');
+      if (headerFooterStyle === 'light') setHfTextColor('#1C252E');
+      if (menuBgStyle === 'light') setMenuTextColor('#1C252E');
+    }
+
+    try {
+      localStorage.setItem('prompt_hrms_login_dark', nextDark ? 'true' : 'false');
+    } catch {
+      // ignore
+    }
   };
 
   const toggleDarkMode = () => {
-    applySurfaceTheme(isDarkTheme ? 'uniglobal-light' : 'midnight-dark');
+    setDarkMode(!isDarkTheme);
   };
 
   useEffect(() => {
@@ -563,12 +709,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const setHeaderFooterStyle = (style: HeaderFooterStyle) => {
     setHeaderFooterStyleState(style);
-    setHfTextColor(style === 'light' ? '#1B365D' : '#ffffff');
+    setHfTextColor(style === 'light' ? (isDarkTheme ? '#f5f7fa' : '#1C252E') : '#ffffff');
   };
 
   const setMenuBgStyle = (style: HeaderFooterStyle) => {
     setMenuBgStyleState(style);
-    setMenuTextColor(style === 'light' ? '#334155' : '#ffffff');
+    setMenuTextColor(style === 'light' ? (isDarkTheme ? '#e5e9f0' : '#1C252E') : '#ffffff');
   };
 
   useEffect(() => {
@@ -685,21 +831,31 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const preset = GRADIENT_PRESETS.find((g) => g.id === gradientId) ?? GRADIENT_PRESETS[0];
 
     if (themeMode === 'uniglobal-light') {
-      root.style.setProperty('--ug-primary', '#1B365D');
-      root.style.setProperty('--ug-primary-soft', 'rgba(27, 54, 93, 0.08)');
+      const baseHex = '#1B365D';
+      const effectiveHex = isDarkTheme ? lightenHexColor(baseHex, 0.3) : baseHex;
+      root.style.setProperty('--ug-primary', effectiveHex);
+      root.style.setProperty('--ug-primary-soft', hexToRgbaString(effectiveHex, isDarkTheme ? 0.22 : 0.09));
       root.style.setProperty('--ug-accent', '#B31B34');
-      root.style.setProperty('--ug-active-bg', '#1B365D');
+      root.style.setProperty('--ug-active-bg', baseHex);
     } else if (themeMode === 'single') {
-      root.style.setProperty('--ug-primary', primaryColor);
-      root.style.setProperty('--ug-primary-soft', `${primaryColor}16`);
+      const effectiveHex =
+        isDarkTheme && hexLuminance(primaryColor) < 110
+          ? lightenHexColor(primaryColor, 0.22)
+          : primaryColor;
+      root.style.setProperty('--ug-primary', effectiveHex);
+      root.style.setProperty('--ug-primary-soft', hexToRgbaString(effectiveHex, isDarkTheme ? 0.22 : 0.11));
       root.style.setProperty('--ug-active-bg', primaryColor);
     } else {
-      root.style.setProperty('--ug-primary', preset.primary);
-      root.style.setProperty('--ug-primary-soft', `${preset.primary}16`);
+      const effectiveHex =
+        isDarkTheme && hexLuminance(preset.primary) < 110
+          ? lightenHexColor(preset.primary, 0.22)
+          : preset.primary;
+      root.style.setProperty('--ug-primary', effectiveHex);
+      root.style.setProperty('--ug-primary-soft', hexToRgbaString(effectiveHex, isDarkTheme ? 0.22 : 0.11));
       root.style.setProperty('--ug-gradient', preset.css);
       root.style.setProperty('--ug-active-bg', preset.css);
     }
-  }, [themeMode, primaryColor, gradientId]);
+  }, [themeMode, primaryColor, gradientId, isDarkTheme]);
 
   const toggleQuickAccess = (menuId: string) => {
     setQuickAccessIds((prev) =>
@@ -708,28 +864,29 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const resetAppearance = () => {
-    setSurfaceTheme('uniglobal-light');
-    setThemeMode('uniglobal-light');
-    setPrimaryColor('#1B365D');
-    setGradientId('uniglobal-brand');
+    const loginSwatch = getLoginAccentSwatch();
+    setSurfaceTheme('prompt-maroon');
+    setThemeMode('single');
+    setPrimaryColor(loginSwatch);
+    setGradientId('prompt-maroon-glow');
     setHeaderFooterStyleState('light');
-    setHeaderFooterColor('#1B365D');
-    setHfTextColor('#1B365D');
-    setHfGradStart('#1B365D');
-    setHfGradEnd('#B31B34');
+    setHeaderFooterColor(loginSwatch);
+    setHfTextColor('#1C252E');
+    setHfGradStart(loginSwatch);
+    setHfGradEnd('#5B0447');
     setHfGradAngle(135);
     setMenuBgStyleState('light');
-    setMenuBgColor('#1B365D');
-    setMenuTextColor('#334155');
-    setMenuGradStart('#1B365D');
-    setMenuGradEnd('#0f172a');
+    setMenuBgColor(loginSwatch);
+    setMenuTextColor('#1C252E');
+    setMenuGradStart(loginSwatch);
+    setMenuGradEnd('#121820');
     setMenuGradAngle(180);
     setMenuLayout('vertical');
     setMenuSticky(true);
     setFontSizePx(13.5);
     setFontFamilyId('inter');
     setCardShadowLevel(1);
-    setScrollbarColor('#1B365D');
+    setScrollbarColor(loginSwatch);
   };
 
   return (
@@ -738,6 +895,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         surfaceTheme,
         applySurfaceTheme,
         isDarkTheme,
+        setDarkMode,
         toggleDarkMode,
         themeMode,
         setThemeMode,

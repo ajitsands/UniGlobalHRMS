@@ -296,6 +296,9 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
     setUserRole,
     setThemeMode,
     setPrimaryColor,
+    setScrollbarColor,
+    isDarkTheme,
+    setDarkMode,
     formatDate,
     formatTime,
     timeZone,
@@ -311,7 +314,7 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
   const [swatchHex, setSwatchHex] = useState<string>(
     () => localStorage.getItem('prompt_hrms_login_swatch') || '#A1077E'
   );
-  const [loginDark, setLoginDark] = useState<boolean>(false);
+  const [loginDark, setLoginDark] = useState<boolean>(() => isDarkTheme);
   const [paletteOpen, setPaletteOpen] = useState<boolean>(false);
   const [syncThemeOnLogin, setSyncThemeOnLogin] = useState<boolean>(true);
   const paletteRef = useRef<HTMLDivElement>(null);
@@ -366,8 +369,27 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
     setSwatchHex(hex);
     try {
       localStorage.setItem('prompt_hrms_login_swatch', hex);
+      const rawSession = sessionStorage.getItem('prompt_hrms_auth_session_v1');
+      if (rawSession) {
+        const parsed = JSON.parse(rawSession);
+        parsed.accentHex = hex;
+        sessionStorage.setItem('prompt_hrms_auth_session_v1', JSON.stringify(parsed));
+      }
     } catch {
       // ignore
+    }
+    if (syncThemeOnLogin) {
+      setThemeMode('single');
+      setPrimaryColor(hex);
+      setScrollbarColor(hex);
+    }
+  };
+
+  const handleToggleLoginDark = () => {
+    const next = !loginDark;
+    setLoginDark(next);
+    if (syncThemeOnLogin) {
+      setDarkMode(next);
     }
   };
 
@@ -521,6 +543,8 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
       if (syncThemeOnLogin) {
         setThemeMode('single');
         setPrimaryColor(swatchHex);
+        setScrollbarColor(swatchHex);
+        setDarkMode(loginDark);
       }
       setIsAuthenticating(false);
       const targetMenu =
@@ -927,7 +951,7 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
               variant="secondary"
               size="sm"
               icon={loginDark ? <Sun size={14} style={{ color: '#F59E0B' }} /> : <Moon size={14} />}
-              onClick={() => setLoginDark((d) => !d)}
+              onClick={handleToggleLoginDark}
               aria-label="Toggle Light or Dark mode"
             />
           </Tooltip>
