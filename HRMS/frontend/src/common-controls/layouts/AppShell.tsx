@@ -38,7 +38,7 @@ import {
 import { Accordion, Drawer } from '../controls/ContainersAndPopups';
 import { Badge, Button, HelpPopup, Tooltip } from '../controls/HelpAndFeedback';
 import { SwitchToggle } from '../controls/FormControls';
-import { UniGlobalLogoIcon } from '../controls/BrandAndLoader';
+import { PromptLogo } from '../controls/BrandAndLoader';
 import { useToast } from '../controls/ToastSystem';
 
 export interface NavMenuItem {
@@ -512,28 +512,56 @@ export const AppShell: React.FC<AppShellProps> = ({
           >
             <Menu size={20} />
           </button>
-          <div
-            className="ug-brand-badge"
+          <PromptLogo
+            variant={isHfDark || isDarkTheme ? 'white' : 'color'}
+            height={38}
+          />
+          <span
+            aria-hidden="true"
             style={{
-              background: '#ffffff',
-              border: '1px solid var(--ug-border)',
-              padding: 3,
+              height: 28,
+              width: 1,
+              background:
+                isHfDark || isDarkTheme
+                  ? 'rgba(255, 255, 255, 0.28)'
+                  : 'var(--ug-border-strong)',
+              marginInline: 2,
+              flexShrink: 0,
             }}
-          >
-            <UniGlobalLogoIcon size={36} />
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-              <span style={{ color: hfTextColor }}>
-                {isAr ? 'برومبت' : 'PROMPT'}
-              </span>
-              <span style={{ fontSize: '0.815rem', fontWeight: 700, color: isHfDark ? '#fde68a' : 'var(--ug-accent)', letterSpacing: '0.8px' }}>
+          />
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', lineHeight: 1.15 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '2px 8px',
+                  borderRadius: 999,
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.9px',
+                  background: isHfDark
+                    ? 'rgba(255, 255, 255, 0.18)'
+                    : 'color-mix(in srgb, var(--ug-primary) 12%, transparent)',
+                  color: isHfDark ? '#ffffff' : 'var(--ug-primary)',
+                  border: isHfDark
+                    ? '1px solid rgba(255, 255, 255, 0.28)'
+                    : '1px solid color-mix(in srgb, var(--ug-primary) 24%, transparent)',
+                }}
+              >
                 {isAr ? 'الموارد البشرية' : 'HRMS'}
               </span>
             </div>
             <div
               className="ug-header-sub"
-              style={{ fontSize: '0.778rem', fontWeight: 500, color: hfTextColor, opacity: 0.78 }}
+              style={{
+                fontSize: '0.74rem',
+                fontWeight: 500,
+                color: hfTextColor,
+                opacity: 0.78,
+                marginTop: 3,
+                whiteSpace: 'nowrap',
+              }}
             >
               {isAr ? 'بوابة إدارة الموارد البشرية والرواتب' : 'UniGlobal Consultancy • UG Suite'}
             </div>
@@ -935,8 +963,11 @@ export const AppShell: React.FC<AppShellProps> = ({
               style={{ borderBottomColor: isMenuColored ? 'rgba(255,255,255,0.2)' : undefined }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
-                <UniGlobalLogoIcon size={22} />
-                <span>{isAr ? 'القائمة الرئيسية' : 'PROMPT HRMS'}</span>
+                <PromptLogo
+                  variant={isMenuColored || isDarkTheme ? 'white' : 'color'}
+                  height={28}
+                  badgeText={isAr ? 'الموارد البشرية' : 'HRMS'}
+                />
               </div>
               <button
                 type="button"

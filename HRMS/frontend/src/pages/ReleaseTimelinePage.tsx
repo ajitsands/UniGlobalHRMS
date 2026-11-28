@@ -52,6 +52,27 @@ const STORAGE_KEY = 'uniglobal_hrms_release_timeline_v1';
 
 const INITIAL_RELEASES: ReleaseRecord[] = [
   {
+    id: 'rel-172',
+    version: '1.7.2',
+    type: 'Patch',
+    revision: 1,
+    title: 'Application-Wide Prompt Solutions Brand Logo & Favicon Update',
+    completionDate: '2026-11-28',
+    branch: 'main',
+    author: 'Ajit',
+    description:
+      'Updated the main application top Header, Mobile Navigation Drawer, Browser Favicon, Control Gallery, and Default Animated Loaders to use the official Prompt Solutions logo (prompt_logo.png on light surfaces and prompt_logo_white.png automatically on dark mode, single-color, and gradient headers) alongside a theme-tinted HRMS badge.',
+    tags: ['Prompt Logo', 'Adaptive Light/Dark Brand', 'Favicon'],
+    revisions: [
+      {
+        revNumber: 1,
+        date: '2026-11-28',
+        note: 'Switched AppShell header, mobile drawer, loaders, Control Gallery, and browser favicon to official Prompt Solutions logo assets from PROMPT_HRMS_Login_Home_Concepts_HTML',
+        author: 'Ajit',
+      },
+    ],
+  },
+  {
     id: 'rel-171',
     version: '1.7.1',
     type: 'Patch',

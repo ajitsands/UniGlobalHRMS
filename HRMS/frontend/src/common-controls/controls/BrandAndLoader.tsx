@@ -1,4 +1,88 @@
 import React from 'react';
+import { useTheme } from '../tokens/ThemeContext';
+
+export interface PromptLogoIconProps {
+  size?: number;
+  animated?: boolean;
+  className?: string;
+}
+
+/**
+ * Square Prompt Solutions Emblem Icon (cropped from official prompt_logo.png).
+ * Used for favicons, compact square badges, and animated ring loaders.
+ */
+export const PromptLogoIcon: React.FC<PromptLogoIconProps> = ({
+  size = 28,
+  animated = false,
+  className = '',
+}) => {
+  const src = '/assets/logos/prompt_icon.png';
+
+  if (!animated) {
+    return (
+      <img
+        src={src}
+        alt="Prompt Solutions Icon"
+        width={size}
+        height={size}
+        className={className}
+        style={{
+          width: size,
+          height: size,
+          objectFit: 'contain',
+          display: 'block',
+        }}
+      />
+    );
+  }
+
+  const ringSize = Math.round(size * 1.38);
+  return (
+    <span
+      style={{
+        position: 'relative',
+        width: ringSize,
+        height: ringSize,
+        display: 'inline-grid',
+        placeItems: 'center',
+      }}
+    >
+      <svg
+        width={ringSize}
+        height={ringSize}
+        viewBox="0 0 64 64"
+        fill="none"
+        style={{ position: 'absolute', inset: 0 }}
+        aria-hidden="true"
+      >
+        <circle cx="32" cy="32" r="29" stroke="var(--ug-border)" strokeWidth="3.5" />
+        <circle
+          cx="32"
+          cy="32"
+          r="29"
+          stroke="var(--ug-primary)"
+          strokeWidth="3.5"
+          strokeDasharray="115 68"
+          strokeLinecap="round"
+          className="ug-loader-ring"
+        />
+      </svg>
+      <img
+        src={src}
+        alt="Prompt Loading"
+        width={size}
+        height={size}
+        className="ug-loader-core"
+        style={{
+          width: size,
+          height: size,
+          objectFit: 'contain',
+          display: 'block',
+        }}
+      />
+    </span>
+  );
+};
 
 export interface UniGlobalLogoIconProps {
   size?: number;
@@ -171,14 +255,16 @@ export const UniGlobalLoader: React.FC<UniGlobalLoaderProps> = ({
   size = 'md',
   label = 'Loading...',
   overlay = false,
-  brand = 'uniglobal',
+  brand = 'prompt',
 }) => {
+  const { isDarkTheme } = useTheme();
   const px = size === 'sm' ? 22 : size === 'lg' ? 46 : 32;
+  const logoVariant = isDarkTheme ? 'white' : 'color';
   const content = (
     <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
       {brand === 'prompt' ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <PromptLogo height={px + 6} />
+          <PromptLogo variant={logoVariant} height={px + 6} />
           <div
             style={{
               width: 120,

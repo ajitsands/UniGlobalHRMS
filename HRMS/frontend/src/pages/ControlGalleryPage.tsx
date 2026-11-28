@@ -22,6 +22,8 @@ import {
   ImageUpload,
   Modal,
   NumberInput,
+  PromptLogo,
+  PromptLogoIcon,
   RadioGroup,
   RangeSlider,
   ScheduleAppointment,
@@ -37,7 +39,6 @@ import {
   ToastPosition,
   Tooltip,
   UniGlobalLoader,
-  UniGlobalLogoIcon,
   useTheme,
   useToast,
 } from '@controls';
@@ -138,7 +139,7 @@ const DEMO_TIMELINE_EVENTS: TimelineEvent[] = [
 
 export const ControlGalleryPage: React.FC = () => {
   const toast = useToast();
-  const { currencyCode, currencyMeta, showCurrencyCode, formatCurrency, formatDate } = useTheme();
+  const { isDarkTheme, currencyCode, currencyMeta, showCurrencyCode, formatCurrency, formatDate } = useTheme();
   const [appointments, setAppointments] = useState<ScheduleAppointment[]>(INITIAL_APPOINTMENTS);
   const [empName, setEmpName] = useState('Ahmed Al-Khalifa');
   const [salary, setSalary] = useState('1250.500');
@@ -634,12 +635,15 @@ export const ControlGalleryPage: React.FC = () => {
             },
             {
               id: 'loader',
-              label: 'UG Brand Icon & Animated Loader',
+              label: 'Prompt Brand Logo & Animated Loader',
               content: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <UniGlobalLogoIcon size={36} />
-                    <span style={{ fontSize: '0.926rem', fontWeight: 600 }}>App Icon (UG)</span>
+                    <PromptLogo variant={isDarkTheme ? 'white' : 'color'} height={36} badgeText="HRMS" />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <PromptLogoIcon size={36} />
+                    <span style={{ fontSize: '0.926rem', fontWeight: 600 }}>Favicon Emblem</span>
                   </div>
                   <UniGlobalLoader size="sm" label="Small Loader" />
                   <UniGlobalLoader size="md" label="Syncing Payroll..." />
@@ -661,7 +665,7 @@ export const ControlGalleryPage: React.FC = () => {
         />
       </Card>
 
-      {showOverlayLoader && <UniGlobalLoader size="lg" overlay label="Processing UniGlobal HRMS..." />}
+      {showOverlayLoader && <UniGlobalLoader size="lg" overlay label="Processing PROMPT HRMS..." />}
 
       <Modal
         open={modalOpen}
