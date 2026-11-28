@@ -6,6 +6,7 @@ import {
   Checkbox,
   HelpPopup,
   Modal,
+  PasswordResetOtpModal,
   PromptLogo,
   RadioGroup,
   SelectControl,
@@ -15,6 +16,8 @@ import {
   Tooltip,
   UniGlobalLoader,
   UserRole,
+  getStoredUserProfile,
+  verifyStoredUserPassword,
   useTheme,
   useToast,
 } from '@controls';
@@ -322,7 +325,9 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
   // Interactive Form State
   const [selectedPersonaId, setSelectedPersonaId] = useState<string>('superadmin');
   const [userId, setUserId] = useState<string>('ADMIN-01');
-  const [password, setPassword] = useState<string>('Prompt@2026');
+  const [password, setPassword] = useState<string>(
+    () => getStoredUserProfile('ADMIN-01', 'Ajit Kumar').password
+  );
   const [mobileNo, setMobileNo] = useState<string>('3944 0100');
   const [companyCr, setCompanyCr] = useState<string>('CR-102401');
   const [rememberMe, setRememberMe] = useState<boolean>(true);
@@ -345,11 +350,8 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
   const [nocturneAuthTab, setNocturneAuthTab] = useState<'password' | 'otp'>('password');
   const [liveNow, setLiveNow] = useState<Date>(() => new Date());
 
-  // Modals (Forgot Password & PROMPT ERP SSO Handshake)
+  // Modals (Forgot Password via Email+OTP & PROMPT ERP SSO Handshake)
   const [forgotOpen, setForgotOpen] = useState<boolean>(false);
-  const [recoveryChannel, setRecoveryChannel] = useState<string>('email');
-  const [recoveryIdentity, setRecoveryIdentity] = useState<string>('ajit@uniglobal.bh');
-  const [recoverySent, setRecoverySent] = useState<boolean>(false);
 
   const [erpModalOpen, setErpModalOpen] = useState<boolean>(false);
   const [erpTenantCode, setErpTenantCode] = useState<string>('PROMPT-BH-PROD');
@@ -420,7 +422,7 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
   const applyPersona = (p: DemoPersona) => {
     setSelectedPersonaId(p.id);
     setUserId(p.userId);
-    setPassword('Prompt@2026');
+    setPassword(getStoredUserProfile(p.userId, p.displayName).password);
     setMobileNo(p.mobile);
     setCompanyCr(p.companyCr);
     setFormError('');
@@ -582,6 +584,14 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
     }
     if (!companyCr) {
       setFormError(isAr ? 'يرجى اختيار الشركة والفرع.' : 'Please select a Company CR & Branch.');
+      return;
+    }
+    if (!verifyStoredUserPassword(userId.trim(), password)) {
+      setFormError(
+        isAr
+          ? 'كلمة المرور غير صحيحة. انقر على نسيت كلمة المرور لإعادة التعيين عبر البريد ورمز OTP.'
+          : 'Incorrect password. Click Forgot Password to reset via Email & OTP.'
+      );
       return;
     }
     setFormError('');
@@ -1265,7 +1275,6 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
                           <button
                             type="button"
                             onClick={() => {
-                              setRecoverySent(false);
                               setForgotOpen(true);
                             }}
                             style={{
@@ -1462,7 +1471,6 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
                       <button
                         type="button"
                         onClick={() => {
-                          setRecoverySent(false);
                           setForgotOpen(true);
                         }}
                         style={{
@@ -1985,7 +1993,6 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
                     <button
                       type="button"
                       onClick={() => {
-                        setRecoverySent(false);
                         setForgotOpen(true);
                       }}
                       style={{
@@ -2042,65 +2049,22 @@ export const LoginScreensPage: React.FC<LoginScreensPageProps> = ({
       )}
 
       {/* ====================================================================
-          INTERACTIVE MODAL 1: FORGOT PASSWORD RECOVERY (@controls Modal)
+          INTERACTIVE MODAL 1: FORGOT / RESET PASSWORD VIA EMAIL + OTP
           ==================================================================== */}
-      <Modal
+      <PasswordResetOtpModal
         open={forgotOpen}
         onClose={() => setForgotOpen(false)}
-        title={isAr ? 'استعادة كلمة المرور — PROMPT HRMS' : 'Account Password Recovery'}
-        size="sm"
-        footer={
-          <>
-            <Button variant="secondary" size="sm" onClick={() => setForgotOpen(false)}>
-              {isAr ? 'إغلاق' : 'Close'}
-            </Button>
-            {!recoverySent && (
-              <Button
-                size="sm"
-                onClick={() => {
-                  setRecoverySent(true);
-                  toast.success(
-                    isAr ? 'تم إرسال رابط الاستعادة' : 'Recovery Instructions Sent',
-                    `Dispatched to ${recoveryIdentity}`
-                  );
-                }}
-              >
-                {isAr ? 'إرسال رمز الاستعادة' : 'Send Reset Link'}
-              </Button>
-            )}
-          </>
+        userId={userId.trim() || 'ADMIN-01'}
+        displayName={
+          DEMO_PERSONAS.find((p) => p.userId.toLowerCase() === userId.trim().toLowerCase())?.displayName ??
+          userId.trim() ??
+          'User'
         }
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {recoverySent ? (
-            <Alert variant="success" title={isAr ? 'تم الإرسال بنجاح' : 'Reset Link Dispatched'}>
-              {isAr
-                ? `تم إرسال تعليمات إعادة تعيين كلمة المرور إلى ${recoveryIdentity}.`
-                : `Password reset instructions and a 10-minute security token have been sent to ${recoveryIdentity}.`}
-            </Alert>
-          ) : (
-            <>
-              <RadioGroup
-                label={isAr ? 'طريقة التحقق' : 'Verification Channel'}
-                name="recovery-channel"
-                direction="column"
-                value={recoveryChannel}
-                onChange={setRecoveryChannel}
-                options={[
-                  { value: 'email', label: isAr ? 'البريد المؤسسي' : 'Corporate Email Link' },
-                  { value: 'sms', label: isAr ? 'رسالة نصية (+973)' : 'Registered Mobile SMS (+973)' },
-                ]}
-              />
-              <TextInput
-                label={recoveryChannel === 'email' ? 'Corporate Email' : 'Employee Mobile (+973)'}
-                value={recoveryIdentity}
-                onChange={(e) => setRecoveryIdentity(e.target.value)}
-                required
-              />
-            </>
-          )}
-        </div>
-      </Modal>
+        onPasswordUpdated={(updatedPw) => {
+          setPassword(updatedPw);
+          setFormError('');
+        }}
+      />
 
       {/* ====================================================================
           INTERACTIVE MODAL 2: PROMPT ERP SINGLE SIGN-ON HANDSHAKE (@controls Modal)

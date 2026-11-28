@@ -16,3 +16,4 @@ export * from './controls/BrandAndLoader';
 export * from './controls/ToastSystem';
 export * from './controls/ScheduleCalendar';
 export * from './controls/Timeline';
+export * from './controls/UserProfileAndLock';

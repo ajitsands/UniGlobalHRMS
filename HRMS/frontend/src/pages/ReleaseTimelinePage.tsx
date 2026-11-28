@@ -52,6 +52,27 @@ const STORAGE_KEY = 'uniglobal_hrms_release_timeline_v1';
 
 const INITIAL_RELEASES: ReleaseRecord[] = [
   {
+    id: 'rel-180',
+    version: '1.8.0',
+    type: 'Minor',
+    revision: 1,
+    title: 'Header User Profile Dropdown, Email+OTP Password Reset & Session Auto-Lock',
+    completionDate: '2026-11-28',
+    branch: 'main',
+    author: 'Ajit',
+    description:
+      'Replaced the top Header Sign Out button with a User Profile Icon & Dropdown (Avatar + Name, Change Profile Image, Change Password, 3-step Reset Password via Email & 6-digit OTP, Lock Screen / Logoff, and Sign Out), added a full-screen Session Lock / Logoff screen that unlocks with password back to the exact last-used page, and added SuperAdmin-configurable Inactivity Auto-Lock Timeout (default 20 minutes) in Application Settings & SQL Server.',
+    tags: ['Profile Menu & Photo', 'Email + OTP Reset', 'Lock Screen (Resume Page)', '20m Idle Auto-Lock'],
+    revisions: [
+      {
+        revNumber: 1,
+        date: '2026-11-28',
+        note: 'Delivered HeaderProfileMenu, 3-step PasswordResetOtpModal, SessionLockScreen, and SuperAdmin IdleTimeoutMinutes (default 20m) in ApplicationSettingsPage + dbo.AppUiSettings',
+        author: 'Ajit',
+      },
+    ],
+  },
+  {
     id: 'rel-173',
     version: '1.7.3',
     type: 'Patch',

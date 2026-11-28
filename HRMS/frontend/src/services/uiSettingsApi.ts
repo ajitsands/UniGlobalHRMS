@@ -30,6 +30,8 @@ export interface GlobalUiSettingsPayload {
 
   lockCorporateTheme: boolean;
   recentMenusLimit: number;
+  enableIdleTimeout: boolean;
+  idleTimeoutMinutes: number;
   dateFormat: string;
   timeFormat: string;
   currencyCode: string;

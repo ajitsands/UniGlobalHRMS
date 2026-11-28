@@ -91,6 +91,16 @@ using (var scope = app.Services.CreateScope())
             BEGIN
                 ALTER TABLE dbo.AppUiSettings
                 ADD TimeZoneId NVARCHAR(64) NOT NULL CONSTRAINT DF_AppUiSettings_TimeZoneId DEFAULT(N'Asia/Bahrain');
+            END
+            IF COL_LENGTH(N'dbo.AppUiSettings', N'EnableIdleTimeout') IS NULL
+            BEGIN
+                ALTER TABLE dbo.AppUiSettings
+                ADD EnableIdleTimeout BIT NOT NULL CONSTRAINT DF_AppUiSettings_EnableIdleTimeout DEFAULT(1);
+            END
+            IF COL_LENGTH(N'dbo.AppUiSettings', N'IdleTimeoutMinutes') IS NULL
+            BEGIN
+                ALTER TABLE dbo.AppUiSettings
+                ADD IdleTimeoutMinutes INT NOT NULL CONSTRAINT DF_AppUiSettings_IdleTimeoutMinutes DEFAULT(20);
             END");
     }
     catch (Exception ex)

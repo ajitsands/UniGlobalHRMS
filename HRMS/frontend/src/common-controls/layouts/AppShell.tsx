@@ -39,6 +39,7 @@ import { Accordion, Drawer } from '../controls/ContainersAndPopups';
 import { Badge, Button, HelpPopup, Tooltip } from '../controls/HelpAndFeedback';
 import { SwitchToggle } from '../controls/FormControls';
 import { PromptLogo } from '../controls/BrandAndLoader';
+import { HeaderProfileMenu, UserProfileInfo } from '../controls/UserProfileAndLock';
 import { useToast } from '../controls/ToastSystem';
 
 export interface NavMenuItem {
@@ -63,7 +64,9 @@ interface AppShellProps {
   onReorderMenus: (items: NavMenuItem[]) => void;
   activeMenuId: string;
   onSelectMenu: (id: string) => void;
+  currentUser?: UserProfileInfo;
   currentUserLabel?: string;
+  onLockScreen?: () => void;
   onSignOut?: () => void;
   recentMenus?: RecentMenuRecord[];
   recentSyncDirty?: boolean;
@@ -78,7 +81,9 @@ export const AppShell: React.FC<AppShellProps> = ({
   onReorderMenus,
   activeMenuId,
   onSelectMenu,
+  currentUser,
   currentUserLabel,
+  onLockScreen,
   onSignOut,
   recentMenus = [],
   recentSyncDirty = false,
@@ -819,25 +824,33 @@ export const AppShell: React.FC<AppShellProps> = ({
             </Button>
           </Tooltip>
 
-          {onSignOut && (
-            <Tooltip
-              content={
-                currentUserLabel
-                  ? `${currentUserLabel} — Click to Sign Out / Switch Login Screen`
-                  : 'Sign Out to Login Screen'
-              }
-              theme="primary"
-              placement="bottom"
-            >
-              <Button
-                variant="secondary"
-                size="sm"
-                icon={<LogOut size={14} style={{ color: 'var(--ug-danger)' }} />}
-                onClick={onSignOut}
+          {onSignOut && currentUser ? (
+            <HeaderProfileMenu
+              user={currentUser}
+              onLockScreen={() => onLockScreen?.()}
+              onSignOut={onSignOut}
+            />
+          ) : (
+            onSignOut && (
+              <Tooltip
+                content={
+                  currentUserLabel
+                    ? `${currentUserLabel} — Click to Sign Out / Switch Login Screen`
+                    : 'Sign Out to Login Screen'
+                }
+                theme="primary"
+                placement="bottom"
               >
-                <span className="ug-hide-mobile">{isAr ? 'خروج' : 'Sign Out'}</span>
-              </Button>
-            </Tooltip>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<LogOut size={14} style={{ color: 'var(--ug-danger)' }} />}
+                  onClick={onSignOut}
+                >
+                  <span className="ug-hide-mobile">{isAr ? 'خروج' : 'Sign Out'}</span>
+                </Button>
+              </Tooltip>
+            )
           )}
         </div>
       </header>

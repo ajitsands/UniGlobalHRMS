@@ -88,6 +88,8 @@ public class UiSettingsService : IUiSettingsService
         entity.ScrollbarColor = dto.ScrollbarColor;
         entity.LockCorporateTheme = dto.LockCorporateTheme;
         entity.RecentMenusLimit = Math.Clamp(dto.RecentMenusLimit <= 0 ? 10 : dto.RecentMenusLimit, 1, 50);
+        entity.EnableIdleTimeout = dto.EnableIdleTimeout;
+        entity.IdleTimeoutMinutes = Math.Clamp(dto.IdleTimeoutMinutes <= 0 ? 20 : dto.IdleTimeoutMinutes, 1, 240);
         entity.DateFormat = string.IsNullOrWhiteSpace(dto.DateFormat) ? "DD-MM-YYYY" : dto.DateFormat.Trim();
         entity.TimeFormat = string.IsNullOrWhiteSpace(dto.TimeFormat) ? "12h" : dto.TimeFormat.Trim();
         entity.CurrencyCode = string.IsNullOrWhiteSpace(dto.CurrencyCode) ? "BHD" : dto.CurrencyCode.Trim().ToUpperInvariant();
@@ -132,6 +134,8 @@ public class UiSettingsService : IUiSettingsService
         ScrollbarColor = e.ScrollbarColor,
         LockCorporateTheme = e.LockCorporateTheme,
         RecentMenusLimit = Math.Clamp(e.RecentMenusLimit <= 0 ? 10 : e.RecentMenusLimit, 1, 50),
+        EnableIdleTimeout = e.EnableIdleTimeout,
+        IdleTimeoutMinutes = Math.Clamp(e.IdleTimeoutMinutes <= 0 ? 20 : e.IdleTimeoutMinutes, 1, 240),
         DateFormat = string.IsNullOrWhiteSpace(e.DateFormat) ? "DD-MM-YYYY" : e.DateFormat,
         TimeFormat = string.IsNullOrWhiteSpace(e.TimeFormat) ? "12h" : e.TimeFormat,
         CurrencyCode = string.IsNullOrWhiteSpace(e.CurrencyCode) ? "BHD" : e.CurrencyCode,

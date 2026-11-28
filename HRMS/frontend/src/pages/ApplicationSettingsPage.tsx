@@ -51,7 +51,13 @@ const SAMPLE_PAYROLL_ROWS: SamplePayrollPreviewRow[] = [
   { id: 4, component: 'Monthly EOSB Indemnity Provision', effectiveDate: '2026-11-28', baseBhd: 104.208 },
 ];
 
-export const ApplicationSettingsPage: React.FC = () => {
+export interface ApplicationSettingsPageProps {
+  onRequestLockScreen?: () => void;
+}
+
+export const ApplicationSettingsPage: React.FC<ApplicationSettingsPageProps> = ({
+  onRequestLockScreen,
+}) => {
   const {
     language,
     dateFormat,
@@ -74,6 +80,10 @@ export const ApplicationSettingsPage: React.FC = () => {
     todayIso,
     recentMenusLimit,
     setRecentMenusLimit,
+    enableIdleTimeout,
+    setEnableIdleTimeout,
+    idleTimeoutMinutes,
+    setIdleTimeoutMinutes,
     lockCorporateTheme,
     setLockCorporateTheme,
     userRole,
@@ -590,9 +600,150 @@ export const ApplicationSettingsPage: React.FC = () => {
             },
             {
               id: 'cache-governance',
-              label: isAr ? '3. الذاكرة المؤقتة والحوكمة (SuperAdmin)' : '3. System Cache & Governance',
+              label: isAr ? '3. الأمان وقفل الجلسة والحوكمة (SuperAdmin)' : '3. Session Auto-Lock & Governance',
               content: (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  {/* Session Auto-Logoff / Idle Lock Screen Policy */}
+                  <div
+                    style={{
+                      padding: '16px 18px',
+                      borderRadius: 12,
+                      background: 'var(--ug-surface-alt)',
+                      border: '1px solid var(--ug-border-strong)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 14,
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Lock size={18} style={{ color: 'var(--ug-primary)' }} />
+                        <div>
+                          <strong style={{ fontSize: '0.96rem', color: 'var(--ug-text)' }}>
+                            {isAr
+                              ? 'الإيقاف التلقائي وقفل الشاشة عند عدم النشاط'
+                              : 'Inactive Session Auto-Logoff & Lock Screen Policy'}
+                          </strong>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--ug-text-secondary)' }}>
+                            {isAr
+                              ? 'يقفل النظام الشاشة تلقائياً بعد فترة الخمول المحددة، وعند إدخال كلمة المرور يعود المستخدم لآخر صفحة مفتوحة.'
+                              : 'Automatically locks the screen after inactivity; entering your password resumes your exact last-used page.'}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Badge variant={enableIdleTimeout ? 'primary' : 'warning'}>
+                          {enableIdleTimeout
+                            ? isAr
+                              ? `مفعل (${idleTimeoutMinutes} دقيقة)`
+                              : `Active (${idleTimeoutMinutes} min)`
+                            : isAr
+                            ? 'غير مفعل'
+                            : 'Disabled'}
+                        </Badge>
+                        {onRequestLockScreen && (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            icon={<Lock size={14} />}
+                            onClick={onRequestLockScreen}
+                          >
+                            {isAr ? 'قفل الشاشة الآن' : 'Lock Screen Now'}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {userRole === 'SuperAdmin' ? (
+                      <>
+                        <SwitchToggle
+                          label={
+                            isAr
+                              ? 'تفعيل قفل الجلسة التلقائي بعد فترة عدم النشاط لجميع المستخدمين'
+                              : 'Enable Automatic Session Logoff / Lock Screen After Inactivity (All Users)'
+                          }
+                          helpText="Fixed by SuperAdmin in dbo.AppUiSettings. Standard users can also manually lock their screen anytime from their Profile menu."
+                          checked={enableIdleTimeout}
+                          onChange={setEnableIdleTimeout}
+                        />
+
+                        {enableIdleTimeout && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div>
+                              <div style={{ fontSize: '0.82rem', fontWeight: 700, marginBottom: 8, color: 'var(--ug-text-secondary)' }}>
+                                {isAr ? 'اختر مدة الخمول بالدقائق (الافتراضي: 20 دقيقة):' : 'Quick Inactivity Timeout Presets (Default: 20 Minutes):'}
+                              </div>
+                              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                                {[
+                                  { mins: 1, label: '1 min (Quick Test)' },
+                                  { mins: 5, label: '5 min' },
+                                  { mins: 10, label: '10 min' },
+                                  { mins: 15, label: '15 min' },
+                                  { mins: 20, label: '20 min (Default)' },
+                                  { mins: 30, label: '30 min' },
+                                  { mins: 45, label: '45 min' },
+                                  { mins: 60, label: '60 min' },
+                                ].map((opt) => {
+                                  const active = idleTimeoutMinutes === opt.mins;
+                                  return (
+                                    <Button
+                                      key={opt.mins}
+                                      type="button"
+                                      size="sm"
+                                      variant={active ? 'primary' : 'secondary'}
+                                      onClick={() => setIdleTimeoutMinutes(opt.mins)}
+                                    >
+                                      {opt.label}
+                                    </Button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            <div className="ug-grid-2">
+                              <RangeSlider
+                                label={isAr ? 'مدة عدم النشاط قبل القفل (بالدقائق)' : 'Inactivity Timeout Slider (Minutes)'}
+                                min={1}
+                                max={120}
+                                step={1}
+                                unit=" min"
+                                value={Math.min(120, idleTimeoutMinutes)}
+                                onChange={setIdleTimeoutMinutes}
+                              />
+                              <NumberInput
+                                label={isAr ? 'تحديد الدقائق بدقة (1 - 240 دقيقة)' : 'Exact Timeout Minutes (1 – 240 min)'}
+                                min={1}
+                                max={240}
+                                step={1}
+                                value={String(idleTimeoutMinutes)}
+                                onChange={(e) => setIdleTimeoutMinutes(Number(e.target.value) || 20)}
+                                helpText="Click Save to SQL Server above to enforce across all user sessions."
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <Alert variant="info" title={isAr ? 'سياسة أمان الجلسة المعتمدة' : 'Corporate Session Timeout Policy'}>
+                        <span>
+                          {enableIdleTimeout ? (
+                            <>
+                              Your session automatically locks after <strong>{idleTimeoutMinutes} minutes</strong> of inactivity (configured by{' '}
+                              <strong>SuperAdmin</strong>). You can also click <strong>Lock Screen / Logoff</strong> anytime from your top-right Profile icon.
+                            </>
+                          ) : (
+                            <>
+                              Automatic inactivity lock is currently disabled by <strong>SuperAdmin</strong>. You can manually lock your screen anytime using{' '}
+                              <strong>Lock Screen</strong> in your Profile menu.
+                            </>
+                          )}
+                        </span>
+                      </Alert>
+                    )}
+                  </div>
+
                   {userRole === 'SuperAdmin' ? (
                     <>
                       <RangeSlider
@@ -618,7 +769,8 @@ export const ApplicationSettingsPage: React.FC = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <Lock size={15} />
                         <span>
-                          Recent Menu Cache Limit is fixed at <strong>{recentMenusLimit} menus</strong> per user by{' '}
+                          Recent Menu Cache Limit (<strong>{recentMenusLimit} menus</strong>) and Auto-Lock Timeout (
+                          <strong>{enableIdleTimeout ? `${idleTimeoutMinutes} min` : 'Off'}</strong>) are fixed by{' '}
                           <strong>SuperAdmin</strong>. Switch to SuperAdmin role to modify system-wide governance settings.
                         </span>
                       </div>

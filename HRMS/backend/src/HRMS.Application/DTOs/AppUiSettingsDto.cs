@@ -33,6 +33,8 @@ public class AppUiSettingsDto
 
     public bool LockCorporateTheme { get; set; } = true;
     public int RecentMenusLimit { get; set; } = 10;
+    public bool EnableIdleTimeout { get; set; } = true;
+    public int IdleTimeoutMinutes { get; set; } = 20;
 
     // Global Regional & Gulf Formatting Settings (Default: Kingdom of Bahrain)
     public string DateFormat { get; set; } = "DD-MM-YYYY";

@@ -44,9 +44,11 @@ public class AppUiSettings
     public int CardShadowLevel { get; set; } = 1;
     public string ScrollbarColor { get; set; } = "#1B365D";
 
-    // Governance: Lock Corporate Identity for standard users & SuperAdmin Recent-Menu Cache Limit
+    // Governance: Lock Corporate Identity, Recent-Menu Cache Limit & Session Idle Auto-Lock
     public bool LockCorporateTheme { get; set; } = true;
     public int RecentMenusLimit { get; set; } = 10;
+    public bool EnableIdleTimeout { get; set; } = true;
+    public int IdleTimeoutMinutes { get; set; } = 20;
 
     // Global Regional & Gulf Formatting Settings (Default: Kingdom of Bahrain)
     public string DateFormat { get; set; } = "DD-MM-YYYY";

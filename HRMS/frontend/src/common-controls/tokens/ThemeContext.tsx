@@ -305,6 +305,10 @@ interface ThemeContextValue {
   setLockCorporateTheme: (v: boolean) => void;
   recentMenusLimit: number;
   setRecentMenusLimit: (n: number) => void;
+  enableIdleTimeout: boolean;
+  setEnableIdleTimeout: (enabled: boolean) => void;
+  idleTimeoutMinutes: number;
+  setIdleTimeoutMinutes: (mins: number) => void;
   dateFormat: AppDateFormat;
   setDateFormat: (fmt: AppDateFormat) => void;
   timeFormat: AppTimeFormat;
@@ -363,6 +367,8 @@ interface PersistedSettings {
   quickAccessIds: string[];
   isMenuLocked: boolean;
   recentMenusLimit: number;
+  enableIdleTimeout: boolean;
+  idleTimeoutMinutes: number;
   dateFormat: AppDateFormat;
   timeFormat: AppTimeFormat;
   currencyCode: GulfCurrencyCode;
@@ -398,6 +404,8 @@ const DEFAULT_SETTINGS: PersistedSettings = {
   quickAccessIds: ['dashboard', 'ui-kit', 'emp-directory', 'pay-run'],
   isMenuLocked: false,
   recentMenusLimit: 10,
+  enableIdleTimeout: true,
+  idleTimeoutMinutes: 20,
   dateFormat: 'DD-MM-YYYY',
   timeFormat: '12h',
   currencyCode: 'BHD',
@@ -481,6 +489,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [recentMenusLimit, setRecentMenusLimitState] = useState<number>(
     Math.min(50, Math.max(1, Number(initial.recentMenusLimit) || 10))
   );
+  const [enableIdleTimeout, setEnableIdleTimeout] = useState<boolean>(
+    initial.enableIdleTimeout !== undefined ? Boolean(initial.enableIdleTimeout) : true
+  );
+  const [idleTimeoutMinutes, setIdleTimeoutMinutesState] = useState<number>(
+    Math.min(240, Math.max(1, Number(initial.idleTimeoutMinutes) || 20))
+  );
+  const setIdleTimeoutMinutes = (mins: number) => {
+    setIdleTimeoutMinutesState(Math.min(240, Math.max(1, Math.round(Number(mins) || 20))));
+  };
   const [dateFormat, setDateFormat] = useState<AppDateFormat>(initial.dateFormat || 'DD-MM-YYYY');
   const [timeFormat, setTimeFormat] = useState<AppTimeFormat>(initial.timeFormat || '12h');
   const [currencyCode, setCurrencyCode] = useState<GulfCurrencyCode>(initial.currencyCode || 'BHD');
@@ -577,6 +594,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (remote.recentMenusLimit && remote.recentMenusLimit > 0) {
         setRecentMenusLimitState(Math.min(50, Math.max(1, Number(remote.recentMenusLimit))));
       }
+      if (typeof remote.enableIdleTimeout === 'boolean') {
+        setEnableIdleTimeout(remote.enableIdleTimeout);
+      }
+      if (remote.idleTimeoutMinutes && remote.idleTimeoutMinutes > 0) {
+        setIdleTimeoutMinutesState(Math.min(240, Math.max(1, Number(remote.idleTimeoutMinutes))));
+      }
       if (remote.dateFormat) setDateFormat(remote.dateFormat as AppDateFormat);
       if (remote.timeFormat) setTimeFormat(remote.timeFormat as AppTimeFormat);
       if (remote.currencyCode) setCurrencyCode(remote.currencyCode as GulfCurrencyCode);
@@ -622,6 +645,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         scrollbarColor,
         lockCorporateTheme,
         recentMenusLimit,
+        enableIdleTimeout,
+        idleTimeoutMinutes,
         dateFormat,
         timeFormat,
         currencyCode,
@@ -746,6 +771,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         quickAccessIds,
         isMenuLocked,
         recentMenusLimit,
+        enableIdleTimeout,
+        idleTimeoutMinutes,
         dateFormat,
         timeFormat,
         currencyCode,
@@ -784,6 +811,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     quickAccessIds,
     isMenuLocked,
     recentMenusLimit,
+    enableIdleTimeout,
+    idleTimeoutMinutes,
     dateFormat,
     timeFormat,
     currencyCode,
@@ -954,6 +983,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setLockCorporateTheme,
         recentMenusLimit,
         setRecentMenusLimit,
+        enableIdleTimeout,
+        setEnableIdleTimeout,
+        idleTimeoutMinutes,
+        setIdleTimeoutMinutes,
         dateFormat,
         setDateFormat,
         timeFormat,
